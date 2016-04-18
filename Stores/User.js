@@ -1,5 +1,5 @@
 'use strict';
-const User = require('../Models/User');
+const Models = require('../Models');
 
 class UserStore {
   constructor() {
@@ -7,7 +7,7 @@ class UserStore {
   }
 
   getUser() {
-    return User
+    return Models.User
       .signin();
   }
 }
