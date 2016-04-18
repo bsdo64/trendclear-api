@@ -7,7 +7,7 @@ class User {
       .tc_users
       .query()
       .then(function (user) {
-        console.log(user);
+        return user;
       })
       .catch(function (err) {
         console.log(err);
