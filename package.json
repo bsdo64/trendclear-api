@@ -15,7 +15,7 @@
     "lodash": "^4.11.1",
     "moment": "^2.12.0",
     "shortid": "^2.2.6",
-    "trendclear-database": "latest"
+    "trendclear-database": "^0.0.3"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const M = require('../../Models/index');
+
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -8,9 +10,13 @@ router.use(function timeLog(req, res, next) {
 });
 // define the home page route
 router.get('/', function(req, res) {
-  
 
-  res.send('Birds home page');
+  M
+    .User
+    .signin()
+    .then(function (user) {
+      res.send(user);
+    })
 });
 // define the about route
 router.get('/about', function(req, res) {
