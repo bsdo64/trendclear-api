@@ -3,6 +3,7 @@ const router = express.Router();
 
 const M = require('../../Models/index');
 const SigninHandler = require('./Signin');
+const StoreHandler = require('./Store');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -13,12 +14,15 @@ router.use(function timeLog(req, res, next) {
 
   next();
 });
+
+router.use('/store', StoreHandler);
+
 // define the home page route
 router.use('/signin', SigninHandler);
 
 // define the about route
 router.get('/about', function(req, res) {
-  res.send('About birds');
+  
 });
 
 module.exports = router;

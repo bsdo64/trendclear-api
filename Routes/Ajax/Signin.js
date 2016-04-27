@@ -71,7 +71,8 @@ router.post('/requestEmailVerify', function (req, res, next) {
   const sessionId = helper.signedSessionId(req.cookies.sessionId);
 
   M
-    .User.requestEmailVerifyCode(req.body.email, sessionId)
+    .User
+    .requestEmailVerifyCode(req.body.email, sessionId)
     .then(function (result) {
       res.json(result);
     })
