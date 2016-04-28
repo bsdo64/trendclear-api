@@ -9,6 +9,13 @@ const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 
 class User {
+  /**
+   *
+   * Signin
+   *
+   * @param email
+   * @returns {Promise.<T>}
+   */
   checkEmailDup(email) {
     return M
       .tc_users
@@ -158,6 +165,58 @@ class User {
         console.log(err);
         throw new Error(err);
       })
+  }
+
+  /**
+   *
+   *  CheckUserLogin
+   *
+   */
+  checkUserLogin(user) {
+    const userObj = {
+      id: user.id,
+      nick: user.nick
+    };
+
+    return M
+      .tc_users
+      .query()
+      .eager('[trendbox, grade, role, profile]')
+      .where(userObj)
+      .then(function (findUser) {
+        return findUser
+      })
+      .catch(function (err) {
+        console.log(err);
+        throw new Error(err);
+      })
+  }
+
+  
+  login(user, sessionId) {
+    const userObj = {
+      email: user.email,
+      password: user.password
+    };
+
+    return M
+      .tc_users
+      .query()
+      .eager('password')
+      .where({ email: userObj.email })
+      .then(function (findUser) {
+        if (!findUser) {
+          throw new Error('User not Found');
+        }
+
+        console.log(findUser[0].password[0].password);
+        var checkPassword = bcrypt.compareSync(userObj.password, findUser[0].password[0].password); // true
+        if (checkPassword) {
+          return User.setTokenWithRedisSession({nick: findUser[0].nick, id: findUser[0].id}, sessionId);
+        } else {
+          throw new Error('Password is not Correct');
+        }
+      });
   }
 
   static setTokenWithRedisSession(user, sessionId) {

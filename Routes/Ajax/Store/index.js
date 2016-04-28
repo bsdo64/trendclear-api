@@ -2,14 +2,96 @@ const express = require('express');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
 const helper = require('../../helper/func');
+const assign = require('deep-assign');
+const redisClient = require('../../../Util/RedisClient');
+const jsonwebtoken = require("jsonwebtoken");
+const jwtConf = require('../../../config/jwt');
+const M = require('../../../Models/index');
 
 router.use(function (req, res, next) {
-  console.log(req.signedCookies);
+  const cookies = req.cookies;
+  const sessionId = cookieParser.signedCookie(cookies.sessionId, '1234567890QWERTY');
+  const token = cookies.token;
 
-  next();
+  redisClient.get('sess:' + sessionId, function (err, result) {
+    var resultJS = JSON.parse(result);
+    var resultData = res.resultData = {};
+
+    if (err) {
+      next(err);
+    }
+    if (!resultJS) {
+      next(new Error('Malformed sessionId'));
+    }
+
+    if (resultJS.token && !token) {
+      next(new Error('Client dont has Token but redis has'));
+    }
+
+    function tokenVerify(token, redisToken) {
+      return token === redisToken;
+    }
+
+    if (resultJS.token && token) {
+      var verifyToken = tokenVerify(token, resultJS.token);
+      if (!verifyToken) {
+        next(new Error('Malformed token'));
+      }
+
+      jsonwebtoken.verify(token, jwtConf.secret, function (jwtErr, decoded) {
+        // err
+        if (jwtErr || !decoded) {
+          return next(jwtErr);
+        }
+
+        console.log(decoded);
+
+        var userObj = {
+          id: decoded.id,
+          nick: decoded.nick
+        };
+        // decoded undefined
+        M
+          .User
+          .checkUserLogin(userObj)
+          .then(function (user) {
+            if (!user) {
+              return next(new Error('Malformed jwt payload'));
+            }
+
+            console.log(userObj);
+
+            assign(resultData, {
+              UserStore: {
+                user: {
+                  id: user[0].id,
+                  nick: user[0].nick,
+                  email: user[0].email
+                },
+                trendbox: user[0].trendbox[0],
+                profile: user[0].profile[0],
+                grade: user[0].grade[0],
+                role: user[0].role[0],
+                icon: user[0],
+              },
+              LoginStore: {isLogin: true, openLoginModal: false, loginSuccess: true, loginFail: false}
+            });
+            console.dir(user, {depth: 10});
+            next(); // User Login!!
+          });
+      });
+    } else {
+      assign(resultData, {
+        UserStore: {user: null},
+        LoginStore: {isLogin: false, openLoginModal: false, loginSuccess: false, loginFail: false}
+      });
+      next(); // User Not Login!!
+    }
+  });
 });
 
 router.get('/', function (req, res, next) {
+  console.log(res.resultData);
   res.json({
     GnbStore: {
       openGnb: false,
@@ -782,34 +864,11 @@ router.get('/', function (req, res, next) {
         }]
       }
     },
-    LoginStore: {
-      isLogin: false,
-      openLoginModal: false,
-      loginSuccess: false,
-      loginFail: false
-    },
+    LoginStore: res.resultData.LoginStore,
     UserStore: {
-      user: {
-        id: 1,
-        nick: 'Nickname',
-        email: 'bsdo@naver.com'
-      },
-      trendbox: {
-        id: 1,
-        nick: 'Nickname',
-        level: 1,
-        exp: 130,
-        next_exp: 250,
-        reputation: 120,
-        tp: 120,
-        rp: 10
-      },
-      profile: {
-        avatar_img: null,
-        sex: 1,
-        birth: new Date(),
-        joined_at: new Date()
-      },
+      user: res.resultData.UserStore.user,
+      trendbox: res.resultData.UserStore.trendbox,
+      profile: res.resultData.UserStore.profile,
       icon: {
         id: 1,
         img: 'icon_1.png'
@@ -2219,34 +2278,11 @@ router.get('/community', function (req, res, next) {
           }]
         }
       },
-      LoginStore: {
-        isLogin: false,
-        openLoginModal: false,
-        loginSuccess: false,
-        loginFail: false
-      },
+      LoginStore: res.resultData.LoginStore,
       UserStore: {
-        user: {
-          id: 1,
-          nick: 'Nickname',
-          email: 'bsdo@naver.com'
-        },
-        trendbox: {
-          id: 1,
-          nick: 'Nickname',
-          level: 1,
-          exp: 130,
-          next_exp: 250,
-          reputation: 120,
-          tp: 120,
-          rp: 10
-        },
-        profile: {
-          avatar_img: null,
-          sex: 1,
-          birth: new Date(),
-          joined_at: new Date()
-        },
+        user: res.resultData.UserStore.user,
+        trendbox: res.resultData.UserStore.trendbox,
+        profile: res.resultData.UserStore.profile,
         icon: {
           id: 1,
           img: 'icon_1.png'
@@ -3012,34 +3048,11 @@ router.get('/community', function (req, res, next) {
           }]
         }
       },
-      LoginStore: {
-        isLogin: false,
-        openLoginModal: false,
-        loginSuccess: false,
-        loginFail: false
-      },
+      LoginStore: res.resultData.LoginStore,
       UserStore: {
-        user: {
-          id: 1,
-          nick: 'Nickname',
-          email: 'bsdo@naver.com'
-        },
-        trendbox: {
-          id: 1,
-          nick: 'Nickname',
-          level: 1,
-          exp: 130,
-          next_exp: 250,
-          reputation: 120,
-          tp: 120,
-          rp: 10
-        },
-        profile: {
-          avatar_img: null,
-          sex: 1,
-          birth: new Date(),
-          joined_at: new Date()
-        },
+        user: res.resultData.UserStore.user,
+        trendbox: res.resultData.UserStore.trendbox,
+        profile: res.resultData.UserStore.profile,
         icon: {
           id: 1,
           img: 'icon_1.png'
@@ -3836,29 +3849,11 @@ router.get('/community', function (req, res, next) {
           }]
         }
       },
-      LoginStore: {
-        isLogin: false,
-        openLoginModal: false,
-        loginSuccess: false,
-        loginFail: false
-      },
+      LoginStore: res.resultData.LoginStore,
       UserStore: {
-        trendbox: {
-          id: 1,
-          nick: 'Nickname',
-          level: 1,
-          exp: 130,
-          next_exp: 250,
-          reputation: 120,
-          tp: 120,
-          rp: 10
-        },
-        profile: {
-          avatar_img: null,
-          sex: 1,
-          birth: new Date(),
-          joined_at: new Date()
-        },
+        user: res.resultData.UserStore.user,
+        trendbox: res.resultData.UserStore.trendbox,
+        profile: res.resultData.UserStore.profile,
         icon: {
           id: 1,
           img: 'icon_1.png'
@@ -4723,29 +4718,11 @@ router.get('/signin', function (req, res, next) {
         }]
       }
     },
-    LoginStore: {
-      isLogin: false,
-      openLoginModal: false,
-      loginSuccess: false,
-      loginFail: false
-    },
+    LoginStore: res.resultData.LoginStore,
     UserStore: {
-      trendbox: {
-        id: 1,
-        nick: 'Nickname',
-        level: 1,
-        exp: 130,
-        next_exp: 250,
-        reputation: 120,
-        tp: 120,
-        rp: 10
-      },
-      profile: {
-        avatar_img: null,
-        sex: 1,
-        birth: new Date(),
-        joined_at: new Date()
-      },
+      user: res.resultData.UserStore.user,
+      trendbox: res.resultData.UserStore.trendbox,
+      profile: res.resultData.UserStore.profile,
       icon: {
         id: 1,
         img: 'icon_1.png'
