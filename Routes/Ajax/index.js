@@ -5,6 +5,7 @@ const logger = require('morgan');
 const M = require('../../Models/index');
 const SigninHandler = require('./Signin');
 const LoginHandler = require('./Login');
+const LogoutHandler = require('./Logout');
 const StoreHandler = require('./Store');
 
 router.use(logger('dev'));
@@ -24,6 +25,7 @@ router.use('/store', StoreHandler);
 // define the home page route
 router.use('/signin', SigninHandler);
 router.use('/login', LoginHandler);
+router.use('/logout', LogoutHandler);
 
 // define the about route
 router.get('/about', function(req, res) {

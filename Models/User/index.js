@@ -204,20 +204,35 @@ class User {
       .query()
       .eager('password')
       .where({ email: userObj.email })
+      .first()
       .then(function (findUser) {
         if (!findUser) {
           throw new Error('User not Found');
         }
 
-        console.log(findUser[0].password[0].password);
-        var checkPassword = bcrypt.compareSync(userObj.password, findUser[0].password[0].password); // true
+        console.dir(findUser, {depth: 10});
+        console.log(findUser.password[0].password);
+        var checkPassword = bcrypt.compareSync(userObj.password, findUser.password[0].password); // true
         if (checkPassword) {
-          return User.setTokenWithRedisSession({nick: findUser[0].nick, id: findUser[0].id}, sessionId);
+          return User.setTokenWithRedisSession({nick: findUser.nick, id: findUser.id}, sessionId);
         } else {
           throw new Error('Password is not Correct');
         }
       });
   }
+  
+  logout(user, sessionId) {
+    return redisClient.get('sess:' + sessionId)
+      .then(function (result) {
+        var resultJS = JSON.parse(result);
+        delete resultJS.token;
+
+        return JSON.stringify(resultJS);
+      })
+      .then(function (result) {
+        return redisClient.set('sess:' + sessionId, result);
+      });
+  };
 
   static setTokenWithRedisSession(user, sessionId) {
     const token = jsonwebtoken.sign(user, jwtConf.secret, jwtConf.option);
