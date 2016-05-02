@@ -183,6 +183,7 @@ class User {
       .query()
       .eager('[trendbox, grade, role, profile]')
       .where(userObj)
+      .first()
       .then(function (findUser) {
         return findUser
       })
