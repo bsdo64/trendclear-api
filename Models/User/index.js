@@ -211,8 +211,6 @@ class User {
           throw new Error('User not Found');
         }
 
-        console.dir(findUser, {depth: 10});
-        console.log(findUser.password[0].password);
         var checkPassword = bcrypt.compareSync(userObj.password, findUser.password[0].password); // true
         if (checkPassword) {
           return User.setTokenWithRedisSession({nick: findUser.nick, id: findUser.id}, sessionId);
@@ -232,6 +230,22 @@ class User {
       })
       .then(function (result) {
         return redisClient.set('sess:' + sessionId, result);
+      });
+  };
+
+  checkUserByToken(token, sessionId) {
+    return redisClient
+      .get('sess:' + sessionId)
+      .then(function (result) {
+        var resultJS = JSON.parse(result);
+        console.log(resultJS.token === token);
+
+        var decoded = jsonwebtoken.verify(token, jwtConf.secret);
+        return M
+          .tc_users
+          .query()
+          .where({id: decoded.id, nick: decoded.nick})
+          .first()
       });
   };
 
