@@ -70,15 +70,27 @@ router.use(function (req, res, next) {
                 role: user.role[0],
                 icon: user,
               },
-              LoginStore: {isLogin: true, openLoginModal: false, loginSuccess: true, loginFail: false}
+              LoginStore: {
+                isLogin: true,
+                openLoginModal: false,
+                loginSuccess: true,
+                loginFail: false
+              }
             });
             next(); // User Login!!
           });
       });
     } else {
       assign(resultData, {
-        UserStore: {user: null},
-        LoginStore: {isLogin: false, openLoginModal: false, loginSuccess: false, loginFail: false}
+        UserStore: {
+          user: null
+        },
+        LoginStore: {
+          isLogin: false,
+          openLoginModal: false,
+          loginSuccess: false,
+          loginFail: false
+        }
       });
       next(); // User Not Login!!
     }
