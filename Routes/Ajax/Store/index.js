@@ -70,15 +70,27 @@ router.use(function (req, res, next) {
                 role: user.role[0],
                 icon: user,
               },
-              LoginStore: {isLogin: true, openLoginModal: false, loginSuccess: true, loginFail: false}
+              LoginStore: {
+                isLogin: true,
+                openLoginModal: false,
+                loginSuccess: true,
+                loginFail: false
+              }
             });
             next(); // User Login!!
           });
       });
     } else {
       assign(resultData, {
-        UserStore: {user: null},
-        LoginStore: {isLogin: false, openLoginModal: false, loginSuccess: false, loginFail: false}
+        UserStore: {
+          user: null
+        },
+        LoginStore: {
+          isLogin: false,
+          openLoginModal: false,
+          loginSuccess: false,
+          loginFail: false
+        }
       });
       next(); // User Not Login!!
     }
@@ -99,13 +111,21 @@ router.use(function (req, res, next) {
       });
     })
     .then(function() {
-      return M
-        .Club
-        .getClubMenusById(88)
-        .then(function(category) {
-          console.log(category);
-          next();
-        })
+      if (req.query.categoryId) {
+        return M
+          .Club
+          .getClubMenusById(req.query.categoryId)
+          .then(function(category) {
+            assign(res.resultData, {
+              GnbStore: {
+                categoryMenu: [8]
+              }
+            });
+            next();
+          })
+      } else {
+        return next();
+      }
     })
 });
 
