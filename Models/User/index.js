@@ -211,7 +211,7 @@ class User {
           throw new Error('User not Found');
         }
 
-        var checkPassword = bcrypt.compareSync(userObj.password, findUser.password[0].password); // true
+        var checkPassword = bcrypt.compareSync(userObj.password, findUser.password.password); // true
         if (checkPassword) {
           return User.setTokenWithRedisSession({nick: findUser.nick, id: findUser.id}, sessionId);
         } else {
