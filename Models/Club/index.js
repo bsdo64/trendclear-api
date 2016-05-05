@@ -34,10 +34,12 @@ class Club {
       .where('tc_club_categories.id', categoryId)
       .first()
       .then(function (clubs) {
+        console.log(clubs);
         return Db
           .tc_clubs
           .query()
           .eager('[category_groups.categories.forums]')
+          .filterEager('category_groups', builder => builder.where('id', '=', clubs.category_group_id))
           .where({id: clubs.club_id})
           .first()
       })
