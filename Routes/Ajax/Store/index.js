@@ -123,6 +123,18 @@ router.use(function (req, res, next) {
               }
             });
 
+            return M
+              .Forum
+              .getForumInfo(req.query.forumId)
+          })
+          .then(function (forum) {
+
+            assign(res.resultData, {
+              CommunityStore: {
+                forum: forum
+              }
+            })
+
             next();
           })
       } else if (req.query.forumId && req.query.categoryId) {
@@ -135,6 +147,18 @@ router.use(function (req, res, next) {
             assign(res.resultData, {
               GnbStore: {
                 categoryMenu: { categories: [category] }
+              }
+            });
+
+            return M
+              .Forum
+              .getForumInfo(req.query.forumId)
+          })
+          .then(function (forum) {
+
+            assign(res.resultData, {
+              CommunityStore: {
+                forum: forum
               }
             });
 
@@ -357,27 +381,7 @@ router.get('/community', function (req, res, next) {
           like_count: '1,232',
           comment_count: '322'
         },
-        "club": {
-          "id": 1,
-          "order": 0,
-          "title": "공지사항",
-          "created_at": "2016-04-27T08:02:49.000Z",
-          "ClubGroup": {
-            "using": true,
-            "id": 1,
-            "created_at": "2016-04-27T08:02:49.000Z",
-            "title": "공지",
-            "order": 0,
-            "user_id": 1,
-            "description": "공지게시판 입니다",
-            "updated_at": "2016-04-27T08:02:49.000Z"
-          },
-          "club_group_id": 1,
-          "description": "공지게시판 입니다",
-          "user_id": 1,
-          "updated_at": "2016-04-27T08:02:49.000Z",
-          "url": "notice"
-        },
+        forum: res.resultData.CommunityStore.forum,
         "list": {
           "page": 1,
           "data": [
@@ -665,27 +669,7 @@ router.get('/community', function (req, res, next) {
     res.json({
       CommunityStore: {
         type: 'forum',
-        "club": {
-          "id": 1,
-          "order": 0,
-          "title": "공지사항",
-          "created_at": "2016-04-27T08:02:49.000Z",
-          "ClubGroup": {
-            "using": true,
-            "id": 1,
-            "created_at": "2016-04-27T08:02:49.000Z",
-            "title": "공지",
-            "order": 0,
-            "user_id": 1,
-            "description": "공지게시판 입니다",
-            "updated_at": "2016-04-27T08:02:49.000Z"
-          },
-          "club_group_id": 1,
-          "description": "공지게시판 입니다",
-          "user_id": 1,
-          "updated_at": "2016-04-27T08:02:49.000Z",
-          "url": "notice"
-        },
+        forum : res.resultData.CommunityStore.forum,
         "list": {
           "page": 1,
           "data": [
