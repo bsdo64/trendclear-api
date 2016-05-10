@@ -26,7 +26,7 @@ router.post('/submit', function (req, res, next) {
 
       return M
         .Post
-        .submitPost(postObj, user)
+        .submitPost(postObj, user, req.body.query)
     })
     .then(function (post) {
       console.log(post);

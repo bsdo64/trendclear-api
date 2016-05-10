@@ -9,8 +9,7 @@ const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 
 class Post {
-  submitPost(post, user) {
-    
+  submitPost(post, user, query) {
     return Db
       .tc_posts
       .query()
@@ -18,11 +17,31 @@ class Post {
         title: post.title,
         content: post.content,
         author_id: user.id,
-        created_at: new Date()
+        created_at: new Date(),
+        forum_id: query.forumId
       })
       .then(function (post) {
         return post
+          .$query()
+          .eager('forum.category.category_group.club')
       })
+  }
+
+  findOneById(postId) {
+    return Db
+      .tc_posts
+      .query()
+      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags]')
+      .where('id', '=' ,postId)
+      .first()
+  }
+
+  bestPostList(page = 0) {
+    return Db
+      .tc_posts
+      .query()
+      .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
+      .page(page, 10)
   }
 }
 

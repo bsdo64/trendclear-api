@@ -20,6 +20,16 @@ class Forum {
         return forum
       })
   }
+  
+  getForumPostList(forumId, page = 0) {
+    return Db
+      .tc_posts
+      .query()
+      .where('forum_id', '=', forumId)
+      .eager('[prefix, author.[icon,profile], forum.category.category_group.club]')
+      .page(page, 10)
+
+  }
 }
 
 module.exports = new Forum();

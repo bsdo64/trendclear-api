@@ -14,11 +14,12 @@
     "joi": "^8.0.5",
     "jsonwebtoken": "^5.7.0",
     "lodash": "^4.11.1",
+    "lodash-deep": "^2.0.0",
     "moment": "^2.12.0",
     "nodemailer": "^2.3.2",
     "query-parser": "0.0.1",
     "shortid": "^2.2.6",
-    "trendclear-database": "0.0.6"
+    "trendclear-database": "0.0.12"
   },
   "devDependencies": {
     "morgan": "^1.7.0"
