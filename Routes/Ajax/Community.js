@@ -14,7 +14,8 @@ router.use(function (req, res, next) {
 router.post('/submit', function (req, res, next) {
   const postObj = {
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    prefixId: req.body.prefixId,
   };
   const sessionId = helper.signedSessionId(req.cookies.sessionId);
   const token = req.cookies.token;

@@ -27,8 +27,16 @@ class Forum {
       .query()
       .where('forum_id', '=', forumId)
       .eager('[prefix, author.[icon,profile], forum.category.category_group.club]')
+      .orderBy('created_at', 'DESC')
       .page(page, 10)
 
+  }
+  
+  getPrefix(forumId) {
+    return Db
+      .tc_forum_prefixes
+      .query()
+      .where('forum_id', '=', forumId)
   }
 }
 

@@ -521,28 +521,37 @@ router.get('/signin', function (req, res, next) {
 });
 
 router.get('/community/submit', function (req, res, next) {
-  res.json({
-    CommunityStore: {},
-    GnbStore: {
-      openGnb: false,
-      gnbMenu: res.resultData.GnbStore.gnbMenu,
-      categoryMenu: {
-        categories: res.resultData.GnbStore.categoryMenu.categories
-      }
-    },
-    LoginStore: res.resultData.LoginStore,
-    UserStore: {
-      user: res.resultData.UserStore.user,
-      trendbox: res.resultData.UserStore.trendbox,
-      profile: res.resultData.UserStore.profile,
-      icon: {
-        id: 1,
-        img: 'icon_1.png'
-      }
-    },
-    SigninStore: {},
-    BestPostStore: {}
-  })
+  M
+    .Forum
+    .getPrefix(req.query.forumId)
+    .then(function (prefixes) {
+      res.json({
+        CommunityStore: {},
+        GnbStore: {
+          openGnb: false,
+          gnbMenu: res.resultData.GnbStore.gnbMenu,
+          categoryMenu: {
+            categories: res.resultData.GnbStore.categoryMenu.categories
+          }
+        },
+        LoginStore: res.resultData.LoginStore,
+        UserStore: {
+          user: res.resultData.UserStore.user,
+          trendbox: res.resultData.UserStore.trendbox,
+          profile: res.resultData.UserStore.profile,
+          grade: res.resultData.UserStore.grade,
+          icon: {
+            id: 1,
+            img: 'icon_1.png'
+          }
+        },
+        SigninStore: {},
+        BestPostStore: {},
+        SubmitStore: {
+          prefixes: prefixes
+        }
+      })
+    })
 });
 
 

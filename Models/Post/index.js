@@ -18,7 +18,8 @@ class Post {
         content: post.content,
         author_id: user.id,
         created_at: new Date(),
-        forum_id: query.forumId
+        forum_id: query.forumId,
+        prefix_id: post.prefixId
       })
       .then(function (post) {
         return post
@@ -31,7 +32,7 @@ class Post {
     return Db
       .tc_posts
       .query()
-      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags]')
+      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author, author]]')
       .where('id', '=' ,postId)
       .first()
   }
@@ -41,6 +42,7 @@ class Post {
       .tc_posts
       .query()
       .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
+      .orderBy('created_at', 'DESC')
       .page(page, 10)
   }
 }
