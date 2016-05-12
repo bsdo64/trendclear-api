@@ -401,19 +401,7 @@ router.get('/community', function (req, res, next) {
         }
       },
       LoginStore: res.resultData.LoginStore,
-      UserStore: {
-        user: res.resultData.UserStore.user,
-        trendbox: res.resultData.UserStore.trendbox,
-        profile: res.resultData.UserStore.profile,
-        icon: {
-          id: 1,
-          img: 'icon_1.png'
-        },
-        grade: {
-          name: '브론즈',
-          img: 'grade_bronze.png'
-        }
-      },
+      UserStore: res.resultData.UserStore,
       SigninStore: {
         emailDup: null,
         nickDup: null,
@@ -438,19 +426,7 @@ router.get('/community', function (req, res, next) {
         }
       },
       LoginStore: res.resultData.LoginStore,
-      UserStore: {
-        user: res.resultData.UserStore.user,
-        trendbox: res.resultData.UserStore.trendbox,
-        profile: res.resultData.UserStore.profile,
-        icon: {
-          id: 1,
-          img: 'icon_1.png'
-        },
-        grade: {
-          name: '브론즈',
-          img: 'grade_bronze.png'
-        }
-      },
+      UserStore: res.resultData.UserStore,
       BestPostStore: {},
       SigninStore: {
         emailDup: null,
@@ -491,19 +467,7 @@ router.get('/signin', function (req, res, next) {
       }
     },
     LoginStore: res.resultData.LoginStore,
-    UserStore: {
-      user: res.resultData.UserStore.user,
-      trendbox: res.resultData.UserStore.trendbox,
-      profile: res.resultData.UserStore.profile,
-      icon: {
-        id: 1,
-        img: 'icon_1.png'
-      },
-      grade: {
-        name: '브론즈',
-        img: 'grade_bronze.png'
-      }
-    },
+    UserStore: res.resultData.UserStore,
     BestPostStore: {
       posts: {
         data: []
@@ -535,18 +499,13 @@ router.get('/community/submit', function (req, res, next) {
           }
         },
         LoginStore: res.resultData.LoginStore,
-        UserStore: {
-          user: res.resultData.UserStore.user,
-          trendbox: res.resultData.UserStore.trendbox,
-          profile: res.resultData.UserStore.profile,
-          grade: res.resultData.UserStore.grade,
-          icon: {
-            id: 1,
-            img: 'icon_1.png'
+        UserStore: res.resultData.UserStore,
+        SigninStore: {},
+        BestPostStore: {
+          posts: {
+            data: []
           }
         },
-        SigninStore: {},
-        BestPostStore: {},
         SubmitStore: {
           prefixes: prefixes
         }

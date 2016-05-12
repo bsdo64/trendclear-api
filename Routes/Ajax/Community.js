@@ -11,6 +11,45 @@ router.use(function (req, res, next) {
   next();
 });
 
+router.post('/comment', function (req, res, next) {
+  const commentObj = {
+    content: req.body.content,
+    postId: req.body.postId
+  };
+  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const token = req.cookies.token;
+
+  return M
+    .User
+    .checkUserByToken(token, sessionId)
+    .then(function (user) {
+
+      return M
+        .Comment
+        .submitComment(commentObj, user)
+    })
+    .then(function (comment) {
+      console.log(comment);
+      res.json(comment);
+    })
+    .catch(function (err) {
+      console.error(err);
+      console.error(err.stack);
+
+      if (err.message === 'User not Found') {
+        res.json({
+          message: 'user not found',
+          error: err
+        });
+      } else {
+        res.json({
+          message: 'can\'t make token',
+          error: err
+        });
+      }
+    });
+})
+
 router.post('/submit', function (req, res, next) {
   const postObj = {
     title: req.body.title,
