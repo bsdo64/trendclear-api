@@ -258,16 +258,7 @@ router.get('/', function (req, res, next) {
           }
         },
         LoginStore: res.resultData.LoginStore,
-        UserStore: {
-          user: res.resultData.UserStore.user,
-          trendbox: res.resultData.UserStore.trendbox,
-          profile: res.resultData.UserStore.profile,
-          icon: res.resultData.UserStore.icon,
-          grade: {
-            name: '브론즈',
-            img: 'grade_bronze.png'
-          }
-        },
+        UserStore: res.resultData.UserStore,
         BestPostStore: {
           posts: {
             data: posts.results,

@@ -33,6 +33,9 @@ class Post {
       .tc_posts
       .query()
       .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author, author]]')
+      .filterEager('comments', builder =>
+        builder.limit(10).offset(0)
+      )
       .where('id', '=' ,postId)
       .first()
   }
@@ -44,6 +47,21 @@ class Post {
       .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
       .page(page, 10)
+  }
+
+  likePost(postObj, user) {
+    return Db
+      .tc_posts
+      .query()
+      .findById(postObj.postId)
+      .then(post => {
+        return post
+          .$query()
+          .increment('like_count', 1)
+          .then(() => {
+            return post
+          })
+      })
   }
 }
 

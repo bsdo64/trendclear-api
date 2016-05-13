@@ -8,6 +8,8 @@ const LoginHandler = require('./Login');
 const LogoutHandler = require('./Logout');
 const StoreHandler = require('./Store');
 const CommunityHandler = require('./Community');
+const UserHandler = require('./User');
+const LikeHandler = require('./Like');
 
 router.use(logger('dev'));
 // middleware that is specific to this router
@@ -28,6 +30,8 @@ router.use('/signin', SigninHandler);
 router.use('/login', LoginHandler);
 router.use('/logout', LogoutHandler);
 router.use('/community', CommunityHandler);
+router.use('/user', UserHandler);
+router.use('/like', LikeHandler);
 
 // define the about route
 router.get('/about', function(req, res) {

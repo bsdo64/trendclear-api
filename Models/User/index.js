@@ -249,6 +249,17 @@ class User {
       });
   };
 
+  updateAvatarImg(imgObj, user) {
+    return user
+      .$relatedQuery('profile')
+      .update({
+        avatar_img: imgObj.file.name
+      })
+      .then(function (numberOfAffectedRows) {
+        return numberOfAffectedRows;
+      });
+  }
+
   static setTokenWithRedisSession(user, sessionId) {
     const token = jsonwebtoken.sign(user, jwtConf.secret, jwtConf.option);
 
