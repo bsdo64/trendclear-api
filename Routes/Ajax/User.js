@@ -5,12 +5,6 @@ const helper = require('../helper/func');
 
 const M = require('../../Models/index');
 
-router.use(function (req, res, next) {
-  console.log(req.signedCookies);
-
-  next();
-});
-
 router.post('/avatarImg', function (req, res, next) {
   const imgObj = {
     file: req.body.file

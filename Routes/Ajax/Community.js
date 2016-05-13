@@ -5,12 +5,6 @@ const helper = require('../helper/func');
 
 const M = require('../../Models/index');
 
-router.use(function (req, res, next) {
-  console.log(req.signedCookies);
-
-  next();
-});
-
 router.post('/comment', function (req, res, next) {
   const commentObj = {
     content: req.body.content,
@@ -29,7 +23,7 @@ router.post('/comment', function (req, res, next) {
         .submitComment(commentObj, user)
     })
     .then(function (comment) {
-      console.log(comment);
+      
       res.json(comment);
     })
     .catch(function (err) {
@@ -69,7 +63,7 @@ router.post('/submit', function (req, res, next) {
         .submitPost(postObj, user, req.body.query)
     })
     .then(function (post) {
-      console.log(post);
+      
       res.json(post);
     })
     .catch(function (err) {

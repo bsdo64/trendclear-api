@@ -119,7 +119,6 @@ router.use(function (req, res, next) {
           .Club
           .getClubMenusByCategoryId(req.query.categoryId)
           .then(function(category) {
-            console.log(1, category);
 
             assign(res.resultData, {
               GnbStore: {
@@ -146,7 +145,6 @@ router.use(function (req, res, next) {
           .Club
           .getClubMenusByCategoryId(req.query.categoryId)
           .then(function(category) {
-            console.log(2, category);
 
             assign(res.resultData, {
               GnbStore: {
@@ -171,8 +169,7 @@ router.use(function (req, res, next) {
               .getForumPostList(req.query.forumId, req.query.page)
           })
           .then(function (result) {
-            console.log(result.results);
-
+            
             next();
           })
       } else if (req.query.categoryId) {
@@ -180,7 +177,6 @@ router.use(function (req, res, next) {
           .Club
           .getClubMenusByCategoryId(req.query.categoryId)
           .then(function(category) {
-            console.log(3, category);
 
             assign(res.resultData, {
               GnbStore: {

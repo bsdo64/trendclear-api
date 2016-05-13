@@ -34,7 +34,7 @@ class Club {
       .where('tc_club_categories.id', categoryId)
       .first()
       .then(function (clubs) {
-        console.log(clubs);
+        
         return Db
           .tc_clubs
           .query()

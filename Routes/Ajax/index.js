@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const logger = require('morgan');
+const {signedSessionId} = require('../helper/func');
 
-const M = require('../../Models/index');
 const SigninHandler = require('./Signin');
 const LoginHandler = require('./Login');
 const LogoutHandler = require('./Logout');
@@ -12,11 +12,12 @@ const UserHandler = require('./User');
 const LikeHandler = require('./Like');
 
 router.use(logger('dev'));
-// middleware that is specific to this router
+
 router.use(function timeLog(req, res, next) {
+  console.log();
   console.log('Time: ', Date.now());
 
-  console.log('query: ', req.query);
+  console.log('sessionId: ', signedSessionId(req.cookies.sessionId));
   console.log('query: ', req.query);
   console.log('body: ', req.body);
 

@@ -157,7 +157,6 @@ class User {
             return User.setTokenWithRedisSession({nick: uCreate.nick, id: newUser.id}, sessionId);
           })
           .then(function (token) {
-            console.log(token);
             return {token: token};
           });
       })
@@ -240,13 +239,20 @@ class User {
         var resultJS = JSON.parse(result);
         console.log(resultJS.token === token);
 
-        var decoded = jsonwebtoken.verify(token, jwtConf.secret);
+        let jwt = Promise.promisifyAll(jsonwebtoken);
+        return jwt.verify(token, jwtConf.secret);
+      })
+      .then(function (decoded) {
         return M
           .tc_users
           .query()
           .where({id: decoded.id, nick: decoded.nick})
           .first()
-      });
+      })
+      .catch(function (err) {
+        console.error(err);
+        return err;
+      })
   };
 
   updateAvatarImg(imgObj, user) {
