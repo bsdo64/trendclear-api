@@ -34,7 +34,9 @@ class Post {
       .query()
       .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author.profile, author.profile]]')
       .filterEager('comments', builder =>
-        builder.limit(10).offset(0)
+        builder
+          .limit(10)
+          .offset(0)
       )
       .where('id', '=' ,postId)
       .first()
@@ -42,7 +44,11 @@ class Post {
         let query = post.$relatedQuery('comments');
         return Promise.all([
           query.resultSize(),
-          query.offset(0).limit(10).eager('[subComments.author.[icon.iconDef, profile], author.[icon.iconDef, profile]]')
+          query
+            .offset(0)
+            .limit(10)
+            .eager('[subComments.author.[icon.iconDef, profile], author.[icon.iconDef, profile]]')
+            .orderBy('created_at', 'desc')
         ])
         .spread((total, results) => {
           post.comments = results;
