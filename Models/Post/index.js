@@ -32,10 +32,22 @@ class Post {
     return Db
       .tc_posts
       .query()
-      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author, author]]')
-      .filterEager('comments', builder =>builder.limit(10).offset(0))
+      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags]')
       .where('id', '=', postId)
       .first()
+      .then(post => {
+        let query = post.$relatedQuery('comments');
+        return Promise.all([
+          query.resultSize(),
+          query.offset(0).limit(10).eager('[subComments.author.[icon.iconDef, profile], author.[icon.iconDef, profile]]')
+        ])
+        .spread((total, results) => {
+          post.comments = results;
+          post.comment_count = parseInt(total, 10);
+          return post;
+        })
+
+      })
   }
 
   bestPostList (page = 0) {
@@ -60,7 +72,7 @@ class Post {
           .first()
           .then(like => {
             const query = post.$relatedQuery('likes');
-            
+
             if (like && like.id) {
               return query
                 .update({
