@@ -32,8 +32,11 @@ class Post {
     return Db
       .tc_posts
       .query()
-      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags]')
-      .where('id', '=', postId)
+      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author.profile, author.profile]]')
+      .filterEager('comments', builder =>
+        builder.limit(10).offset(0)
+      )
+      .where('id', '=' ,postId)
       .first()
       .then(post => {
         let query = post.$relatedQuery('comments');
