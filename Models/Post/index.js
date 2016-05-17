@@ -73,21 +73,24 @@ class Post {
       .page(page, 10)
       .then((posts) => {
 
-        return Db
-          .tc_posts
-          .query()
-          .select('tc_posts.id as postId', 'tc_likes.liker_id')
-          .join('tc_likes', 'tc_posts.id', knex.raw(`CAST(tc_likes.type_id as int)`))
-          .andWhere('tc_likes.type', 'post')
-          .andWhere('tc_likes.liker_id', user.id)
-          .then(function (likeTable) {
+        if (user) {
+          return Db
+            .tc_posts
+            .query()
+            .select('tc_posts.id as postId', 'tc_likes.liker_id')
+            .join('tc_likes', 'tc_posts.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+            .andWhere('tc_likes.type', 'post')
+            .andWhere('tc_likes.liker_id', user.id)
+            .then(function (likeTable) {
 
-            _.map(posts.results, function (value) {
-              value.liked = !!_.find(likeTable, {'postId': value.id});
-            });
-
-            return posts
-          })
+              _.map(posts.results, function (value) {
+                value.liked = !!_.find(likeTable, {'postId': value.id});
+              });
+              return posts
+            })
+        } else {
+          return posts;
+        }
       })
   }
 
