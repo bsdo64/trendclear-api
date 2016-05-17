@@ -6,9 +6,16 @@ const helper = require('../helper/func');
 const M = require('../../Models/index');
 
 router.get('/', function (req, res, next) {
+  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const token = req.cookies.token;
+
   return M
-    .Post
-    .bestPostList(1)
+    .User
+    .checkUserByToken(token, sessionId)
+    .then((user) => M
+      .Post
+      .bestPostList(1, user)
+    )
     .then(function (posts) {
 
       res.json(posts);
