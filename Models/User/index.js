@@ -251,7 +251,7 @@ class User {
       })
       .catch(function (err) {
         console.error(err);
-        return err;
+        throw new Error(err);
       })
   };
 

@@ -34,7 +34,7 @@ class Comment {
       .then(function (comment) {
         return comment
           .$query()
-          .eager('author')
+          .eager('author.[profile, grade]')
       })
   }
 

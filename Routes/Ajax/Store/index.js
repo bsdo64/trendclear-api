@@ -193,9 +193,17 @@ router.use(function (req, res, next) {
 });
 
 router.get('/', function (req, res, next) {
+  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const token = req.cookies.token;
+  
   M
-    .Post
-    .bestPostList()
+    .User
+    .checkUserByToken(token, sessionId)
+    .then(function (user) {
+      return M
+        .Post
+        .bestPostList(0, user)
+    })
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -283,30 +291,51 @@ router.get('/community', function (req, res, next) {
   const prop = {
     categoryId: req.query.categoryId,
     forumId: req.query.forumId,
-    postId: req.query.postId
+    postId: req.query.postId,
+    page: req.query.p - 1 || 0,
+    commentPage: req.query.comment_p - 1 || 0
   };
 
   if (prop.categoryId && prop.forumId && prop.postId) {
     let postList;
-    
+
     M
       .Forum
-      .getForumPostList(prop.forumId)
+      .getForumPostList(prop.forumId, prop.page)
       .then(function (posts) {
         postList = posts;
 
         return M
           .Post
-          .findOneById(prop.postId)
+          .findOneById(prop.postId, prop.commentPage)
       })
       .then(function (post) {
+
+        post.created_at = moment(post.created_at).format('YYYY-MM-DD HH:mm');
+
+        for (let i in postList.results) {
+          for (let j in postList.results[i]) {
+            if (j === 'created_at') {
+              postList.results[i][j] = moment(postList.results[i][j]).format('YYYY-MM-DD HH:mm');
+            }
+          }
+        }
+
+        for (let i in post.comments) {
+          for (let j in post.comments[i]) {
+            if (j === 'created_at') {
+              post.comments[i][j] = moment(post.comments[i][j]).format('YYYY-MM-DD HH:mm');
+            }
+          }
+        }
+
         res.json({
           CommunityStore: {
             type: 'post',
             post: post,
             forum: res.resultData.CommunityStore.forum,
             "list": {
-              "page": 1,
+              "page": prop.page + 1,
               "data": postList.results,
               "total": postList.total,
               "limit": 10
