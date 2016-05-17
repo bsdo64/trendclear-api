@@ -8,6 +8,7 @@ const LoginHandler = require('./Login');
 const LogoutHandler = require('./Logout');
 const StoreHandler = require('./Store');
 const CommunityHandler = require('./Community');
+const BestHandler = require('./Best');
 const UserHandler = require('./User');
 const LikeHandler = require('./Like');
 
@@ -31,6 +32,7 @@ router.use('/signin', SigninHandler);
 router.use('/login', LoginHandler);
 router.use('/logout', LogoutHandler);
 router.use('/community', CommunityHandler);
+router.use('/best', BestHandler);
 router.use('/user', UserHandler);
 router.use('/like', LikeHandler);
 

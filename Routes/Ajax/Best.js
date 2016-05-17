@@ -1,32 +1,17 @@
 const express = require('express');
-const moment = require('moment');
 const router = express.Router();
 const cookieParser = require('cookie-parser');
 const helper = require('../helper/func');
 
 const M = require('../../Models/index');
 
-router.post('/comment', function (req, res, next) {
-  const commentObj = {
-    content: req.body.content,
-    postId: req.body.postId
-  };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-
+router.get('/', function (req, res, next) {
   return M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
+    .Post
+    .bestPostList(1)
+    .then(function (posts) {
 
-      return M
-        .Comment
-        .submitComment(commentObj, user)
-    })
-    .then(function (comment) {
-
-      comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm')
-      res.json(comment);
+      res.json(posts);
     })
     .catch(function (err) {
       console.error(err);
@@ -65,7 +50,7 @@ router.post('/submit', function (req, res, next) {
         .submitPost(postObj, user, req.body.query)
     })
     .then(function (post) {
-      
+
       res.json(post);
     })
     .catch(function (err) {

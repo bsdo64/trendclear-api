@@ -7,6 +7,7 @@ const shortId = require('shortid');
 const jsonwebtoken = require('jsonwebtoken');
 const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 class Post {
   submitPost (post, user, query) {
@@ -28,15 +29,17 @@ class Post {
       })
   }
 
-  findOneById (postId) {
+  findOneById (postId, commentPage = 0) {
+    const limit = 10;
+    const offset = commentPage * limit;
     return Db
       .tc_posts
       .query()
       .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author.profile, author.profile]]')
       .filterEager('comments', builder =>
         builder
-          .limit(10)
-          .offset(0)
+          .limit(limit)
+          .offset(offset)
       )
       .where('id', '=' ,postId)
       .first()
@@ -45,8 +48,8 @@ class Post {
         return Promise.all([
           query.resultSize(),
           query
-            .offset(0)
-            .limit(10)
+            .offset(offset)
+            .limit(limit)
             .eager('[subComments.author.[icon.iconDef, profile], author.[icon.iconDef, profile]]')
             .orderBy('created_at', 'desc')
         ])
@@ -59,13 +62,33 @@ class Post {
       })
   }
 
-  bestPostList (page = 0) {
+  bestPostList (page = 0, user) {
+    const knex = Db.tc_posts.knex();
+
     return Db
       .tc_posts
       .query()
       .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
       .page(page, 10)
+      .then((posts) => {
+
+        return Db
+          .tc_posts
+          .query()
+          .select('tc_posts.id as postId', 'tc_likes.liker_id')
+          .join('tc_likes', 'tc_posts.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+          .andWhere('tc_likes.type', 'post')
+          .andWhere('tc_likes.liker_id', user.id)
+          .then(function (likeTable) {
+
+            _.map(posts.results, function (value) {
+              value.liked = !!_.find(likeTable, {'postId': value.id});
+            });
+
+            return posts
+          })
+      })
   }
 
   likePost (postObj, user) {
