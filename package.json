@@ -25,6 +25,7 @@
     "morgan": "^1.7.0"
   },
   "scripts": {
+    "start": "nodemon bin/www.js"
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
