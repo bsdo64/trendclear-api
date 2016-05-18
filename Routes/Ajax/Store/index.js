@@ -109,7 +109,8 @@ router.use(function (req, res, next) {
       assign(res.resultData, {
         GnbStore: {
           openGnb: false,
-          gnbMenu: { openSideNow: null, data: clubs }
+          gnbMenu: { openSideNow: null, data: clubs },
+          categoryMenu: {}
         }
       });
     })
@@ -215,52 +216,7 @@ router.get('/', function (req, res, next) {
       }
 
       res.json({
-        GnbStore: {
-          openGnb: false,
-          gnbMenu: res.resultData.GnbStore.gnbMenu,
-          categoryMenu: {
-            categories: [{
-              "id": 3,
-              "title": "베스트",
-              "order": 0,
-              "description": "베스트",
-              "using": true,
-              "category_groups": [
-                {
-                  "using": "1",
-                  "categories": [
-                    {
-                      "forums": [
-                        {
-                          "id": 37,
-                          "title": "헤어",
-                          "order": "0",
-                          "description": "헤어",
-                          "using": "1",
-                          "category_id": 11
-                        },
-                        {
-                          "id": 38,
-                          "title": "탈모",
-                          "order": "1",
-                          "description": "탈모",
-                          "using": "1",
-                          "category_id": 11
-                        }
-                      ],
-                      "id": 11
-                    }
-                  ],
-                  "id": 5,
-                  "title": "전체보기",
-                  "order": "0",
-                  "club_id": 3,
-                  "description": "전체보기"
-                }
-              ]
-            }]
-          }
-        },
+        GnbStore: res.resultData.GnbStore,
         LoginStore: res.resultData.LoginStore,
         UserStore: res.resultData.UserStore,
         BestPostStore: {
@@ -341,13 +297,7 @@ router.get('/community', function (req, res, next) {
               "limit": 10
             }
           },
-          GnbStore: {
-            openGnb: false,
-            gnbMenu: res.resultData.GnbStore.gnbMenu,
-            categoryMenu: {
-              categories: res.resultData.GnbStore.categoryMenu.categories
-            }
-          },
+          GnbStore: res.resultData.GnbStore,
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
           SigninStore: {},
@@ -358,7 +308,7 @@ router.get('/community', function (req, res, next) {
   } else if (prop.categoryId && prop.forumId) {
     M
       .Forum
-      .getForumPostList(prop.forumId)
+      .getForumPostList(prop.forumId, prop.page)
       .then(function (posts) {
 
         for (let i in posts.results) {

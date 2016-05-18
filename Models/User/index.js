@@ -240,9 +240,17 @@ class User {
         console.log(resultJS.token === token);
 
         let jwt = Promise.promisifyAll(jsonwebtoken);
-        return jwt.verify(token, jwtConf.secret);
+        if (token) {
+          return jwt.verify(token, jwtConf.secret);
+        } else {
+          return null
+        }
       })
       .then(function (decoded) {
+        if (!decoded) {
+          return null
+        }
+
         return M
           .tc_users
           .query()

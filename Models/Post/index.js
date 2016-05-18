@@ -35,7 +35,7 @@ class Post {
     return Db
       .tc_posts
       .query()
-      .eager('[prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author.profile, author.profile]]')
+      .eager('[likes, prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author.profile, author.profile]]')
       .filterEager('comments', builder =>
         builder
           .limit(limit)
@@ -70,7 +70,7 @@ class Post {
       .query()
       .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
-      .page(page, 10)
+      .page(page, 20)
       .then((posts) => {
 
         if (user) {
