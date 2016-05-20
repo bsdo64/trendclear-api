@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const cookieParser = require('cookie-parser');
+const moment = require('moment');
 const helper = require('../helper/func');
 
 const M = require('../../Models/index');
@@ -17,6 +17,14 @@ router.get('/', function (req, res, next) {
       .bestPostList(1, user)
     )
     .then(function (posts) {
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
 
       res.json(posts);
     })
