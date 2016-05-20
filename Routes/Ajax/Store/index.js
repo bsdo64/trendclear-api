@@ -324,7 +324,7 @@ router.get('/community', function (req, res, next) {
             type: 'forum',
             forum : res.resultData.CommunityStore.forum,
             "list": {
-              "page": 1,
+              "page": prop.page + 1,
               "data": posts.results,
               "total": posts.total,
               "limit": 10
@@ -347,11 +347,7 @@ router.get('/community', function (req, res, next) {
             emailVerifySuccess: false,
             emailVerifyFail: false
           },
-          BestPostStore: {
-            posts: {
-              data: []
-            }
-          }
+          BestPostStore: {}
         })
       });
   } else if (prop.categoryId) {
@@ -376,11 +372,7 @@ router.get('/community', function (req, res, next) {
         emailVerifySuccess: false,
         emailVerifyFail: false
       },
-      BestPostStore: {
-        posts: {
-          data: []
-        }
-      }
+      BestPostStore: {}
     })
   } else {
     res.json({
@@ -434,11 +426,7 @@ router.get('/signin', function (req, res, next) {
     },
     LoginStore: res.resultData.LoginStore,
     UserStore: res.resultData.UserStore,
-    BestPostStore: {
-      posts: {
-        data: []
-      }
-    },
+    BestPostStore: {},
     SigninStore: {
       emailDup: null,
       nickDup: null,

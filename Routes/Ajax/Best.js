@@ -6,6 +6,7 @@ const helper = require('../helper/func');
 const M = require('../../Models/index');
 
 router.get('/', function (req, res, next) {
+  const page = req.query.page - 1;
   const sessionId = helper.signedSessionId(req.cookies.sessionId);
   const token = req.cookies.token;
 
@@ -14,7 +15,7 @@ router.get('/', function (req, res, next) {
     .checkUserByToken(token, sessionId)
     .then((user) => M
       .Post
-      .bestPostList(1, user)
+      .bestPostList(page, user)
     )
     .then(function (posts) {
 
