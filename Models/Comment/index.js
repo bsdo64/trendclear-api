@@ -38,6 +38,35 @@ class Comment {
       })
   }
 
+  submitSubComment(subComment, user) {
+    return Db
+      .tc_comments
+      .query()
+      .findById(subComment.commentId)
+      .then(function (comment) {
+        return comment
+          .$relatedQuery('subComments')
+          .insert({
+            content: subComment.content,
+            author_id: user.id,
+            created_at: new Date()
+          })
+          .then(function (subComment) {
+            return comment
+              .$query()
+              .increment('sub_comment_count', 1)
+              .then(function () {
+                return subComment
+              })
+          })
+      })
+      .then(function (subComment) {
+        return subComment
+          .$query()
+          .eager('author.[profile, grade]')
+      })
+  }
+
   likeComment (commentObj, user) {
     return Db
       .tc_comments

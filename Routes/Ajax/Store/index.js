@@ -282,6 +282,16 @@ router.get('/community', function (req, res, next) {
             if (j === 'created_at') {
               post.comments[i][j] = moment(post.comments[i][j]).format('YYYY-MM-DD HH:mm');
             }
+
+            if (j === 'subComments') {
+              for (let k in post.comments[i][j]) {
+                for (let l in post.comments[i][j][k]) {
+                  if (l === 'created_at') {
+                    post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).format('YYYY-MM-DD HH:mm');
+                  }
+                }
+              }
+            }
           }
         }
 
