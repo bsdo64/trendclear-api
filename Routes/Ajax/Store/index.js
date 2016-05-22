@@ -291,7 +291,7 @@ router.get('/community', function (req, res, next) {
             post: post,
             forum: res.resultData.CommunityStore.forum,
             "list": {
-              "page": prop.page + 1,
+              "page": parseInt(prop.page, 10) + 1,
               "data": postList.results,
               "total": postList.total,
               "limit": 10
@@ -324,7 +324,7 @@ router.get('/community', function (req, res, next) {
             type: 'forum',
             forum : res.resultData.CommunityStore.forum,
             "list": {
-              "page": prop.page + 1,
+              "page": parseInt(prop.page, 10) + 1,
               "data": posts.results,
               "total": posts.total,
               "limit": 10
