@@ -82,10 +82,13 @@ class Comment {
             const query = comment.$relatedQuery('likes');
             
             if (like && like.id) {
-              return query
-                .update({
-                  type: 'comment', liker_id: user.id
-                })
+              // return query
+              //   .update({
+              //     type: 'comment', liker_id: user.id
+              //   })
+
+              return false;
+
             } else {
               return query
                 .insert({
@@ -94,7 +97,8 @@ class Comment {
             }
           })
           .then((like) => {
-            if (like !== 1) {
+            const isModel = like instanceof Db.tc_likes;
+            if (isModel) {
               return comment
                 .$query()
                 .increment('like_count', 1)

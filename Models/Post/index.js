@@ -29,22 +29,19 @@ class Post {
       })
   }
 
-  findOneById (postId, commentPage = 0) {
+  findOneById (postId, commentPage = 0, user) {
+    const knex = Db.tc_comments.knex();
     const limit = 10;
     const offset = commentPage * limit;
+
     return Db
       .tc_posts
       .query()
-      .eager('[likes, prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags, comments.[subComments.author.profile, author.profile]]')
-      .filterEager('comments', builder =>
-        builder
-          .limit(limit)
-          .offset(offset)
-      )
+      .eager('[likes, prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags]')
       .where('id', '=' ,postId)
       .first()
       .then(post => {
-        let query = post.$relatedQuery('comments');
+        const query = post.$relatedQuery('comments');
         return Promise.all([
           query.resultSize(),
           query
@@ -54,9 +51,33 @@ class Post {
             .orderBy('created_at', 'desc')
         ])
         .spread((total, results) => {
-          post.comments = results;
-          post.comment_count = parseInt(total, 10);
-          return post;
+
+          if (user) {
+            return Db
+              .tc_comments
+              .query()
+              .select('tc_comments.id as commentId', 'tc_likes.liker_id')
+              .join('tc_likes', 'tc_comments.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+              .andWhere('tc_likes.type', 'comment')
+              .andWhere('tc_likes.liker_id', user.id)
+              .then(function (likeTable) {
+
+                _.map(results, function (value) {
+                  value.liked = !!_.find(likeTable, {'commentId': value.id});
+                });
+
+                post.comments = results;
+                post.comment_count = parseInt(total, 10);
+                return post;
+
+              })
+          } else {
+
+            post.comments = results;
+            post.comment_count = parseInt(total, 10);
+            return post;
+
+          }
         })
 
       })
@@ -103,16 +124,18 @@ class Post {
         return Db
           .tc_likes
           .query()
-          .where({ type: 'post', type_id: post.id, liker_id: user.id })
+          .where({ type: 'post', type_id: post.id, liker_id: user.id})
           .first()
           .then(like => {
             const query = post.$relatedQuery('likes');
 
             if (like && like.id) {
-              return query
-                .update({
-                  type: 'post', liker_id: user.id
-                })
+              // return query
+              //   .update({
+              //     type: 'post', liker_id: user.id
+              //   })
+
+              return false;
             } else {
               return query
                 .insert({
@@ -121,7 +144,8 @@ class Post {
             }
           })
           .then((like) => {
-            if (like !== 1) {
+            const isModel = like instanceof Db.tc_likes;
+            if (isModel) {
               return post
                 .$query()
                 .increment('like_count', 1)

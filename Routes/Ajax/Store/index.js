@@ -261,9 +261,17 @@ router.get('/community', function (req, res, next) {
       .then(function (posts) {
         postList = posts;
 
+        const sessionId = helper.signedSessionId(req.cookies.sessionId);
+        const token = req.cookies.token;
+
+        return M
+          .User
+          .checkUserByToken(token, sessionId)
+      })
+      .then(function (user) {
         return M
           .Post
-          .findOneById(prop.postId, prop.commentPage)
+          .findOneById(prop.postId, prop.commentPage, user)
       })
       .then(function (post) {
 
