@@ -54,23 +54,35 @@ class Post {
 
           if (user) {
             return Db
-              .tc_comments
+              .tc_posts
               .query()
-              .select('tc_comments.id as commentId', 'tc_likes.liker_id')
-              .join('tc_likes', 'tc_comments.id', knex.raw(`CAST(tc_likes.type_id as int)`))
-              .andWhere('tc_likes.type', 'comment')
+              .select('tc_posts.id as postId', 'tc_likes.liker_id')
+              .join('tc_likes', 'tc_posts.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+              .andWhere('tc_likes.type', 'post')
               .andWhere('tc_likes.liker_id', user.id)
               .then(function (likeTable) {
-
-                _.map(results, function (value) {
-                  value.liked = !!_.find(likeTable, {'commentId': value.id});
-                });
-
-                post.comments = results;
-                post.comment_count = parseInt(total, 10);
-                return post;
-
+                post.liked = !!_.find(likeTable, {'postId': post.id});
+                return true
               })
+              .then(() =>
+                Db
+                  .tc_comments
+                  .query()
+                  .select('tc_comments.id as commentId', 'tc_likes.liker_id')
+                  .join('tc_likes', 'tc_comments.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+                  .andWhere('tc_likes.type', 'comment')
+                  .andWhere('tc_likes.liker_id', user.id)
+                  .then(function (likeTable) {
+
+                    _.map(results, function (value) {
+                      value.liked = !!_.find(likeTable, {'commentId': value.id});
+                    });
+
+                    post.comments = results;
+                    post.comment_count = parseInt(total, 10);
+                    return post;
+                  })
+              )
           } else {
 
             post.comments = results;

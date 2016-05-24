@@ -485,5 +485,36 @@ router.get('/community/submit', function (req, res, next) {
     })
 });
 
+router.get('/search', function (req, res, next) {
+  M
+    .Search
+    .listByQuery(req.query.query)
+    .then(function (posts) {
+      res.json({
+        CommunityStore: {},
+        GnbStore: {
+          openGnb: false,
+          gnbMenu: res.resultData.GnbStore.gnbMenu,
+          categoryMenu: {
+            categories: res.resultData.GnbStore.categoryMenu.categories
+          }
+        },
+        LoginStore: res.resultData.LoginStore,
+        UserStore: res.resultData.UserStore,
+        SigninStore: {},
+        SearchStore: {
+          search: {
+            posts: posts
+          }
+        },
+        BestPostStore: {
+          posts: {
+            data: []
+          }
+        },
+        SubmitStore: {}
+      })
+    })
+});
 
 module.exports = router;

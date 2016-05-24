@@ -11,6 +11,7 @@ const CommunityHandler = require('./Community');
 const BestHandler = require('./Best');
 const UserHandler = require('./User');
 const LikeHandler = require('./Like');
+const SearchHandler = require('./Search');
 
 router.use(logger('dev'));
 
@@ -35,6 +36,7 @@ router.use('/community', CommunityHandler);
 router.use('/best', BestHandler);
 router.use('/user', UserHandler);
 router.use('/like', LikeHandler);
+router.use('/search', SearchHandler);
 
 // define the about route
 router.get('/about', function(req, res) {
