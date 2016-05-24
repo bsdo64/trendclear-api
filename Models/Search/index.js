@@ -16,11 +16,19 @@ class Search {
   listByQuery (query, page = 0) {
     const limit = 20;
 
-    return Db
+    const array = query.split(' ');
+    console.log(array);
+
+    let q = Db
       .tc_posts
       .query()
-      .where('content', 'like', '%' + query + '%')
-      .orWhere('title', 'like', '%' + query + '%')
+      .where('title', 'like', '%' + query + '%');
+
+    for (let index in array) {
+      q = q.orWhere('content', 'like', '%' + array[index] + '%')
+    }
+
+    return q
       .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
       .page(page, limit)
