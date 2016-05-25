@@ -13,7 +13,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 
 class Search {
-  listByQuery (query, page = 0) {
+  listByQuery (query, page = 0, user) {
     const limit = 20;
 
     const array = query.split(' ');
@@ -32,6 +32,28 @@ class Search {
       .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
       .page(page, limit)
+      .then((posts) => {
+        if (user) {
+          const knex = Db.tc_posts.knex();
+
+          return Db
+            .tc_posts
+            .query()
+            .select('tc_posts.id as postId', 'tc_likes.liker_id')
+            .join('tc_likes', 'tc_posts.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+            .andWhere('tc_likes.type', 'post')
+            .andWhere('tc_likes.liker_id', user.id)
+            .then(function (likeTable) {
+
+              _.map(posts.results, function (value) {
+                value.liked = !!_.find(likeTable, {'postId': value.id});
+              });
+              return posts
+            })
+        } else {
+          return posts;
+        }
+      })
   }
 }
 

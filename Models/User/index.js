@@ -8,6 +8,8 @@ const jsonwebtoken = require('jsonwebtoken');
 const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 
+const Trendbox = require('../Trendbox');
+
 class User {
   /**
    *
@@ -272,6 +274,13 @@ class User {
       .then(function (numberOfAffectedRows) {
         return numberOfAffectedRows;
       });
+  }
+  
+  levelUp(levelObj, user) {
+    return Promise
+      .resolve()
+      .then(Trendbox.incrementLevel(user, levelObj.currentLevel))
+      .then(newTrendbox => newTrendbox)
   }
 
   static setTokenWithRedisSession(user, sessionId) {

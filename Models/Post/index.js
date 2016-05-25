@@ -9,6 +9,8 @@ const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 const _ = require('lodash');
 
+const Trendbox = require('../Trendbox');
+
 class Post {
   submitPost (post, user, query) {
     return Db
@@ -23,10 +25,18 @@ class Post {
         prefix_id : post.prefixId
       })
       .then(function (post) {
+        return Promise
+          .resolve()
+          .then(Trendbox.incrementPointT(user, 10))
+          .then(Trendbox.incrementExp(user, 5))
+          .then(() => post)
+      })
+      .then((post) => {
         return post
           .$query()
           .eager('forum.category.category_group.club')
       })
+
   }
 
   findOneById (postId, commentPage = 0, user) {

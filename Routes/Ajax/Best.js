@@ -7,16 +7,11 @@ const M = require('../../Models/index');
 
 router.get('/', function (req, res, next) {
   const page = req.query.page - 1;
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
+  const user = res.locals.user;
 
   return M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then((user) => M
-      .Post
-      .bestPostList(page, user)
-    )
+    .Post
+    .bestPostList(page, user)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -53,18 +48,11 @@ router.post('/submit', function (req, res, next) {
     content: req.body.content,
     prefixId: req.body.prefixId,
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-
-  return M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
-
-      return M
-        .Post
-        .submitPost(postObj, user, req.body.query)
-    })
+  const user = res.locals.user;
+  
+  M
+    .Post
+    .submitPost(postObj, user, req.body.query)
     .then(function (post) {
 
       res.json(post);

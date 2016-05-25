@@ -9,18 +9,11 @@ router.post('/avatarImg', function (req, res, next) {
   const imgObj = {
     file: req.body.file
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-
-  return M
+  const user = res.locals.user;
+  
+  M
     .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
-
-      return M
-        .User
-        .updateAvatarImg(imgObj, user)
-    })
+    .updateAvatarImg(imgObj, user)
     .then(function (result) {
       res.json('ok');
     })
@@ -31,6 +24,20 @@ router.post('/avatarImg', function (req, res, next) {
         error: err
       });
     });
+});
+
+router.post('/levelup', (req, res, next) => {
+  const levelObj = {
+    currentLevel: req.body.currentLevel
+  };
+  const user = res.locals.user;
+  
+  M
+    .User
+    .levelUp(levelObj, user)
+    .then(newTrendbox => {
+      res.json(newTrendbox);
+    })
 });
 
 module.exports = router;

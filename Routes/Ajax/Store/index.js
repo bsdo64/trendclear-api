@@ -11,94 +11,6 @@ const moment = require('moment');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
-router.use(function (req, res, next) {
-  const cookies = req.cookies;
-  const sessionId = cookieParser.signedCookie(cookies.sessionId, '1234567890QWERTY');
-  const token = cookies.token;
-
-  redisClient.get('sess:' + sessionId, function (err, result) {
-    var resultJS = JSON.parse(result);
-    var resultData = res.resultData = {};
-
-    if (err) {
-      next(err);
-    }
-    if (!resultJS) {
-      next(new Error('Malformed sessionId'));
-    }
-
-    if (resultJS.token && !token) {
-      next(new Error('Client dont has Token but redis has'));
-    }
-
-    function tokenVerify(token, redisToken) {
-      return token === redisToken;
-    }
-
-    if (resultJS.token && token) {
-      var verifyToken = tokenVerify(token, resultJS.token);
-      if (!verifyToken) {
-        next(new Error('Malformed token'));
-      }
-
-      jsonwebtoken.verify(token, jwtConf.secret, function (jwtErr, decoded) {
-        // err
-        if (jwtErr || !decoded) {
-          return next(jwtErr);
-        }
-
-        var userObj = {
-          id: decoded.id,
-          nick: decoded.nick
-        };
-        // decoded undefined
-        M
-          .User
-          .checkUserLogin(userObj)
-          .then(function (user) {
-            if (!user) {
-              return next(new Error('Malformed jwt payload'));
-            }
-
-            assign(resultData, {
-              UserStore: {
-                user: {
-                  id: user.id,
-                  nick: user.nick,
-                  email: user.email
-                },
-                trendbox: user.trendbox,
-                profile: user.profile,
-                grade: user.grade,
-                role: user.role,
-                icon: user.icon[0],
-              },
-              LoginStore: {
-                isLogin: true,
-                openLoginModal: false,
-                loginSuccess: true,
-                loginFail: false
-              }
-            });
-            next(); // User Login!!
-          });
-      });
-    } else {
-      assign(resultData, {
-        UserStore: {
-          user: null
-        },
-        LoginStore: {
-          isLogin: false,
-          openLoginModal: false,
-          loginSuccess: false,
-          loginFail: false
-        }
-      });
-      next(); // User Not Login!!
-    }
-  });
-});
 
 router.use(function (req, res, next) {
   M
@@ -194,17 +106,11 @@ router.use(function (req, res, next) {
 });
 
 router.get('/', function (req, res, next) {
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-  
+  const user = res.locals.user;
+
   M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
-      return M
-        .Post
-        .bestPostList(0, user)
-    })
+    .Post
+    .bestPostList(0, user)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -252,6 +158,8 @@ router.get('/community', function (req, res, next) {
     commentPage: req.query.comment_p - 1 || 0
   };
 
+  const user = res.locals.user;
+
   if (prop.categoryId && prop.forumId && prop.postId) {
     let postList;
 
@@ -261,14 +169,6 @@ router.get('/community', function (req, res, next) {
       .then(function (posts) {
         postList = posts;
 
-        const sessionId = helper.signedSessionId(req.cookies.sessionId);
-        const token = req.cookies.token;
-
-        return M
-          .User
-          .checkUserByToken(token, sessionId)
-      })
-      .then(function (user) {
         return M
           .Post
           .findOneById(prop.postId, prop.commentPage, user)
@@ -486,9 +386,15 @@ router.get('/community/submit', function (req, res, next) {
 });
 
 router.get('/search', function (req, res, next) {
+  const queryObj = {
+    query: req.query.query,
+    page: req.query.page || 0
+  };
+  const user = res.locals.user;
+
   M
     .Search
-    .listByQuery(req.query.query)
+    .listByQuery(queryObj.query, queryObj.page, user)
     .then(function (posts) {
       res.json({
         CommunityStore: {},

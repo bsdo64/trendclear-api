@@ -9,18 +9,11 @@ router.get('/', function (req, res, next) {
   const searchObj = {
     query: req.params.query
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-
-  return M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
-
-      return M
-        .Post
-        .bestPostList(searchObj, user)
-    })
+  const user = res.locals.user;
+  
+  M
+    .Post
+    .bestPostList(searchObj, user)
     .then(function (post) {
       if (post) {
         res.json(post);

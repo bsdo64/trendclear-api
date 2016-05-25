@@ -9,18 +9,10 @@ router.post('/post/:postId', function (req, res, next) {
   const postObj = {
     postId: req.params.postId
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-
-  return M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
-
-      return M
-        .Post
-        .likePost(postObj, user)
-    })
+  const user = res.locals.user;
+  M
+    .Post
+    .likePost(postObj, user)
     .then(function (post) {
       if (post) {
         res.json('ok');
@@ -50,18 +42,11 @@ router.post('/comment/:commentId', function (req, res, next) {
   const commentObj = {
     commentId: req.params.commentId
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
-  const token = req.cookies.token;
-
-  return M
-    .User
-    .checkUserByToken(token, sessionId)
-    .then(function (user) {
-
-      return M
-        .Comment
-        .likeComment(commentObj, user)
-    })
+  const user = res.locals.user;
+  
+  M
+    .Comment
+    .likeComment(commentObj, user)
     .then(function (post) {
       if (post) {
         res.json('ok');
