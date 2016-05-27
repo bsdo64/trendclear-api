@@ -155,7 +155,8 @@ router.get('/community', function (req, res, next) {
     forumId: req.query.forumId,
     postId: req.query.postId,
     page: req.query.p - 1 || 0,
-    commentPage: req.query.comment_p - 1 || 0
+    commentPage: req.query.comment_p - 1 || 0,
+    ip: req.ip
   };
 
   const user = res.locals.user;
@@ -164,8 +165,12 @@ router.get('/community', function (req, res, next) {
     let postList;
 
     M
-      .Forum
-      .getForumPostList(prop.forumId, prop.page)
+      .Post
+      .incrementView(prop, user)
+      .then(() => M
+        .Forum
+        .getForumPostList(prop.forumId, prop.page)
+      )
       .then(function (posts) {
         postList = posts;
 
@@ -396,6 +401,15 @@ router.get('/search', function (req, res, next) {
     .Search
     .listByQuery(queryObj.query, queryObj.page, user)
     .then(function (posts) {
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
       res.json({
         CommunityStore: {},
         GnbStore: {

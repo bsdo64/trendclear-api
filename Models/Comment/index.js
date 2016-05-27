@@ -112,6 +112,51 @@ class Comment {
       })
   }
 
+  likeSubComment (commentObj, user) {
+    return Db
+      .tc_sub_comments
+      .query()
+      .findById(commentObj.subCommentId)
+      .then(subComment => {
+        return Db
+          .tc_likes
+          .query()
+          .where({ type: 'sub_comment', type_id: subComment.id, liker_id: user.id })
+          .first()
+          .then(like => {
+            const query = subComment.$relatedQuery('likes');
+
+            if (like && like.id) {
+              // return query
+              //   .update({
+              //     type: 'comment', liker_id: user.id
+              //   })
+
+              return false;
+
+            } else {
+              return query
+                .insert({
+                  type: 'sub_comment', liker_id: user.id
+                })
+            }
+          })
+          .then((like) => {
+            const isModel = like instanceof Db.tc_likes;
+            if (isModel) {
+              return subComment
+                .$query()
+                .increment('like_count', 1)
+                .then(() => {
+                  return subComment
+                })
+            } else {
+              return subComment
+            }
+          })
+      })
+  }
+
 }
 
 module.exports = new Comment();

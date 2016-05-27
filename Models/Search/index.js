@@ -29,7 +29,7 @@ class Search {
     }
 
     return q
-      .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
+      .eager('[prefix, author.[icon.iconDef,profile,trendbox], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
       .page(page, limit)
       .then((posts) => {

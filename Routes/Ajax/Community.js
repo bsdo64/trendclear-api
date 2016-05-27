@@ -6,6 +6,21 @@ const helper = require('../helper/func');
 
 const M = require('../../Models/index');
 
+router.post('/post/view', (req, res, next) => {
+  const viewObj = {
+    postId: req.body.postId
+  };
+  const user = res.locals.user;
+
+  M
+    .Post
+    .incrementView(viewObj, user)
+    .then((post) => {
+      res.json(post);
+    })
+
+})
+
 router.post('/subComment', function (req, res, next) {
   const commentObj = {
     content: req.body.content,
@@ -53,6 +68,8 @@ router.post('/comment', function (req, res, next) {
     .then(function (comment) {
 
       comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm')
+      comment.subComments = [];
+      
       res.json(comment);
     })
     .catch(function (err) {

@@ -47,7 +47,7 @@ class Post {
     return Db
       .tc_posts
       .query()
-      .eager('[likes, prefix, author.[icon.iconDef, profile], forum.category.category_group.club, tags]')
+      .eager('[likes, prefix, author.[icon.iconDef, profile, trendbox], forum.category.category_group.club, tags]')
       .where('id', '=' ,postId)
       .first()
       .then(post => {
@@ -58,6 +58,23 @@ class Post {
             .offset(offset)
             .limit(limit)
             .eager('[subComments.author.[icon.iconDef, profile], author.[icon.iconDef, profile]]')
+            .traverse(Db.tc_comments, function (comment, parentModel, relationName) {
+              if (user) {
+                Db
+                  .tc_sub_comments
+                  .query()
+                  .select('tc_sub_comments.id as subCommentId', 'tc_likes.liker_id')
+                  .join('tc_likes', 'tc_sub_comments.id', knex.raw(`CAST(tc_likes.type_id as int)`))
+                  .andWhere('tc_likes.type', 'sub_comment')
+                  .andWhere('tc_likes.liker_id', user.id)
+                  .then(function (likeTable) {
+
+                    _.map(comment.subComments, function (value) {
+                      value.liked = !!_.find(likeTable, {subCommentId: value.id});
+                    });
+                  })
+              }
+            })
             .orderBy('created_at', 'desc')
         ])
         .spread((total, results) => {
@@ -71,7 +88,7 @@ class Post {
               .andWhere('tc_likes.type', 'post')
               .andWhere('tc_likes.liker_id', user.id)
               .then(function (likeTable) {
-                post.liked = !!_.find(likeTable, {'postId': post.id});
+                post.liked = !!_.find(likeTable, {postId: post.id});
                 return true
               })
               .then(() =>
@@ -85,7 +102,7 @@ class Post {
                   .then(function (likeTable) {
 
                     _.map(results, function (value) {
-                      value.liked = !!_.find(likeTable, {'commentId': value.id});
+                      value.liked = !!_.find(likeTable, {commentId: value.id});
                     });
 
                     post.comments = results;
@@ -111,7 +128,7 @@ class Post {
     return Db
       .tc_posts
       .query()
-      .eager('[prefix, author.[icon.iconDef,profile], forum.category.category_group.club, tags]')
+      .eager('[prefix, author.[icon.iconDef,profile,trendbox], forum.category.category_group.club, tags]')
       .orderBy('created_at', 'DESC')
       .page(page, 20)
       .then((posts) => {
@@ -178,6 +195,37 @@ class Post {
               return post
             }
           })
+      })
+  }
+
+  incrementView(prop, user) {
+    let query = Db
+      .tc_post_views
+      .query()
+      .where({user_id: user ? user.id : null, post_id: prop.postId, ip: prop.ip});
+
+
+    return query
+      .first()
+      .then((view) => {
+        if (view) {
+          return Db
+            .tc_post_views
+            .query()
+            .update({updated_at: new Date()})
+            .where({user_id: user ? user.id : null, post_id: prop.postId, ip: prop.ip})
+        } else {
+          return Db
+            .tc_posts
+            .query()
+            .where('id', '=', prop.postId)
+            .increment('view_count', 1)
+            .then(() => Db
+              .tc_post_views
+              .query()
+              .insert({user_id: user ? user.id : null, post_id: prop.postId, ip: prop.ip, view_at: new Date(), updated_at: new Date()})
+            )
+        }
       })
   }
 }

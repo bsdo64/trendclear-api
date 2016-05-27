@@ -72,4 +72,38 @@ router.post('/comment/:commentId', function (req, res, next) {
     });
 });
 
+router.post('/subComment/:subCommentId', function (req, res, next) {
+  const commentObj = {
+    subCommentId: req.params.subCommentId
+  };
+  const user = res.locals.user;
+
+  M
+    .Comment
+    .likeSubComment(commentObj, user)
+    .then(function (post) {
+      if (post) {
+        res.json('ok');
+      } else {
+        res.json('error');
+      }
+    })
+    .catch(function (err) {
+      console.error(err);
+      console.error(err.stack);
+
+      if (err.message === 'User not Found') {
+        res.json({
+          message: 'user not found',
+          error: err
+        });
+      } else {
+        res.json({
+          message: 'can\'t make token',
+          error: err
+        });
+      }
+    });
+})
+
 module.exports = router;
