@@ -16,7 +16,7 @@ router.post('/', function (req, res, next) {
     .User
     .login(userObj, sessionId)
     .then(function (token) {
-      console.log(token);
+      console.log('token: ', token);
       res.cookie('token', token, {
         expires: new Date(Date.now() + (24 * 60 * 60 * 1000)),
         httpOnly: true

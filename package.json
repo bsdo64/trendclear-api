@@ -12,7 +12,7 @@
     "express": "^4.13.4",
     "ioredis": "^1.15.1",
     "joi": "^8.0.5",
-    "jsonwebtoken": "^5.7.0",
+    "jsonwebtoken": "^7.0.0",
     "lodash": "^4.11.1",
     "lodash-deep": "^2.0.0",
     "moment": "^2.12.0",

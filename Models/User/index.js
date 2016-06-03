@@ -103,15 +103,26 @@ class User {
       birth: user.birth
     };
 
-    // password encrypt
-    const passwordHash = bcrypt.hashSync(userObj.password, 10);
+    function hashPassword(userPassword, salt = 10) {
+      return new Promise((resolve, reject) => {
+        bcrypt.hash(userPassword, salt, (err, res) => {
+          if (err) {
+            reject(err);
+          }
 
-    const uCreate = {
+          if (res) {
+            resolve(res)
+          }
+        })
+      })
+    }
+
+    let uCreate = {
       email: userObj.email,
       nick: userObj.nick,
       uid: shortId.generate(),
       password: {
-        password: passwordHash
+        password: userObj.password
       },
       profile: {
         sex: userObj.sex,
@@ -122,10 +133,15 @@ class User {
         level: 1
       }
     };
-    return M
-      .tc_users
-      .query()
-      .insertWithRelated(uCreate)
+    return hashPassword(userObj.password, 10)
+      .then((hashPassword) => {
+        uCreate.password.password = hashPassword;
+
+        return M
+          .tc_users
+          .query()
+          .insertWithRelated(uCreate)
+      })
       .then(function (newUser) {
 
         return Promise.join(
@@ -156,7 +172,7 @@ class User {
               })
           })
           .then(function () {
-            return User.setTokenWithRedisSession({nick: uCreate.nick, id: newUser.id}, sessionId);
+            return User.setTokenWithRedisSession({nick: uCreate.nick, id: newUser.id}, sessionId)
           })
           .then(function (token) {
             return {token: token};
@@ -201,6 +217,20 @@ class User {
       password: user.password
     };
 
+    function passwordCompare(userPassword, hash) {
+      return new Promise((resolve, reject) => {
+        bcrypt.compare(userPassword, hash, (err, res) => {
+          if (err) {
+            reject(err);
+          }
+
+          if (res) {
+            resolve(res)
+          }
+        })
+      })
+    }
+
     return M
       .tc_users
       .query()
@@ -212,12 +242,17 @@ class User {
           throw new Error('User not Found');
         }
 
-        var checkPassword = bcrypt.compareSync(userObj.password, findUser.password.password); // true
-        if (checkPassword) {
-          return User.setTokenWithRedisSession({nick: findUser.nick, id: findUser.id}, sessionId);
-        } else {
-          throw new Error('Password is not Correct');
-        }
+        return passwordCompare(userObj.password, findUser.password.password)
+          .then((passwordCheck) => {
+            if (passwordCheck === false) {
+              throw new Error('Password is not Correct');
+            }
+            return User
+              .setTokenWithRedisSession({nick: findUser.nick, id: findUser.id}, sessionId)
+          })
+      })
+      .catch(err => {
+        throw new Error('Password is not Correct');
       });
   }
   
@@ -284,20 +319,26 @@ class User {
   }
 
   static setTokenWithRedisSession(user, sessionId) {
-    const token = jsonwebtoken.sign(user, jwtConf.secret, jwtConf.option);
-
-    return redisClient.get('sess:' + sessionId)
-      .then(function (result) {
-        var resultJS = JSON.parse(result);
-        resultJS.token = token;
-        return JSON.stringify(resultJS);
-      })
-      .then(function (result) {
-        return redisClient.set('sess:' + sessionId, result);
-      })
-      .then(function (result) {
-        return token;
+    return new Promise((resolve, reject) => {
+      jsonwebtoken.sign(user, jwtConf.secret, jwtConf.option, (err, token) => {
+        return redisClient
+          .get('sess:' + sessionId)
+          .then(function (result) {
+            var resultJS = JSON.parse(result);
+            resultJS.token = token;
+            return JSON.stringify(resultJS);
+          })
+          .then(function (result) {
+            return redisClient.set('sess:' + sessionId, result);
+          })
+          .then(function (result) {
+            resolve(token);
+          })
+          .catch(err => {
+            reject(err);
+          })
       });
+    })
   }
 }
 
