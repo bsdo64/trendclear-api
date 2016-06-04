@@ -163,6 +163,15 @@ class User {
               .insert({
                 grade_id: grade.id
               })
+              .then(() => {
+                return newUser
+                  .$relatedQuery('skills')
+                  .insert([
+                    {level: 1, skill_id: skills[0].id},
+                    {level: 1, skill_id: skills[1].id},
+                    {level: 1, skill_id: skills[2].id},
+                  ])
+              })
               .then(function () {
                 return newUser
                   .$relatedQuery('role')
@@ -198,7 +207,7 @@ class User {
     return M
       .tc_users
       .query()
-      .eager('[trendbox, grade.gradeDef, role, profile, icon.iconDef]')
+      .eager('[skills.skill.property, trendbox, grade.gradeDef, role, profile, icon.iconDef]')
       .where(userObj)
       .first()
       .then(function (findUser) {

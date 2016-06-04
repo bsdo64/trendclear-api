@@ -8,6 +8,8 @@ const jsonwebtoken = require('jsonwebtoken');
 const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 
+const Skill = require('../Skill');
+
 class Comment {
   submitComment(comment, user) {
     return Db
@@ -26,6 +28,11 @@ class Comment {
             return post
               .$query()
               .increment('comment_count', 1)
+              .then(function() {
+                return Promise
+                  .resolve()
+                  .then(Skill.setUsingTime(user, 'write_comment'))
+              })
               .then(function () {
                 return comment
               })
@@ -55,6 +62,11 @@ class Comment {
             return comment
               .$query()
               .increment('sub_comment_count', 1)
+              .then(function() {
+                return Promise
+                  .resolve()
+                  .then(Skill.setUsingTime(user, 'write_sub_comment'))
+              })
               .then(function () {
                 return subComment
               })
@@ -102,8 +114,8 @@ class Comment {
               return comment
                 .$query()
                 .increment('like_count', 1)
-                .then(() => {
-                  return comment
+                .then((likeInc) => {
+                  return likeInc
                 })
             } else {
               return comment
@@ -147,8 +159,8 @@ class Comment {
               return subComment
                 .$query()
                 .increment('like_count', 1)
-                .then(() => {
-                  return subComment
+                .then((subCommentLike) => {
+                  return subCommentLike
                 })
             } else {
               return subComment

@@ -10,6 +10,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 
 const Trendbox = require('../Trendbox');
+const Skill = require('../Skill');
 
 class Post {
   submitPost (post, user, query) {
@@ -27,6 +28,7 @@ class Post {
       .then(function (post) {
         return Promise
           .resolve()
+          .then(Skill.setUsingTime(user, 'write_post'))
           .then(Trendbox.incrementPointT(user, 10))
           .then(Trendbox.incrementExp(user, 5))
           .then(() => post)
@@ -188,8 +190,8 @@ class Post {
               return post
                 .$query()
                 .increment('like_count', 1)
-                .then(() => {
-                  return post
+                .then((increment) => {
+                  return increment
                 })
             } else {
               return post

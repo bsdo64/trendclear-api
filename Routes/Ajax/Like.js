@@ -13,9 +13,13 @@ router.post('/post/:postId', function (req, res, next) {
   M
     .Post
     .likePost(postObj, user)
-    .then(function (post) {
-      if (post) {
-        res.json('ok');
+    .then(function (postLike) {
+      if (postLike) {
+        if (postLike === 1) {
+          res.json('ok');
+        } else {
+          res.json('nc')
+        }
       } else {
         res.json('error');
       }
@@ -47,9 +51,14 @@ router.post('/comment/:commentId', function (req, res, next) {
   M
     .Comment
     .likeComment(commentObj, user)
-    .then(function (post) {
-      if (post) {
-        res.json('ok');
+    .then(function (commentLike) {
+      if (commentLike) {
+        if (commentLike === 1) {
+          console.log('commentLike : ', commentLike);
+          res.json('ok');
+        } else {
+          res.json('nc');
+        }
       } else {
         res.json('error');
       }
@@ -81,9 +90,15 @@ router.post('/subComment/:subCommentId', function (req, res, next) {
   M
     .Comment
     .likeSubComment(commentObj, user)
-    .then(function (post) {
-      if (post) {
-        res.json('ok');
+    .then(function (subCommentLike) {
+      if (subCommentLike) {
+
+        if (subCommentLike === 1) {
+          res.json('ok');
+        } else {
+          res.json('nc');
+        }
+        
       } else {
         res.json('error');
       }
