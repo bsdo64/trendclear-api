@@ -38,7 +38,7 @@ class Forum {
           .select('tc_forum_prefixes.*', knex.raw('CAST(COUNT(tc_posts.id) as integer)'))
           .join('tc_posts', 'tc_forum_prefixes.id', 'tc_posts.prefix_id')
           .where('tc_forum_prefixes.forum_id', '=', forumId)
-          .groupBy('tc_forum_prefixes.id').debug()
+          .groupBy('tc_forum_prefixes.id')
           .then(function (countPrefix) {
 
             forum.prefixes = mergeByProp(forum.prefixes, countPrefix, 'id');

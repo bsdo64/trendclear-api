@@ -9,6 +9,7 @@ const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 
 const Skill = require('../Skill');
+const Trendbox = require('../Trendbox');
 
 class Comment {
   submitComment(comment, user) {
@@ -28,14 +29,10 @@ class Comment {
             return post
               .$query()
               .increment('comment_count', 1)
-              .then(function() {
-                return Promise
-                  .resolve()
-                  .then(Skill.setUsingTime(user, 'write_comment'))
-              })
-              .then(function () {
-                return comment
-              })
+              .then(Skill.setUsingTime(user, 'write_comment'))
+              .then(Trendbox.incrementPointT(user, 10))
+              .then(Trendbox.incrementExp(user, 5))
+              .then(() => comment)
           })
       })
       .then(function (comment) {
@@ -62,14 +59,10 @@ class Comment {
             return comment
               .$query()
               .increment('sub_comment_count', 1)
-              .then(function() {
-                return Promise
-                  .resolve()
-                  .then(Skill.setUsingTime(user, 'write_sub_comment'))
-              })
-              .then(function () {
-                return subComment
-              })
+              .then(Skill.setUsingTime(user, 'write_sub_comment'))
+              .then(Trendbox.incrementPointT(user, 10))
+              .then(Trendbox.incrementExp(user, 5))
+              .then(() => subComment)
           })
       })
       .then(function (subComment) {
