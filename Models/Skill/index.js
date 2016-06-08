@@ -24,10 +24,11 @@ class Skill {
         .query()
         .where('name', type)
         .first()
-        .then(skill => 
+        .then(skill =>
           user
             .$relatedQuery('skills')
-            .patchAndFetchById(skill.id, {
+            .where('skill_id', skill.id)
+            .patch({
               using_at: new Date()
             })
         )

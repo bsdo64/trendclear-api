@@ -156,7 +156,9 @@ router.get('/community', function (req, res, next) {
     postId: req.query.postId,
     page: req.query.p - 1 || 0,
     commentPage: req.query.comment_p - 1 || 0,
-    ip: req.ip
+    ip: req.ip,
+    forumSearch: req.query.forumSearch,
+    forumPrefix: req.query.forumPrefix,
   };
 
   const user = res.locals.user;
@@ -169,7 +171,7 @@ router.get('/community', function (req, res, next) {
       .incrementView(prop, user)
       .then(() => M
         .Forum
-        .getForumPostList(prop.forumId, prop.page)
+        .getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix)
       )
       .then(function (posts) {
         postList = posts;
@@ -231,7 +233,7 @@ router.get('/community', function (req, res, next) {
   } else if (prop.categoryId && prop.forumId) {
     M
       .Forum
-      .getForumPostList(prop.forumId, prop.page)
+      .getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix)
       .then(function (posts) {
 
         for (let i in posts.results) {

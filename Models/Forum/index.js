@@ -49,11 +49,21 @@ class Forum {
       })
   }
   
-  getForumPostList(forumId, page = 0) {
-    return Db
+  getForumPostList(forumId, page = 0, forumSearch, forumPrefix) {
+    const query = Db
       .tc_posts
       .query()
-      .where('forum_id', '=', forumId)
+      .where('forum_id', '=', forumId);
+      
+    if (forumSearch) {
+      query.where('title', 'like', '%' + forumSearch + '%');
+    }
+
+    if (forumPrefix) {
+      query.where('prefix_id', forumPrefix);
+    }
+
+    return query
       .eager('[prefix, author.[icon,profile], forum.category.category_group.club]')
       .orderBy('created_at', 'DESC')
       .page(page, 10)

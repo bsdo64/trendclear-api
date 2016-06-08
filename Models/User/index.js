@@ -157,7 +157,12 @@ class User {
             .where('name', '회원')
             .pick(['id']),
 
-          function (grade, role) {
+          M
+            .tc_skills
+            .query()
+            .whereIn('name', ['write_post', 'write_comment', 'write_sub_comment']),
+
+          function (grade, role, skills) {
             return newUser
               .$relatedQuery('grade')
               .insert({
