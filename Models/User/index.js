@@ -288,7 +288,7 @@ class User {
       .get('sess:' + sessionId)
       .then(function (result) {
         var resultJS = JSON.parse(result);
-        console.log(resultJS.token === token);
+        console.log('checktoken with redis :', resultJS.token === token);
 
         let jwt = Promise.promisifyAll(jsonwebtoken);
         if (token) {

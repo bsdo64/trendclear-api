@@ -3,12 +3,14 @@
 const Express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
 const app = Express();
 
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 const AjaxRouter = require('./Routes/Ajax/index');
+const SocketRouter = require('./Routes/Socket/Noti');
 
 app.notiIo = io.of('/noti');
 app.io = io;
@@ -20,11 +22,9 @@ app.use(cookieParser());
 app.use('/ajax', AjaxRouter);
 
 app.notiIo.on('connection', function (socket) {
-  console.log('111111111111');
-  socket.on('join_room', function () {
-    
-    socket.join('bsdo');
-  })
+  const notiSocketHandler = new SocketRouter(socket);
+  
+  socket.on('join_room', notiSocketHandler.joinRoom())
 });
 
 module.exports = server;
