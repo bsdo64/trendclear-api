@@ -22,8 +22,7 @@ app.use('/ajax', AjaxRouter);
 app.notiIo.on('connection', function (socket) {
   console.log('111111111111');
   socket.on('join_room', function () {
-
-    console.log('333333333333');
+    
     socket.join('bsdo');
   })
 });
