@@ -66,7 +66,7 @@ class Trendbox {
       })
   }
   
-  checkAndIncrementRep(post, type, point) {
+  checkAndIncrementRep(user, post, type, point) {
 
     return () =>
       post
@@ -80,7 +80,9 @@ class Trendbox {
             .whereNot({author_id: author.id})
             .then(comments => {
               console.log(comments.length);
-              if (comments.length !== 0 && (comments.length % point) === 0) {
+              if ((user.id !== author.id) &&
+                  (comments.length !== 0) &&
+                  (comments.length % point === 0)) {
                 return Db
                   .tc_user_trendboxes
                   .query()

@@ -212,7 +212,7 @@ class User {
     return M
       .tc_users
       .query()
-      .eager('[skills.skill.property, trendbox, grade.gradeDef, role, profile, icon.iconDef]')
+      .eager('[notifications, skills.skill.property, trendbox, grade.gradeDef, role, profile, icon.iconDef]')
       .where(userObj)
       .first()
       .then(function (findUser) {

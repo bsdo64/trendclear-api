@@ -32,7 +32,7 @@ class Comment {
               .then(Skill.setUsingTime(user, 'write_comment'))
               .then(Trendbox.incrementPointT(user, 10))
               .then(Trendbox.incrementExp(user, 5))
-              .then(Trendbox.checkAndIncrementRep(post, 'comments', 5))
+              .then(Trendbox.checkAndIncrementRep(user, post, 'comments', 5))
               .then(() => comment)
           })
       })

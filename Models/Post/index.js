@@ -145,7 +145,7 @@ class Post {
 
     if (categoryValue) {
       query
-        .select('*', 'cat.id as catId', 'tc_posts.id as id')
+        .select('*', 'tc_posts.title as title', 'cat.id as catId', 'tc_posts.id as id')
         .join('tc_club_categories as cat', 'tc_posts.category_id', 'cat.id')
         .whereIn('cat.id', categoryValue).debug()
     }

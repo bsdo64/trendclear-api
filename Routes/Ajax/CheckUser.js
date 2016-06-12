@@ -72,7 +72,10 @@ module.exports = function (req, res, next) {
                 grade: user.grade,
                 role: user.role,
                 icon: user.icon[0],
-                skills: user.skills
+                skills: user.skills,
+                notifications: {
+                  data: user.notifications
+                }
               },
               LoginStore: {
                 isLogin: true,
