@@ -6,12 +6,13 @@ const helper = require('../helper/func');
 const M = require('../../Models/index');
 
 router.get('/', function (req, res, next) {
-  const page = req.query.page - 1;
+  const page = req.query.page ? req.query.page - 1 : 0;
   const user = res.locals.user;
+  const categoryValue = req.query.categoryValue;
 
   return M
     .Post
-    .bestPostList(page, user)
+    .bestPostList(page, user, categoryValue)
     .then(function (posts) {
 
       for (let i in posts.results) {

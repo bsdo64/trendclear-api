@@ -66,7 +66,7 @@ router.post('/comment', function (req, res, next) {
     .Comment
     .submitComment(commentObj, user)
     .then(function (comment) {
-
+      
       comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm')
       comment.subComments = [];
 

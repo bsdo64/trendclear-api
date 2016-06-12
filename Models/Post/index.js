@@ -15,30 +15,41 @@ const Skill = require('../Skill');
 class Post {
   submitPost (post, user, query) {
     return Db
-      .tc_posts
+      .tc_forums
       .query()
-      .insert({
-        title     : post.title,
-        content   : post.content,
-        author_id : user.id,
-        created_at: new Date(),
-        forum_id  : query.forumId,
-        prefix_id : post.prefixId
+      .eager('[category.category_group.club]')
+      .where('id', query.forumId)
+      .first()
+      .then(forum => {
+        console.log(forum);
+        return Db
+          .tc_posts
+          .query()
+          .insert({
+            title     : post.title,
+            content   : post.content,
+            author_id : user.id,
+            created_at: new Date(),
+            club_id  : forum.category.category_group.club.id,
+            category_group_id  : forum.category.category_group.id,
+            category_id  : forum.category.id,
+            forum_id  : forum.id,
+            prefix_id : post.prefixId
+          })
+          .then(function (post) {
+            return Promise
+              .resolve()
+              .then(Skill.setUsingTime(user, 'write_post'))
+              .then(Trendbox.incrementPointT(user, 10))
+              .then(Trendbox.incrementExp(user, 5))
+              .then(() => post)
+          })
+          .then((post) => {
+            return post
+              .$query()
+              .eager('forum.category.category_group.club')
+          })
       })
-      .then(function (post) {
-        return Promise
-          .resolve()
-          .then(Skill.setUsingTime(user, 'write_post'))
-          .then(Trendbox.incrementPointT(user, 10))
-          .then(Trendbox.incrementExp(user, 5))
-          .then(() => post)
-      })
-      .then((post) => {
-        return post
-          .$query()
-          .eager('forum.category.category_group.club')
-      })
-
   }
 
   findOneById (postId, commentPage = 0, user) {
@@ -124,13 +135,22 @@ class Post {
       })
   }
 
-  bestPostList (page = 0, user) {
+  bestPostList (page = 0, user, categoryValue) {
     const knex = Db.tc_posts.knex();
 
-    return Db
+    const query = Db
       .tc_posts
       .query()
-      .eager('[prefix, author.[icon.iconDef,profile,trendbox], forum.category.category_group.club, tags]')
+      .eager('[prefix, author.[icon.iconDef,profile,trendbox], forum.category.category_group.club, tags]');
+
+    if (categoryValue) {
+      query
+        .select('*', 'cat.id as catId', 'tc_posts.id as id')
+        .join('tc_club_categories as cat', 'tc_posts.category_id', 'cat.id')
+        .whereIn('cat.id', categoryValue).debug()
+    }
+
+    return query
       .orderBy('created_at', 'DESC')
       .page(page, 20)
       .then((posts) => {

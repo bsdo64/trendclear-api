@@ -13,6 +13,7 @@ _.mixin(require('lodash-deep'));
 
 
 router.use(function (req, res, next) {
+
   M
     .Club
     .getGnbMenus()
@@ -25,6 +26,15 @@ router.use(function (req, res, next) {
           categoryMenu: {}
         }
       });
+    })
+    .then(function () {
+
+      assign(res.resultData, {
+        ReportStore: {
+          openReportModal: false
+        }
+      });
+
     })
     .then(function() {
       if (req.query.postId && req.query.forumId && req.query.categoryId) {
@@ -136,15 +146,9 @@ router.get('/', function (req, res, next) {
             }
           }
         },
-        SigninStore: {
-          emailDup: null,
-          nickDup: null,
-          emailRequested: null,
-          submitResult: false,
-          emailVerifySuccess: false,
-          emailVerifyFail: false
-        },
-        CommunityStore: {}
+        SigninStore: {},
+        CommunityStore: {},
+        ReportStore: res.resultData.ReportStore,
       })
     });
 });
@@ -154,8 +158,8 @@ router.get('/community', function (req, res, next) {
     categoryId: req.query.categoryId,
     forumId: req.query.forumId,
     postId: req.query.postId,
-    page: req.query.p - 1 || 0,
-    commentPage: req.query.comment_p - 1 || 0,
+    page: (req.query.p - 1) >= 0 ? (req.query.p - 1) : 0,
+    commentPage: (req.query.comment_p - 1) >= 0 ? (req.query.comment_p - 1) : 0,
     ip: req.ip,
     forumSearch: req.query.forumSearch,
     forumPrefix: req.query.forumPrefix,
@@ -226,7 +230,8 @@ router.get('/community', function (req, res, next) {
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
           SigninStore: {},
-          BestPostStore: {}
+          BestPostStore: {},
+          ReportStore: res.resultData.ReportStore,
         })
       })
 
@@ -272,7 +277,8 @@ router.get('/community', function (req, res, next) {
             emailVerifySuccess: false,
             emailVerifyFail: false
           },
-          BestPostStore: {}
+          BestPostStore: {},
+          ReportStore: res.resultData.ReportStore,
         })
       });
   } else if (prop.categoryId) {
@@ -297,7 +303,8 @@ router.get('/community', function (req, res, next) {
         emailVerifySuccess: false,
         emailVerifyFail: false
       },
-      BestPostStore: {}
+      BestPostStore: {},
+      ReportStore: res.resultData.ReportStore,
     })
   } else {
     res.json({
@@ -318,7 +325,8 @@ router.get('/community', function (req, res, next) {
         submitResult: false,
         emailVerifySuccess: false,
         emailVerifyFail: false
-      }
+      },
+      ReportStore: res.resultData.ReportStore,
     });
   }
 
@@ -359,7 +367,8 @@ router.get('/signin', function (req, res, next) {
       submitResult: false,
       emailVerifySuccess: false,
       emailVerifyFail: false
-    }
+    },
+    ReportStore: res.resultData.ReportStore,
   });
 });
 
@@ -387,7 +396,8 @@ router.get('/community/submit', function (req, res, next) {
         },
         SubmitStore: {
           prefixes: prefixes
-        }
+        },
+        ReportStore: res.resultData.ReportStore,
       })
     })
 });
@@ -434,7 +444,8 @@ router.get('/search', function (req, res, next) {
             data: []
           }
         },
-        SubmitStore: {}
+        SubmitStore: {},
+        ReportStore: res.resultData.ReportStore,
       })
     })
 });

@@ -27,17 +27,8 @@ router.post('/avatarImg', function (req, res, next) {
 });
 
 router.post('/levelup', (req, res, next) => {
-  const levelObj = {
-    currentLevel: req.body.currentLevel
-  };
   const user = res.locals.user;
-  
-  M
-    .User
-    .levelUp(levelObj, user)
-    .then(newTrendbox => {
-      res.json(newTrendbox);
-    })
+  res.json(user.trendbox);
 });
 
 module.exports = router;
