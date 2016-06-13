@@ -450,4 +450,106 @@ router.get('/search', function (req, res, next) {
     })
 });
 
+router.get('/setting', function (req, res, next) {
+  res.json({
+    CommunityStore: {},
+    GnbStore: {
+      openGnb: false,
+      gnbMenu: res.resultData.GnbStore.gnbMenu,
+      categoryMenu: {
+        categories: [{
+          "id": 3,
+          "title": "설정",
+          "order": 0,
+          "using": true,
+          "category_groups": [
+            {
+              "using": "1",
+              "id": 5,
+              "title": "전체 메뉴",
+              "order": "0",
+              "club_id": 3,
+              "description": "계정",
+              categories: [
+                {
+                  "using": "1",
+                  "id": 5,
+                  "title": "나의 활동",
+                  "order": "0",
+                  "club_id": 3,
+                  "description": "계정",
+                  forums: [
+                    {
+                      "using": "1",
+                      "id": 1,
+                      "title": "나의 글",
+                      "order": "0",
+                      "club_id": 3,
+                      "description": "계정"
+                    },
+                    {
+                      "using": "1",
+                      "id": 2,
+                      "title": "나의 좋아요",
+                      "order": "0",
+                      "club_id": 3,
+                      "description": "계정"
+                    },
+                    {
+                      "using": "1",
+                      "id": 5,
+                      "title": "댓글",
+                      "order": "0",
+                      "club_id": 3,
+                      "description": "계정"
+                    }
+                  ]
+                },
+                {
+                  "using": "1",
+                  "id": 6,
+                  "title": "설정",
+                  "order": "0",
+                  "club_id": 3,
+                  "description": "계정",
+                  forums: [
+                    {
+                      "using": "1",
+                      "id": 2,
+                      "title": "비밀번호 변경",
+                      "order": "0",
+                      "club_id": 3,
+                      "description": "계정"
+                    },
+                    {
+                      "using": "1",
+                      "id": 1,
+                      "title": "회원정보 변경",
+                      "order": "0",
+                      "club_id": 3,
+                      "description": "계정"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }]
+      }
+    },
+    LoginStore: res.resultData.LoginStore,
+    UserStore: res.resultData.UserStore,
+    SigninStore: {},
+    SearchStore: {},
+    BestPostStore: {
+      posts: {
+        data: []
+      }
+    },
+    SubmitStore: {},
+    ReportStore: res.resultData.ReportStore,
+    SettingStore: {}
+  })
+});
+
 module.exports = router;

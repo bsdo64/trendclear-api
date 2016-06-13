@@ -14,6 +14,7 @@ const BestHandler = require('./Best');
 const UserHandler = require('./User');
 const LikeHandler = require('./Like');
 const SearchHandler = require('./Search');
+const SettingHandler = require('./Setting');
 
 router.use(logger('dev'));
 
@@ -41,6 +42,7 @@ router.use('/best', BestHandler);
 router.use('/user', UserHandler);
 router.use('/like', LikeHandler);
 router.use('/search', SearchHandler);
+router.use('/settings', SettingHandler);
 
 // define the about route
 router.get('/about', function(req, res) {
