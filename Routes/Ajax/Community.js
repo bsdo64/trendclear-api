@@ -70,7 +70,7 @@ router.post('/comment', function (req, res, next) {
       comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm')
       comment.subComments = [];
 
-      req.app.notiIo['to']('bsdo').emit('news', comment);
+      req.app.notiIo['to'](user.nick).emit('news', comment);
 
       res.json(comment);
     })

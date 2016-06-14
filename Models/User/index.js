@@ -8,6 +8,8 @@ const jsonwebtoken = require('jsonwebtoken');
 const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
 
+const ImageApi = require('../../Util/ImageClient');
+
 const Trendbox = require('../Trendbox');
 
 class User {
@@ -315,13 +317,24 @@ class User {
   };
 
   updateAvatarImg(imgObj, user) {
+    const oldAvatarImg = user.profile.avatar_img;
+
     return user
       .$relatedQuery('profile')
       .update({
         avatar_img: imgObj.file.name
       })
       .then(function (numberOfAffectedRows) {
-        return numberOfAffectedRows;
+        return ImageApi
+          .del('/uploaded/files/', {file: 'http://localhost:3000/image/uploaded/files/'+oldAvatarImg})
+          .then((result) => {
+            return numberOfAffectedRows;
+          })
+          .catch((err) => {
+            // remove fail
+            
+            return numberOfAffectedRows;
+          })
       });
   }
   
