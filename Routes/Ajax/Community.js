@@ -1,10 +1,10 @@
 const express = require('express');
 const moment = require('moment');
 const router = express.Router();
-const cookieParser = require('cookie-parser');
-const helper = require('../helper/func');
 
 const M = require('../../Models/index');
+const Db = require('trendclear-database').Models;
+const Noti = require('../Socket/Noti');
 
 router.post('/post/view', (req, res, next) => {
   const viewObj = {
@@ -70,9 +70,25 @@ router.post('/comment', function (req, res, next) {
       comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm')
       comment.subComments = [];
 
-      req.app.notiIo['to'](user.nick).emit('news', comment);
+      return Db
+        .tc_posts
+        .query()
+        .where({id: commentObj.postId})
+        .first()
+        .then((post) => {
+          return post
+            .$relatedQuery('author')
+            .first()
+            .then(author => {
+              if (post && author && (author.id !== user.id)) {
+                console.log('Send comment socket to author : ', author);
 
-      res.json(comment);
+                Noti.emitNspRoomData(req.app.notiIo, author.nick, 'news', comment);
+              }
+
+              res.json(comment);
+            })
+        })
     })
     .catch(function (err) {
       console.error(err);

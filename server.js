@@ -10,7 +10,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 const AjaxRouter = require('./Routes/Ajax/index');
-const SocketRouter = require('./Routes/Socket/Noti');
+const NotiSocketHandler = require('./Routes/Socket/Noti');
 
 app.notiIo = io.of('/noti');
 app.io = io;
@@ -22,9 +22,8 @@ app.use(cookieParser());
 app.use('/ajax', AjaxRouter);
 
 app.notiIo.on('connection', function (socket) {
-  const notiSocketHandler = new SocketRouter(socket);
-  
-  socket.on('join_room', notiSocketHandler.joinRoom())
+
+  socket.on('join_room', NotiSocketHandler.joinHandler(socket))
 });
 
 module.exports = server;

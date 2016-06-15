@@ -2,31 +2,28 @@ const cookieParser = require('cookie-parser');
 const Cookie = require('cookie');
 const M = require('../../Models/index');
 
-class NotiHandler {
-  constructor(socket) {
-    this.socket = socket;
-    this.request = socket.request;
-    this.headers = this.request.headers;
-    this.cookie = Cookie.parse(this.headers.cookie);
-  }
-  joinRoom() {
-    if (this.cookie.sessionId && this.cookie.token) {
-      const sessionId = cookieParser.signedCookie(this.cookie.sessionId, '1234567890QWERTY');
-      const token = this.cookie.token;
-      const self = this;
+module.exports = {
+  joinHandler: function joinHandler(socket) {
+    return () => {
 
-      return function () {
+      const headers = socket.request.headers;
+      const cookie = Cookie.parse(headers.cookie);
+      if (cookie.sessionId && cookie.token) {
+        const sessionId = cookieParser.signedCookie(cookie.sessionId, '1234567890QWERTY');
+        const token = cookie.token;
+
         M
           .User
           .checkUserByToken(token, sessionId)
           .then((user) => {
-            self.socket.join(user.nick);
+            console.log('Join the socket room : ', user.nick);
+            socket.join(user.nick);
           });
       }
-    } else {
-      return function () {}
     }
-  }
-}
+  },
 
-module.exports = NotiHandler;
+  emitNspRoomData: function (nsp, room, event, data) {
+    nsp.to(room).emit(event, data);
+  }
+};

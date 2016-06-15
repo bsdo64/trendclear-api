@@ -552,4 +552,12 @@ router.get('/setting', function (req, res, next) {
   })
 });
 
+router.get('/setting/password', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/setting/profile', function (req, res, next) {
+  res.json(res.resultData);
+})
+
 module.exports = router;
