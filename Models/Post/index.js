@@ -152,7 +152,7 @@ class Post {
 
     return query
       .orderBy('created_at', 'DESC')
-      .page(page, 20)
+      .page(page, 10)
       .then((posts) => {
 
         if (user) {

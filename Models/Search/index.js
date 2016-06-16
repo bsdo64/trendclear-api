@@ -14,7 +14,7 @@ const _ = require('lodash');
 
 class Search {
   listByQuery (query, page = 0, user) {
-    const limit = 20;
+    const limit = 10;
 
     const array = query.split(' ');
     console.log(array);

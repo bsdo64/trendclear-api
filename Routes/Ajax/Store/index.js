@@ -141,7 +141,7 @@ router.get('/', function (req, res, next) {
             collection: {
               current_page: 1,
               limit: 10,
-              next_page: 2,
+              next_page: (posts.total > 10) ? 2 : null,
               total: posts.total
             }
           }
@@ -441,7 +441,13 @@ router.get('/search', function (req, res, next) {
         },
         BestPostStore: {
           posts: {
-            data: []
+            data: posts.results,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
+            }
           }
         },
         SubmitStore: {},
@@ -450,9 +456,8 @@ router.get('/search', function (req, res, next) {
     })
 });
 
-router.get('/setting', function (req, res, next) {
-  res.json({
-    CommunityStore: {},
+router.use(function (req, res, next) {
+  assign(res.resultData, {
     GnbStore: {
       openGnb: false,
       gnbMenu: res.resultData.GnbStore.gnbMenu,
@@ -536,20 +541,13 @@ router.get('/setting', function (req, res, next) {
           ]
         }]
       }
-    },
-    LoginStore: res.resultData.LoginStore,
-    UserStore: res.resultData.UserStore,
-    SigninStore: {},
-    SearchStore: {},
-    BestPostStore: {
-      posts: {
-        data: []
-      }
-    },
-    SubmitStore: {},
-    ReportStore: res.resultData.ReportStore,
-    SettingStore: {}
-  })
+    }});
+
+  next();
+});
+
+router.get('/setting', function (req, res, next) {
+  res.json(res.resultData);
 });
 
 router.get('/setting/password', function (req, res, next) {
@@ -558,6 +556,56 @@ router.get('/setting/password', function (req, res, next) {
 
 router.get('/setting/profile', function (req, res, next) {
   res.json(res.resultData);
+});
+
+router.use(function (req, res, next) {
+  const user = res.locals.user;
+
+  M
+    .Post
+    .bestPostList(0, user)
+    .then(function (posts) {
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      assign(res.resultData, {
+        BestPostStore: {
+          posts: {
+            data: posts.results,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
+            }
+          }
+        }
+      });
+
+      next();
+    });
 })
+
+router.get('/activity', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/activity/likes', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/activity/posts', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/activity/comments', function (req, res, next) {
+  res.json(res.resultData);
+});
 
 module.exports = router;
