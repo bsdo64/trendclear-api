@@ -483,7 +483,30 @@ router.get('/setting/profile', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.use(function (req, res, next) {
+router.use('/activity/*', (req, res, next) => {
+  const user = res.locals.user;
+
+  M
+    .User
+    .getActivityMeta(user)
+    .then((meta) => {
+      assign(res.resultData, {
+        ActivityStore: {
+          meta: {
+            likesCount: 0,
+            postsCount: 0,
+            commentsCount: 0,
+          }
+        }
+      });
+      next();
+    })
+    .catch(err => {
+      next(err)
+    });
+});
+
+router.use('/activity/*', (req, res, next) => {
   const user = res.locals.user;
 
   M

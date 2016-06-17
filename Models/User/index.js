@@ -1,5 +1,7 @@
 'use strict';
 const M = require('trendclear-database').Models;
+const knex = require('trendclear-database').knex;
+
 const nodemailer = require('nodemailer');
 const redisClient = require('../../Util/RedisClient');
 const bcrypt = require('bcrypt');
@@ -384,6 +386,37 @@ class User {
         throw err
       })
     
+  }
+
+  getActivityMeta(user) {
+    `SELECT tc_users.*,
+       (
+            SELECT COUNT(*)
+            FROM tc_posts
+            WHERE tc_posts.author_id=tc_users.id
+       ) AS post_count,
+       (
+            SELECT COUNT(*)
+            FROM tc_comments
+            WHERE tc_comments.author_id=tc_users.id
+       ) AS comment_count,
+       (
+            SELECT COUNT(*)
+            FROM tc_likes
+            WHERE tc_likes.liker_id=tc_users.id
+       ) AS like_count
+    FROM tc_users`;
+    const countPost = M.tc_posts.query().count('*').where('author_id', '=', 'user_id').as('post_count');
+    const countComment = knex.raw('(SELECT COUNT(*) FROM tc_comments WHERE tc_comments.author_id=tc_users.id) as comment_count');
+    const countLike = knex.raw('(SELECT COUNT(*) FROM tc_likes WHERE tc_likes.liker_id=tc_users.id) as like_count');
+
+    return M
+      .tc_users
+      .query()
+      .select('id as user_id', countPost)
+      .then(result => {
+        console.log(result);
+      })
   }
 
   static setTokenWithRedisSession(user, sessionId) {
