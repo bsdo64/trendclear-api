@@ -492,11 +492,7 @@ router.use('/activity/*', (req, res, next) => {
     .then((meta) => {
       assign(res.resultData, {
         ActivityStore: {
-          meta: {
-            likesCount: 0,
-            postsCount: 0,
-            commentsCount: 0,
-          }
+          meta: meta
         }
       });
       next();
@@ -538,7 +534,7 @@ router.use('/activity/*', (req, res, next) => {
 
       next();
     });
-})
+});
 
 router.get('/activity', function (req, res, next) {
   res.json(res.resultData);

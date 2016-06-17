@@ -406,17 +406,16 @@ class User {
             WHERE tc_likes.liker_id=tc_users.id
        ) AS like_count
     FROM tc_users`;
-    const countPost = M.tc_posts.query().count('*').where('author_id', '=', 'user_id').as('post_count');
-    const countComment = knex.raw('(SELECT COUNT(*) FROM tc_comments WHERE tc_comments.author_id=tc_users.id) as comment_count');
-    const countLike = knex.raw('(SELECT COUNT(*) FROM tc_likes WHERE tc_likes.liker_id=tc_users.id) as like_count');
+    const countPost = M.tc_posts.query().count('*').where(knex.raw('tc_posts.author_id = tc_users.id')).as('postsCount');
+    const countComment = M.tc_comments.query().count('*').where(knex.raw('tc_comments.author_id = tc_users.id')).as('commentsCount');
+    const countLike = M.tc_likes.query().count('*').where(knex.raw('tc_likes.liker_id = tc_users.id')).as('likesCount');
 
     return M
       .tc_users
       .query()
-      .select('id as user_id', countPost)
-      .then(result => {
-        console.log(result);
-      })
+      .select('id', countPost, countComment, countLike)
+      .where('id', user.id)
+      .first()
   }
 
   static setTokenWithRedisSession(user, sessionId) {
