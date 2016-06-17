@@ -12,6 +12,30 @@ const ImageApi = require('../../Util/ImageClient');
 
 const Trendbox = require('../Trendbox');
 
+
+function passwordCompare(userPassword, hash) {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(userPassword, hash, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve(res)
+    })
+  })
+}
+function hashPassword(userPassword, salt = 10) {
+  return new Promise((resolve, reject) => {
+    bcrypt.hash(userPassword, salt, (err, res) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve(res)
+    })
+  })
+}
+
 class User {
   /**
    *
@@ -105,19 +129,7 @@ class User {
       birth: user.birth
     };
 
-    function hashPassword(userPassword, salt = 10) {
-      return new Promise((resolve, reject) => {
-        bcrypt.hash(userPassword, salt, (err, res) => {
-          if (err) {
-            reject(err);
-          }
 
-          if (res) {
-            resolve(res)
-          }
-        })
-      })
-    }
 
     let uCreate = {
       email: userObj.email,
@@ -233,20 +245,6 @@ class User {
       password: user.password
     };
 
-    function passwordCompare(userPassword, hash) {
-      return new Promise((resolve, reject) => {
-        bcrypt.compare(userPassword, hash, (err, res) => {
-          if (err) {
-            reject(err);
-          }
-
-          if (res) {
-            resolve(res)
-          }
-        })
-      })
-    }
-
     return M
       .tc_users
       .query()
@@ -343,6 +341,49 @@ class User {
       .resolve()
       .then(Trendbox.incrementLevel(user, levelObj.currentLevel))
       .then(newTrendbox => newTrendbox)
+  }
+
+  updatePassword(passwordObj, user) {
+    return user
+      .$relatedQuery('password')
+      .first()
+      .then(function (findPassword) {
+        if (!findPassword) {
+          throw new Error('User not Found');
+        }
+
+        return passwordCompare(passwordObj.oldPassword, findPassword.password)
+          .then((passwordCheck) => {
+            if (passwordCheck === false) {
+              throw new Error('Password is not Correct');
+            }
+
+            return hashPassword(passwordObj.newPassword)
+          })
+          .then(newPassword => {
+            return user
+              .$relatedQuery('password')
+              .update({
+                password: newPassword
+              })
+          })
+      })
+      .catch(err => {
+        throw err
+      });
+  }
+  
+  updateProfile(profileObj, user) {
+    return user
+      .$relatedQuery('profile')
+      .update(profileObj)
+      .then((result) => {
+        return user.$relatedQuery('profile')
+      })
+      .catch(err => {
+        throw err
+      })
+    
   }
 
   static setTokenWithRedisSession(user, sessionId) {

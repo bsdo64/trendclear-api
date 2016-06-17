@@ -31,4 +31,70 @@ router.post('/levelup', (req, res, next) => {
   res.json(user.trendbox);
 });
 
+router.post('/setting/password', (req, res, next) => {
+  const passwordObj = {
+    oldPassword: req.body.oldPassword,
+    newPassword: req.body.newPassword
+  };
+  const user = res.locals.user;
+  
+  M
+    .User
+    .updatePassword(passwordObj, user)
+    .then((result) => {
+      console.log(result);
+      res.json('ok');
+    })
+    .catch(err => {
+
+      if (err.message === 'Password is not Correct') {
+        res.json({
+          code: 1,
+          message: 'password change error',
+          error: err
+        })
+      } else {
+        res.json({
+          code: null,
+          message: 'password change error',
+          error: err
+        })
+      }
+    })
+});
+
+
+router.post('/setting/profile', (req, res, next) => {
+  const user = res.locals.user;
+  const profileObj = {
+    sex: req.body.sex,
+    birth: req.body.birth
+  };
+
+  M
+    .User
+    .updateProfile(profileObj, user)
+    .then((profile) => {
+      res.json(profile);
+    })
+    .catch(err => {
+
+      console.log(err);
+
+      if (err.message === 'Password is not Correct') {
+        res.json({
+          code: 1,
+          message: 'password change error',
+          error: err
+        })
+      } else {
+        res.json({
+          code: null,
+          message: 'profile change error',
+          error: err
+        })
+      }
+    })
+});
+
 module.exports = router;
