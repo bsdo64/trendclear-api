@@ -483,7 +483,7 @@ router.get('/setting/profile', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.use('/activity/*', (req, res, next) => {
+router.use('/activity*', (req, res, next) => {
   const user = res.locals.user;
 
   M
@@ -502,7 +502,7 @@ router.use('/activity/*', (req, res, next) => {
     });
 });
 
-router.use('/activity/*', (req, res, next) => {
+router.use('/activity*', (req, res, next) => {
   const user = res.locals.user;
 
   M
@@ -521,6 +521,27 @@ router.use('/activity/*', (req, res, next) => {
       assign(res.resultData, {
         BestPostStore: {
           posts: {
+            data: [],
+            collection: {}
+          }
+        }
+      });
+
+      next();
+    });
+});
+
+router.get(['/activity', '/activity/likes'], function (req, res, next) {
+  const user = res.locals.user;
+  
+  M
+    .Post
+    .likePostList(0, user)
+    .then(posts => {
+      "use strict";
+      assign(res.resultData, {
+        BestPostStore: {
+          posts: {
             data: posts.results,
             collection: {
               current_page: 1,
@@ -530,18 +551,10 @@ router.use('/activity/*', (req, res, next) => {
             }
           }
         }
-      });
-
-      next();
+      })
+      
+      res.json(res.resultData);
     });
-});
-
-router.get('/activity', function (req, res, next) {
-  res.json(res.resultData);
-});
-
-router.get('/activity/likes', function (req, res, next) {
-  res.json(res.resultData);
 });
 
 router.get('/activity/posts', function (req, res, next) {
