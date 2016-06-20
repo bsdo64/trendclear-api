@@ -97,4 +97,26 @@ router.post('/setting/profile', (req, res, next) => {
     })
 });
 
+router.post('/noti/read', (req, res, next) => {
+  const user = res.locals.user;
+  const notiReadObj = {
+    id: req.body.id
+  };
+  
+  M
+    .User
+    .readNoti(notiReadObj, user)
+    .then(result => {
+      res.json(result)
+    })
+    .catch(err => {
+      console.log(err);
+      res.json({
+        code: null,
+        message: 'noti read error',
+        error: err
+      })
+    })
+})
+
 module.exports = router;

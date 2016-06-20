@@ -228,11 +228,28 @@ class User {
     return M
       .tc_users
       .query()
-      .eager('[notifications, skills.skill.property, trendbox, grade.gradeDef, role, profile, icon.iconDef]')
+      .eager('[skills.skill.property, trendbox, grade.gradeDef, role, profile, icon.iconDef]')
       .where(userObj)
       .first()
       .then(function (findUser) {
+
+        `select "tc_user_notifications".*, "tc_posts"."id", "tc_posts"."title"
+        from "tc_user_notifications"
+        LEFT JOIN "tc_posts" ON "tc_posts"."id" = "tc_user_notifications"."target_id"
+        WHERE "tc_user_notifications"."user_id" = (2)	;`
+        
         return findUser
+          .$relatedQuery('notifications')
+          .select('*', 'tc_user_notifications.id as id', 'tc_posts.id as post_id')
+          .join('tc_posts', 'tc_posts.id', 'tc_user_notifications.target_id')
+          .offset(0)
+          .limit(10)
+          .orderBy('receive_at', 'DESC')
+          .then(notis => {
+
+            findUser.notifications = notis;
+            return findUser;
+          })
       })
       .catch(function (err) {
         console.log(err);
@@ -416,6 +433,16 @@ class User {
       .select('id', countPost, countComment, countLike)
       .where('id', user.id)
       .first()
+  }
+
+  readNoti(notiObj, user) {
+    return user
+      .$relatedQuery('notifications')
+      .update({
+        read: true,
+        read_at: new Date()
+      })
+      .where('id', notiObj.id)
   }
 
   static setTokenWithRedisSession(user, sessionId) {

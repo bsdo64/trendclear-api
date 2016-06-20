@@ -81,9 +81,48 @@ router.post('/comment', function (req, res, next) {
             .first()
             .then(author => {
               if (post && author && (author.id !== user.id)) {
-                console.log('Send comment socket to author : ', author);
 
-                Noti.emitNspRoomData(req.app.notiIo, author.nick, 'news', comment);
+                return author
+                  .$relatedQuery('notifications')
+                  .where('type', 'comment_write')
+                  .andWhere('target_id', post.id)
+                  .first()
+                  .then(noti => {
+                    if (noti) {
+                      return author
+                        .$relatedQuery('notifications')
+                        .update({
+                          read: false,
+                          count: post.comment_count,
+                          receive_at: new Date()
+                        })
+                        .where('id', noti.id)
+                    } else {
+                      return author
+                        .$relatedQuery('notifications')
+                        .insert({
+                          type: 'comment_write',
+                          read: false,
+                          target_id: comment.post_id,
+                          count: post.comment_count,
+                          receive_at: new Date()
+                        })
+                    }
+                  })
+                  .then(() => {
+
+                    return author
+                      .$relatedQuery('notifications')
+                      .select('*', 'tc_user_notifications.id as id', 'tc_posts.id as post_id')
+                      .join('tc_posts', 'tc_posts.id', 'tc_user_notifications.target_id')
+                      .offset(0)
+                      .limit(10)
+                      .orderBy('receive_at', 'DESC')
+                  })
+                  .then(notis => {
+                    Noti.emitNspRoomData(req.app.notiIo, author.nick, 'comment_write noti', notis);
+                    res.json(comment);
+                  })
               }
 
               res.json(comment);
