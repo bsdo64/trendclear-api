@@ -22,7 +22,7 @@
     "shortid": "^2.2.6",
     "socket.io": "^1.4.6",
     "superagent": "^2.0.0",
-    "trendclear-database": "0.0.27"
+    "trendclear-database": "0.0.29"
   },
   "devDependencies": {
     "morgan": "^1.7.0",
