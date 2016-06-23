@@ -1,0 +1,12 @@
+{
+"apps" : [{
+    "name"        : "api",
+    "script"      : "bin/www.js",
+    "node_args"   : "--harmony",
+    "merge_logs"  : true,
+    "cwd"         : ".",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }]
+}

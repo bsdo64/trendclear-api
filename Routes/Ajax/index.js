@@ -16,7 +16,7 @@ const LikeHandler = require('./Like');
 const SearchHandler = require('./Search');
 const SettingHandler = require('./Setting');
 
-router.use(logger('dev'));
+router.use(logger('common'));
 
 router.use(function timeLog(req, res, next) {
   console.log();
