@@ -9,6 +9,7 @@ const shortId = require('shortid');
 const jsonwebtoken = require('jsonwebtoken');
 const jwtConf = require("../../config/jwt.js");
 const Promise = require('bluebird');
+const htmlTemplate = require('./template/email');
 
 const ImageApi = require('../../Util/ImageClient');
 
@@ -89,10 +90,10 @@ class User {
         var transporter = nodemailer.createTransport('smtps://bsdo64%40gmail.com:dkbs13579@smtp.gmail.com');
 
         var mailOptions = {
-          from: '"고블린클럽" <bsdo64@gmail.com>', // sender address
+          from: '"베나클" <bsdo64@gmail.com>', // sender address
           to: email, // list of receivers
-          subject: '안녕하세요! 고블린 클럽입니다. 이메일 코드를 확인해주세요', // Subject line
-          html: '<b>' + code + '</b>' // html body
+          subject: '반갑습니다! 베나클 입니다. 이메일 코드를 확인해주세요', // Subject line
+          html: htmlTemplate.make(code)
         };
 
         return new Promise(function (resolve, reject) {
