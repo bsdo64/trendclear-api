@@ -3,9 +3,9 @@ const router = express.Router();
 const moment = require('moment');
 const helper = require('../helper/func');
 
-const M = require('../../Models/index');
+const M = require('vn-api-model');
 
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
   const page = req.query.page ? req.query.page - 1 : 0;
   const user = res.locals.user;
   const categoryValue = req.query.categoryValue;
@@ -41,13 +41,13 @@ router.get('/', function (req, res, next) {
         });
       }
     });
-})
+});
 
-router.post('/submit', function (req, res, next) {
+router.post('/submit', function (req, res) {
   const postObj = {
     title: req.body.title,
     content: req.body.content,
-    prefixId: req.body.prefixId,
+    prefixId: req.body.prefixId
   };
   const user = res.locals.user;
   

@@ -11,7 +11,6 @@
     "cookie-parser": "^1.4.1",
     "deep-assign": "^2.0.0",
     "express": "^4.13.4",
-    "ioredis": "^1.15.1",
     "joi": "^8.0.5",
     "jsonwebtoken": "^7.0.0",
     "lodash": "^4.11.1",
@@ -21,8 +20,9 @@
     "query-parser": "0.0.1",
     "shortid": "^2.2.6",
     "socket.io": "^1.4.6",
-    "superagent": "^2.0.0",
-    "trendclear-database": "0.0.29"
+    "trendclear-database": "github:bsdo64/trendclear-database",
+    "vn-api-client": "github:bsdo64/vn-api-client",
+    "vn-api-model": "github:bsdo64/vn-api-model"
   },
   "devDependencies": {
     "morgan": "^1.7.0",

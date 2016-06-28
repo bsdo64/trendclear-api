@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const cookieParser = require('cookie-parser');
-const helper = require('../helper/func');
 
-const M = require('../../Models/index');
+const M = require('vn-api-model');
 
-router.post('/avatarImg', function (req, res, next) {
+router.post('/avatarImg', function (req, res) {
   const imgObj = {
     file: req.body.file
   };
@@ -26,12 +24,12 @@ router.post('/avatarImg', function (req, res, next) {
     });
 });
 
-router.post('/levelup', (req, res, next) => {
+router.post('/levelup', (req, res) => {
   const user = res.locals.user;
   res.json(user.trendbox);
 });
 
-router.post('/setting/password', (req, res, next) => {
+router.post('/setting/password', (req, res) => {
   const passwordObj = {
     oldPassword: req.body.oldPassword,
     newPassword: req.body.newPassword
@@ -64,7 +62,7 @@ router.post('/setting/password', (req, res, next) => {
 });
 
 
-router.post('/setting/profile', (req, res, next) => {
+router.post('/setting/profile', (req, res) => {
   const user = res.locals.user;
   const profileObj = {
     sex: req.body.sex,
@@ -97,7 +95,7 @@ router.post('/setting/profile', (req, res, next) => {
     })
 });
 
-router.post('/noti/read', (req, res, next) => {
+router.post('/noti/read', (req, res) => {
   const user = res.locals.user;
   const notiReadObj = {
     id: req.body.id
@@ -117,6 +115,6 @@ router.post('/noti/read', (req, res, next) => {
         error: err
       })
     })
-})
+});
 
 module.exports = router;

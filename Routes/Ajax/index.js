@@ -3,7 +3,7 @@ const router = express.Router();
 const logger = require('morgan');
 const {signedSessionId} = require('../helper/func');
 
-const CheckUser = require('./CheckUser');
+const CheckUserHandler = require('./CheckUser');
 
 const SigninHandler = require('./Signin');
 const LoginHandler = require('./Login');
@@ -29,7 +29,7 @@ router.use(function timeLog(req, res, next) {
   next();
 });
 
-router.use(CheckUser);
+router.use(CheckUserHandler);
 
 router.use('/store', StoreHandler);
 

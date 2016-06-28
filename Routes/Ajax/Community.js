@@ -2,11 +2,11 @@ const express = require('express');
 const moment = require('moment');
 const router = express.Router();
 
-const M = require('../../Models/index');
+const M = require('vn-api-model');
 const Db = require('trendclear-database').Models;
 const Noti = require('../Socket/Noti');
 
-router.post('/post/view', (req, res, next) => {
+router.post('/post/view', (req, res) => {
   const viewObj = {
     postId: req.body.postId
   };
@@ -19,9 +19,9 @@ router.post('/post/view', (req, res, next) => {
       res.json(post);
     })
 
-})
+});
 
-router.post('/subComment', function (req, res, next) {
+router.post('/subComment', function (req, res) {
   const commentObj = {
     content: req.body.content,
     commentId: req.body.commentId
@@ -33,7 +33,7 @@ router.post('/subComment', function (req, res, next) {
     .submitSubComment(commentObj, user)
     .then(function (subComment) {
 
-      subComment.created_at = moment(subComment.created_at).format('YYYY-MM-DD HH:mm')
+      subComment.created_at = moment(subComment.created_at).format('YYYY-MM-DD HH:mm');
       subComment.commentId = commentObj.commentId;
       res.json(subComment);
     })
@@ -53,9 +53,9 @@ router.post('/subComment', function (req, res, next) {
         });
       }
     });
-})
+});
 
-router.post('/comment', function (req, res, next) {
+router.post('/comment', function (req, res) {
   const commentObj = {
     content: req.body.content,
     postId: req.body.postId
@@ -67,7 +67,7 @@ router.post('/comment', function (req, res, next) {
     .submitComment(commentObj, user)
     .then(function (comment) {
       
-      comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm')
+      comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm');
       comment.subComments = [];
 
       return Db
@@ -145,13 +145,13 @@ router.post('/comment', function (req, res, next) {
         });
       }
     });
-})
+});
 
-router.post('/submit', function (req, res, next) {
+router.post('/submit', function (req, res) {
   const postObj = {
     title: req.body.title,
     content: req.body.content,
-    prefixId: req.body.prefixId,
+    prefixId: req.body.prefixId
   };
   const user = res.locals.user;
   

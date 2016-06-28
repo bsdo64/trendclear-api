@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const cookieParser = require('cookie-parser');
 const helper = require('../helper/func');
 
-const M = require('../../Models/index');
+const M = require('vn-api-model');
 
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
   const userObj = {
     email: req.body.email,
     password: req.body.password
   };
   const sessionId = helper.signedSessionId(req.cookies.sessionId);
 
-  return M
+  M
     .User
     .login(userObj, sessionId)
     .then(function (token) {

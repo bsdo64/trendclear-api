@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const cookieParser = require('cookie-parser');
 const helper = require('../../helper/func');
 const assign = require('deep-assign');
-const redisClient = require('../../../Util/RedisClient');
-const jsonwebtoken = require("jsonwebtoken");
-const jwtConf = require('../../../config/jwt');
-const M = require('../../../Models/index');
+const M = require('vn-api-model');
 const moment = require('moment');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));

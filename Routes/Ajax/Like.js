@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const cookieParser = require('cookie-parser');
 const helper = require('../helper/func');
 
-const M = require('../../Models/index');
+const M = require('vn-api-model');
 
-router.post('/post/:postId', function (req, res, next) {
+router.post('/post/:postId', function (req, res) {
   const postObj = {
     postId: req.params.postId
   };
@@ -42,7 +41,7 @@ router.post('/post/:postId', function (req, res, next) {
     });
 });
 
-router.post('/comment/:commentId', function (req, res, next) {
+router.post('/comment/:commentId', function (req, res) {
   const commentObj = {
     commentId: req.params.commentId
   };
@@ -81,7 +80,7 @@ router.post('/comment/:commentId', function (req, res, next) {
     });
 });
 
-router.post('/subComment/:subCommentId', function (req, res, next) {
+router.post('/subComment/:subCommentId', function (req, res) {
   const commentObj = {
     subCommentId: req.params.subCommentId
   };
@@ -119,6 +118,6 @@ router.post('/subComment/:subCommentId', function (req, res, next) {
         });
       }
     });
-})
+});
 
 module.exports = router;
