@@ -4,7 +4,7 @@ const router = express.Router();
 
 const M = require('vn-api-model');
 const Db = require('trendclear-database').Models;
-const Noti = require('../Socket/Noti');
+const Noti = require('vn-api-client').Noti;
 
 router.post('/post/view', (req, res) => {
   const viewObj = {
@@ -120,7 +120,9 @@ router.post('/comment', function (req, res) {
                       .orderBy('receive_at', 'DESC')
                   })
                   .then(notis => {
-                    Noti.emitNspRoomData(req.app.notiIo, author.nick, 'comment_write noti', notis);
+
+                    Noti.emit('send noti', {to: author.nick, notis: notis});
+
                     res.json(comment);
                   })
               }
