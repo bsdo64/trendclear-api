@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const moment = require('moment');
 const router = express.Router();
@@ -5,6 +7,99 @@ const router = express.Router();
 const M = require('vn-api-model');
 const Db = require('trendclear-database').Models;
 const Noti = require('vn-api-client').Noti;
+
+router.post('/category', (req, res) => {
+  const {club, categoryGroup, category, forum} = req.body;
+  const categoryObj = {club, categoryGroup, category, forum};
+  const user = res.locals.user;
+
+  if (club.id && categoryGroup.id && category.id) {
+    // create forum
+    Db
+      .tc_forums
+      .query()
+      .insert({
+        title: forum.value,
+        order: 1, 
+        using: 1, 
+        description: forum.value, 
+        club_id: club.id, 
+        club_category_group_id: categoryGroup.id, 
+        category_id: category.id,
+      })
+      .then(result => {
+        res.json(result)
+      })
+  }
+  
+  if (club.id && categoryGroup.id && !category.id) {
+    // create category, forum
+    Db
+      .tc_club_categories
+      .query()
+      .insertWithRelated({ 
+        '#id': 'c1', 
+        title: category.value, 
+        order: 0, 
+        using: 1, 
+        description: category.value, 
+        club_id: club.id, 
+        club_category_group_id: categoryGroup.id, 
+        forums: [
+          { 
+            title: forum.value, 
+            order: 0, 
+            using: 1, 
+            description: forum.value, 
+            club_id: club.id, 
+            club_category_group_id: categoryGroup.id, 
+            category_id: '#ref{c1.id}'
+          }
+        ]
+      })
+      .then(result => {
+        res.json(result)
+      })
+  }
+
+  if (club.id && !categoryGroup.id && !category.id) {
+    // create category, forum, categoryGroup
+    Db
+      .tc_club_category_groups
+      .query()
+      .insertWithRelated({
+        '#id': 'cg1',
+        title: categoryGroup.value,
+        order: 0,
+        using: 1,
+        description: categoryGroup.value,
+        club_id: club.id,
+        categories: {
+          '#id': 'c1',
+          title: category.value,
+          order: 0,
+          using: 1,
+          description: category.value,
+          club_id: club.id,
+          club_category_group_id: '#ref{cg1.id}',
+          forums: [
+            {
+              title: forum.value,
+              order: 0,
+              using: 1,
+              description: forum.value,
+              club_id: club.id,
+              club_category_group_id: '#ref{cg1.id}',
+              category_id: '#ref{c1.id}'
+            }
+          ]
+        }
+      })
+      .then(result => {
+        res.json(result)
+      })
+  }
+});
 
 router.post('/post/view', (req, res) => {
   const viewObj = {
