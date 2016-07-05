@@ -144,7 +144,7 @@ router.get('/', function (req, res, next) {
           }
         },
         ReportStore: res.resultData.ReportStore,
-        ListStore: res.resultData.ListStore
+        ListStore: res.resultData.ListStore,
         AuthStore: res.resultData.AuthStore
       })
     });

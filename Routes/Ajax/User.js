@@ -13,7 +13,7 @@ router.post('/avatarImg', function (req, res) {
     .User
     .updateAvatarImg(imgObj, user)
     .then(function (result) {
-      res.json('ok');
+      res.json({success: 'ok', user: {id: user.id}});
     })
     .catch(function (err) {
       console.error(err);
