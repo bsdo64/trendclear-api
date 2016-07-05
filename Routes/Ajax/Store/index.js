@@ -142,9 +142,8 @@ router.get('/', function (req, res, next) {
             }
           }
         },
-        SigninStore: {},
-        CommunityStore: {},
         ReportStore: res.resultData.ReportStore,
+        AuthStore: res.resultData.AuthStore
       })
     });
 });
@@ -225,9 +224,8 @@ router.get('/community', function (req, res, next) {
           GnbStore: res.resultData.GnbStore,
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
-          SigninStore: {},
-          BestPostStore: {},
           ReportStore: res.resultData.ReportStore,
+          AuthStore: res.resultData.AuthStore
         })
       })
 
@@ -273,8 +271,8 @@ router.get('/community', function (req, res, next) {
             emailVerifySuccess: false,
             emailVerifyFail: false
           },
-          BestPostStore: {},
           ReportStore: res.resultData.ReportStore,
+          AuthStore: res.resultData.AuthStore
         })
       });
   } else if (prop.categoryId) {
@@ -299,7 +297,6 @@ router.get('/community', function (req, res, next) {
         emailVerifySuccess: false,
         emailVerifyFail: false
       },
-      BestPostStore: {},
       ReportStore: res.resultData.ReportStore,
     })
   } else {
@@ -313,7 +310,6 @@ router.get('/community', function (req, res, next) {
       },
       LoginStore: res.resultData.LoginStore,
       UserStore: res.resultData.UserStore,
-      BestPostStore: {},
       SigninStore: {
         emailDup: null,
         nickDup: null,
@@ -355,7 +351,6 @@ router.get('/signin', function (req, res, next) {
     },
     LoginStore: res.resultData.LoginStore,
     UserStore: res.resultData.UserStore,
-    BestPostStore: {},
     SigninStore: {
       emailDup: null,
       nickDup: null,
@@ -365,6 +360,7 @@ router.get('/signin', function (req, res, next) {
       emailVerifyFail: false
     },
     ReportStore: res.resultData.ReportStore,
+    AuthStore: res.resultData.AuthStore
   });
 });
 
@@ -374,7 +370,6 @@ router.get('/community/submit', function (req, res, next) {
     .getPrefix(req.query.forumId)
     .then(function (prefixes) {
       res.json({
-        CommunityStore: {},
         GnbStore: {
           openGnb: false,
           gnbMenu: res.resultData.GnbStore.gnbMenu,
@@ -384,16 +379,11 @@ router.get('/community/submit', function (req, res, next) {
         },
         LoginStore: res.resultData.LoginStore,
         UserStore: res.resultData.UserStore,
-        SigninStore: {},
-        BestPostStore: {
-          posts: {
-            data: []
-          }
-        },
         SubmitStore: {
           prefixes: prefixes
         },
         ReportStore: res.resultData.ReportStore,
+        AuthStore: res.resultData.AuthStore
       })
     })
 });
@@ -419,7 +409,6 @@ router.get('/search', function (req, res, next) {
       }
 
       res.json({
-        CommunityStore: {},
         GnbStore: {
           openGnb: false,
           gnbMenu: res.resultData.GnbStore.gnbMenu,
@@ -429,7 +418,6 @@ router.get('/search', function (req, res, next) {
         },
         LoginStore: res.resultData.LoginStore,
         UserStore: res.resultData.UserStore,
-        SigninStore: {},
         SearchStore: {
           search: {
             posts: posts
@@ -446,8 +434,8 @@ router.get('/search', function (req, res, next) {
             }
           }
         },
-        SubmitStore: {},
         ReportStore: res.resultData.ReportStore,
+        AuthStore: res.resultData.AuthStore
       })
     })
 });
