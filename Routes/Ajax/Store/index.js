@@ -28,7 +28,8 @@ router.use(function (req, res, next) {
       assign(res.resultData, {
         ReportStore: {
           openReportModal: false
-        }
+        },
+        ListStore: {}
       });
 
     })
@@ -143,6 +144,7 @@ router.get('/', function (req, res, next) {
           }
         },
         ReportStore: res.resultData.ReportStore,
+        ListStore: res.resultData.ListStore
         AuthStore: res.resultData.AuthStore
       })
     });
@@ -218,12 +220,19 @@ router.get('/community', function (req, res, next) {
               "page": parseInt(prop.page, 10) + 1,
               "data": postList.results,
               "total": postList.total,
-              "limit": 10
+              "limit": 10,
+              collection: {
+                current_page: 1,
+                limit: 10,
+                next_page: (postList.total > 10) ? 2 : null,
+                total: postList.total
+              }
             }
           },
           GnbStore: res.resultData.GnbStore,
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
+          BestPostStore: {},
           ReportStore: res.resultData.ReportStore,
           AuthStore: res.resultData.AuthStore
         })
@@ -263,14 +272,7 @@ router.get('/community', function (req, res, next) {
           },
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
-          SigninStore: {
-            emailDup: null,
-            nickDup: null,
-            emailRequested: null,
-            submitResult: false,
-            emailVerifySuccess: false,
-            emailVerifyFail: false
-          },
+          BestPostStore: {},
           ReportStore: res.resultData.ReportStore,
           AuthStore: res.resultData.AuthStore
         })
@@ -289,14 +291,7 @@ router.get('/community', function (req, res, next) {
       },
       LoginStore: res.resultData.LoginStore,
       UserStore: res.resultData.UserStore,
-      SigninStore: {
-        emailDup: null,
-        nickDup: null,
-        emailRequested: null,
-        submitResult: false,
-        emailVerifySuccess: false,
-        emailVerifyFail: false
-      },
+      BestPostStore: {},
       ReportStore: res.resultData.ReportStore,
     })
   } else {
@@ -310,14 +305,7 @@ router.get('/community', function (req, res, next) {
       },
       LoginStore: res.resultData.LoginStore,
       UserStore: res.resultData.UserStore,
-      SigninStore: {
-        emailDup: null,
-        nickDup: null,
-        emailRequested: null,
-        submitResult: false,
-        emailVerifySuccess: false,
-        emailVerifyFail: false
-      },
+      BestPostStore: {},
       ReportStore: res.resultData.ReportStore,
     });
   }
@@ -351,14 +339,7 @@ router.get('/signin', function (req, res, next) {
     },
     LoginStore: res.resultData.LoginStore,
     UserStore: res.resultData.UserStore,
-    SigninStore: {
-      emailDup: null,
-      nickDup: null,
-      emailRequested: null,
-      submitResult: false,
-      emailVerifySuccess: false,
-      emailVerifyFail: false
-    },
+    BestPostStore: {},
     ReportStore: res.resultData.ReportStore,
     AuthStore: res.resultData.AuthStore
   });
@@ -420,7 +401,13 @@ router.get('/search', function (req, res, next) {
         UserStore: res.resultData.UserStore,
         SearchStore: {
           search: {
-            posts: posts
+            posts: posts,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
+            }
           }
         },
         BestPostStore: {
