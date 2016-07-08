@@ -232,7 +232,6 @@ router.get('/community', function (req, res, next) {
           GnbStore: res.resultData.GnbStore,
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
-          BestPostStore: {},
           ReportStore: res.resultData.ReportStore,
           AuthStore: res.resultData.AuthStore
         })
@@ -256,23 +255,19 @@ router.get('/community', function (req, res, next) {
           CommunityStore: {
             type: 'forum',
             forum : res.resultData.CommunityStore.forum,
-            "list": {
-              "page": parseInt(prop.page, 10) + 1,
+            list: {
               "data": posts.results,
-              "total": posts.total,
-              "limit": 10
+              collection: {
+                current_page: parseInt(prop.page, 10) + 1,
+                limit: 10,
+                next_page: (posts.total > 10) ? 2 : null,
+                total: posts.total
+              }
             }
           },
-          GnbStore: {
-            openGnb: false,
-            gnbMenu: res.resultData.GnbStore.gnbMenu,
-            categoryMenu: {
-              categories: res.resultData.GnbStore.categoryMenu.categories
-            }
-          },
+          GnbStore: res.resultData.GnbStore,
           LoginStore: res.resultData.LoginStore,
           UserStore: res.resultData.UserStore,
-          BestPostStore: {},
           ReportStore: res.resultData.ReportStore,
           AuthStore: res.resultData.AuthStore
         })

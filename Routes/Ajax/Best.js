@@ -23,7 +23,19 @@ router.get('/', function (req, res) {
         }
       }
 
-      res.json(posts);
+      const limit = 10;
+      const nextPage = page + 1;
+      const data = {
+        data: posts.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * page < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      };
+      
+      res.json(data);
     })
     .catch(function (err) {
       console.error(err);
