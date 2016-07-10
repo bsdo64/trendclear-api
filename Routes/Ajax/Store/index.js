@@ -211,20 +211,22 @@ router.get('/community', function (req, res, next) {
           }
         }
 
+        const nextPage = parseInt(prop.page, 10) + 1;
+
         res.json({
           CommunityStore: {
             type: 'post',
             post: post,
             forum: res.resultData.CommunityStore.forum,
             "list": {
-              "page": parseInt(prop.page, 10) + 1,
+              "page": nextPage,
               "data": postList.results,
               "total": postList.total,
               "limit": 10,
               collection: {
-                current_page: 1,
+                current_page: nextPage,
                 limit: 10,
-                next_page: (postList.total > 10) ? 2 : null,
+                next_page: (postList.total > 10) ? nextPage + 1 : null,
                 total: postList.total
               }
             }
