@@ -1,4 +1,5 @@
 const express = require('express');
+const Promise = require('bluebird');
 const router = express.Router();
 const helper = require('../../helper/func');
 const assign = require('deep-assign');
@@ -7,8 +8,7 @@ const moment = require('moment');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
-
-router.use(function (req, res, next) {
+router.use( function (req, res, next) {
 
   M
     .Club
@@ -165,24 +165,13 @@ router.get('/community', function (req, res, next) {
   const user = res.locals.user;
 
   if (prop.categoryId && prop.forumId && prop.postId) {
-    let postList;
 
-    M
-      .Post
-      .incrementView(prop, user)
-      .then(() => M
-        .Forum
-        .getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix)
-      )
-      .then(function (posts) {
-        postList = posts;
-
-        return M
-          .Post
-          .findOneById(prop.postId, prop.commentPage, user)
-      })
-      .then(function (post) {
-
+    Promise.join(
+      M.Post.incrementView(prop, user),
+      M.Forum.getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix),
+      M.Post.findOneById(prop.postId, prop.commentPage, user),
+      function (first, postList, post) {
+        
         post.created_at = moment(post.created_at).format('YYYY-MM-DD HH:mm');
 
         for (let i in postList.results) {
@@ -212,7 +201,7 @@ router.get('/community', function (req, res, next) {
         }
 
         const nextPage = parseInt(prop.page, 10) + 1;
-
+        
         res.json({
           CommunityStore: {
             type: 'post',

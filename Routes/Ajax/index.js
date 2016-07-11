@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const logger = require('morgan');
 const {signedSessionId} = require('../helper/func');
 
 const CheckUserHandler = require('./CheckUser');
@@ -16,11 +15,28 @@ const LikeHandler = require('./Like');
 const SearchHandler = require('./Search');
 const SettingHandler = require('./Setting');
 
-router.use(logger('common'));
+const now = require('performance-now');
+
+let start;
+function startTime(req, res, next) {
+  "use strict";
+  start = now();
+
+  next();
+}
+
+function endTime(req, res, next) {
+  "use strict";
+
+  let end = now();
+  console.log((end-start).toFixed(3));
+
+  next();
+}
 
 router.use(function timeLog(req, res, next) {
+
   console.log();
-  console.log('Time: ', Date.now());
 
   console.log('sessionId: ', signedSessionId(req.cookies.sessionId));
   console.log('query: ', req.query);
@@ -29,7 +45,7 @@ router.use(function timeLog(req, res, next) {
   next();
 });
 
-router.use(CheckUserHandler);
+router.use(startTime, CheckUserHandler, endTime);
 
 router.use('/store', StoreHandler);
 

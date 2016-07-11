@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
   const token = cookies.token;
 
   let resultData = res.resultData = {};
-
+  
   M
     .User
     .checkUserAuth(sessionId, token)
