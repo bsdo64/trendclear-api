@@ -347,22 +347,34 @@ router.get('/community/submit', function (req, res, next) {
     .Forum
     .getPrefix(req.query.forumId)
     .then(function (prefixes) {
-      res.json({
-        GnbStore: {
-          openGnb: false,
-          gnbMenu: res.resultData.GnbStore.gnbMenu,
-          categoryMenu: {
-            categories: res.resultData.GnbStore.categoryMenu.categories
-          }
-        },
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
-        SubmitStore: {
-          prefixes: prefixes
-        },
-        ReportStore: res.resultData.ReportStore,
-        AuthStore: res.resultData.AuthStore
-      })
+      const result = {
+        prefixes: prefixes
+      };
+
+      return M
+        .Forum
+        .getForumInfo(req.query.forumId)
+        .then(forum => {
+          result.forum = forum;
+
+          res.json({
+            GnbStore: {
+              openGnb: false,
+              gnbMenu: res.resultData.GnbStore.gnbMenu,
+              categoryMenu: {
+                categories: res.resultData.GnbStore.categoryMenu.categories
+              }
+            },
+            LoginStore: res.resultData.LoginStore,
+            UserStore: res.resultData.UserStore,
+            SubmitStore: {
+              prefixes: result.prefixes,
+              forum: result.forum
+            },
+            ReportStore: res.resultData.ReportStore,
+            AuthStore: res.resultData.AuthStore
+          })
+        });
     })
 });
 
