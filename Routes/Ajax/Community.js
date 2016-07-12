@@ -156,75 +156,90 @@ router.post('/comment', function (req, res) {
     postId: req.body.postId
   };
   const user = res.locals.user;
-  
+
+  let newComment;
   M
     .Comment
     .submitComment(commentObj, user)
     .then(function (comment) {
-      
-      comment.created_at = moment(comment.created_at).format('YYYY-MM-DD HH:mm');
-      comment.subComments = [];
+      newComment = comment;
 
-      return Db
-        .tc_posts
-        .query()
-        .where({id: commentObj.postId})
-        .first()
-        .then((post) => {
-          return post
-            .$relatedQuery('author')
-            .first()
-            .then(author => {
-              if (post && author && (author.id !== user.id)) {
+      return M
+        .Post
+        .findOneById(commentObj.postId, 0, user)
+    })
+    .then((post) => {
+      const author = post.author;
 
-                return author
-                  .$relatedQuery('notifications')
-                  .where('type', 'comment_write')
-                  .andWhere('target_id', post.id)
-                  .first()
-                  .then(noti => {
-                    if (noti) {
-                      return author
-                        .$relatedQuery('notifications')
-                        .update({
-                          read: false,
-                          count: post.comment_count,
-                          receive_at: new Date()
-                        })
-                        .where('id', noti.id)
-                    } else {
-                      return author
-                        .$relatedQuery('notifications')
-                        .insert({
-                          type: 'comment_write',
-                          read: false,
-                          target_id: comment.post_id,
-                          count: post.comment_count,
-                          receive_at: new Date()
-                        })
-                    }
-                  })
-                  .then(() => {
+      post.created_at = moment(post.created_at).format('YYYY-MM-DD HH:mm');
 
-                    return author
-                      .$relatedQuery('notifications')
-                      .select('*', 'tc_user_notifications.id as id', 'tc_posts.id as post_id')
-                      .join('tc_posts', 'tc_posts.id', 'tc_user_notifications.target_id')
-                      .offset(0)
-                      .limit(10)
-                      .orderBy('receive_at', 'DESC')
-                  })
-                  .then(notis => {
+      for (let i in post.comments) {
+        for (let j in post.comments[i]) {
+          if (j === 'created_at') {
+            post.comments[i][j] = moment(post.comments[i][j]).format('YYYY-MM-DD HH:mm');
+          }
 
-                    Noti.emit('send noti', {to: author.nick, notis: notis});
-
-                    res.json(comment);
-                  })
+          if (j === 'subComments') {
+            for (let k in post.comments[i][j]) {
+              for (let l in post.comments[i][j][k]) {
+                if (l === 'created_at') {
+                  post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).format('YYYY-MM-DD HH:mm');
+                }
               }
+            }
+          }
+        }
+      }
 
-              res.json(comment);
-            })
-        })
+      // Noti section
+      if (post && author && (author.id !== user.id)) {
+
+        return author
+          .$relatedQuery('notifications')
+          .where('type', 'comment_write')
+          .andWhere('target_id', post.id)
+          .first()
+          .then(noti => {
+            if (noti) {
+              return author
+                .$relatedQuery('notifications')
+                .update({
+                  read: false,
+                  count: post.comment_count,
+                  receive_at: new Date()
+                })
+                .where('id', noti.id)
+            } else {
+              return author
+                .$relatedQuery('notifications')
+                .insert({
+                  type: 'comment_write',
+                  read: false,
+                  target_id: newComment.post_id,
+                  count: post.comment_count,
+                  receive_at: new Date()
+                })
+            }
+          })
+          .then(() => {
+
+            return author
+              .$relatedQuery('notifications')
+              .select('*', 'tc_user_notifications.id as id', 'tc_posts.id as post_id')
+              .join('tc_posts', 'tc_posts.id', 'tc_user_notifications.target_id')
+              .offset(0)
+              .limit(10)
+              .orderBy('receive_at', 'DESC')
+          })
+          .then(notis => {
+
+            Noti.emit('send noti', {to: author.nick, notis: notis});
+
+            res.json(post);
+          })
+      }
+
+      res.json(post);
     })
     .catch(function (err) {
       console.error(err);

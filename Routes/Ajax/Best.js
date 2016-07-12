@@ -30,7 +30,7 @@ router.get('/', function (req, res) {
         collection: {
           current_page: nextPage,
           limit: limit,
-          next_page: (limit * page < posts.total) ? (nextPage + 1) : null,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
           total: posts.total
         }
       };

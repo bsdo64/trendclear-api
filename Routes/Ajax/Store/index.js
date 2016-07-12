@@ -27,7 +27,23 @@ router.use( function (req, res, next) {
 
       assign(res.resultData, {
         ReportStore: {
-          openReportModal: false
+          openReportModal: false,
+          reportItem: [
+            {
+              id: 1,
+              message: '불쾌하거나 흥미없는 내용입니다.'
+            },
+            {
+              id: 2,
+              message: '스팸성 글입니다.'
+            },
+            {
+              id: 3,
+              message: '인신공격, 불법, 허위 내용을 유포하고 있습니다.'
+            }
+          ],
+          selectItem: 1,
+          successReport: false
         },
         ListStore: {}
       });
@@ -331,6 +347,12 @@ router.get('/signin', function (req, res, next) {
   });
 });
 
+router.get('/community/submit/forum', function (req, res, next) {
+
+  res.json(res.resultData);
+
+});
+
 router.get('/community/submit', function (req, res, next) {
   M
     .Forum
@@ -347,13 +369,7 @@ router.get('/community/submit', function (req, res, next) {
           result.forum = forum;
 
           res.json({
-            GnbStore: {
-              openGnb: false,
-              gnbMenu: res.resultData.GnbStore.gnbMenu,
-              categoryMenu: {
-                categories: res.resultData.GnbStore.categoryMenu.categories
-              }
-            },
+            GnbStore: res.resultData.GnbStore,
             LoginStore: res.resultData.LoginStore,
             UserStore: res.resultData.UserStore,
             SubmitStore: {
