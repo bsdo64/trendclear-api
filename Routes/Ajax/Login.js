@@ -18,7 +18,7 @@ router.post('/', function (req, res) {
       console.log('token: ', token);
       res.cookie('token', token, {
         expires: new Date(Date.now() + (24 * 60 * 60 * 1000)),
-        httpOnly: true
+        httpOnly: false
       });
 
       res.json('ok');

@@ -24,7 +24,7 @@ router.post('/', function (req, res, next) {
     .then(function (result) {
       res.cookie('token', result.token, {
         expires: new Date(Date.now() + (24 * 60 * 60 * 1000)),
-        httpOnly: true
+        httpOnly: false
       });
 
       res.json({result: 'ok'});
