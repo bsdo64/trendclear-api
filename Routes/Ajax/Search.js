@@ -6,14 +6,15 @@ const helper = require('../helper/func');
 const M = require('vn-api-model');
 
 router.get('/', function (req, res) {
-  const searchObj = {
-    query: req.params.query
+  const queryObj = {
+    query: req.query.query,
+    page: parseInt(req.query.page, 10) - 1 || 0
   };
   const user = res.locals.user;
-  
+
   M
-    .Post
-    .bestPostList(searchObj, user)
+    .Search
+    .listByQuery(queryObj.query, queryObj.page, user)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -24,28 +25,20 @@ router.get('/', function (req, res) {
         }
       }
 
-      if (posts) {
-        res.json(posts);
-      } else {
-        res.json('error');
-      }
-    })
-    .catch(function (err) {
-      console.error(err);
-      console.error(err.stack);
+      const limit = 10;
+      const nextPage = queryObj.page + 1;
+      const data = {
+        data: posts.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      };
 
-      if (err.message === 'User not Found') {
-        res.json({
-          message: 'user not found',
-          error: err
-        });
-      } else {
-        res.json({
-          message: 'can\'t make token',
-          error: err
-        });
-      }
-    });
+      res.json(data);
+    })
 });
 
 module.exports = router;

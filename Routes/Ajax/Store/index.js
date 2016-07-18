@@ -416,7 +416,8 @@ router.get('/search', function (req, res, next) {
               next_page: (posts.total > 10) ? 2 : null,
               total: posts.total
             }
-          }
+          },
+          query: queryObj.query
         },
         BestPostStore: {
           posts: {
@@ -518,6 +519,15 @@ router.get(['/activity', '/activity/likes'], function (req, res, next) {
     .likePostList(0, user)
     .then(posts => {
       "use strict";
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
       assign(res.resultData, {
         BestPostStore: {
           posts: {

@@ -10,6 +10,7 @@ const app = Express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const noCacheHandler = require('./Middleware/noCacheHandler');
 const AjaxRouter = require('./Routes/Ajax/index');
 const NotiSocketHandler = require('./Routes/Socket/Noti');
 
@@ -27,7 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/ajax', AjaxRouter);
+app.use('/ajax', noCacheHandler, AjaxRouter);
 
 app.notiIo.on('connection', function (socket) {
 
