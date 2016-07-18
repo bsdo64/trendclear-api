@@ -529,7 +529,7 @@ router.get(['/activity', '/activity/likes'], function (req, res, next) {
       }
 
       assign(res.resultData, {
-        BestPostStore: {
+        ActivityStore: {
           posts: {
             data: posts.results,
             collection: {
@@ -540,7 +540,7 @@ router.get(['/activity', '/activity/likes'], function (req, res, next) {
             }
           }
         }
-      })
+      });
       
       res.json(res.resultData);
     });
