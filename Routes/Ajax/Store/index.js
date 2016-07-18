@@ -404,13 +404,7 @@ router.get('/search', function (req, res, next) {
       }
 
       res.json({
-        GnbStore: {
-          openGnb: false,
-          gnbMenu: res.resultData.GnbStore.gnbMenu,
-          categoryMenu: {
-            categories: res.resultData.GnbStore.categoryMenu.categories
-          }
-        },
+        GnbStore: res.resultData.GnbStore,
         LoginStore: res.resultData.LoginStore,
         UserStore: res.resultData.UserStore,
         SearchStore: {
