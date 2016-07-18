@@ -10,7 +10,7 @@ const app = Express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-const noCacheHandler = require('./Middleware/noCacheHandler');
+const noCacheHandler = require('./Middleware/NoCacheHandler');
 const AjaxRouter = require('./Routes/Ajax/index');
 const NotiSocketHandler = require('./Routes/Socket/Noti');
 
