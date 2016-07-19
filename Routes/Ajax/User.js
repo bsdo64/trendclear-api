@@ -201,7 +201,7 @@ router.post('/setting/profile', (req, res) => {
     })
 });
 
-router.post('/noti/read', (req, res) => {
+router.put('/noti/read', (req, res) => {
   const user = res.locals.user;
   const notiReadObj = {
     id: req.body.id
