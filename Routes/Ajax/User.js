@@ -1,7 +1,113 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 
 const M = require('vn-api-model');
+
+router.get('/likes', function (req, res) {
+  const page = req.query.page ? req.query.page - 1 : 0;
+  const user = res.locals.user;
+
+  return M
+    .Post
+    .likePostList(page, user)
+    .then(posts => {
+      "use strict";
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      const limit = 10;
+      const nextPage = page + 1;
+      const data = {
+        type: 'likePostList',
+        data: posts.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      };
+
+      res.json(data);
+    });
+});
+
+router.get('/posts', function (req, res) {
+  const page = req.query.page ? req.query.page - 1 : 0;
+  const user = res.locals.user;
+
+  return M
+    .Post
+    .myWritePostList(page, user)
+    .then(posts => {
+      "use strict";
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      const limit = 10;
+      const nextPage = page + 1;
+      const data = {
+        type: 'myWritePostList',
+        data: posts.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      };
+
+      res.json(data);
+    });
+});
+
+router.get('/comments', function (req, res) {
+  const page = req.query.page ? req.query.page - 1 : 0;
+  const user = res.locals.user;
+
+  return M
+    .Post
+    .myWriteCommentPostList(page, user)
+    .then(posts => {
+      "use strict";
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      const limit = 10;
+      const nextPage = page + 1;
+      const data = {
+        type: 'myWriteCommentPostList',
+        data: posts.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      };
+
+      res.json(data);
+    });
+});
 
 router.post('/avatarImg', function (req, res) {
   const imgObj = {

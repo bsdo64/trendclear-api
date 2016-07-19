@@ -514,7 +514,7 @@ router.use('/activity*', (req, res, next) => {
 router.get(['/activity', '/activity/likes'], function (req, res, next) {
   const user = res.locals.user;
   
-  M
+  return M
     .Post
     .likePostList(0, user)
     .then(posts => {
@@ -530,6 +530,7 @@ router.get(['/activity', '/activity/likes'], function (req, res, next) {
 
       assign(res.resultData, {
         ActivityStore: {
+          type: 'likePostList',
           posts: {
             data: posts.results,
             collection: {
@@ -547,11 +548,75 @@ router.get(['/activity', '/activity/likes'], function (req, res, next) {
 });
 
 router.get('/activity/posts', function (req, res, next) {
-  res.json(res.resultData);
+  const user = res.locals.user;
+
+  return M
+    .Post
+    .myWritePostList(0, user)
+    .then(posts => {
+      "use strict";
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      assign(res.resultData, {
+        ActivityStore: {
+          type: 'myWritePostList',
+          posts: {
+            data: posts.results,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
+            }
+          }
+        }
+      });
+
+      res.json(res.resultData);
+    });
 });
 
 router.get('/activity/comments', function (req, res, next) {
-  res.json(res.resultData);
+  const user = res.locals.user;
+
+  return M
+    .Post
+    .myWriteCommentPostList(0, user)
+    .then(posts => {
+      "use strict";
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      assign(res.resultData, {
+        ActivityStore: {
+          type: 'myWriteCommentPostList',
+          posts: {
+            data: posts.results,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
+            }
+          }
+        }
+      });
+
+      res.json(res.resultData);
+    });
 });
 
 module.exports = router;
