@@ -292,4 +292,37 @@ router.post('/submit', function (req, res) {
     });
 });
 
+router.put('/submit', function (req, res) {
+  const postObj = {
+    postId: req.body.postId,
+    title: req.body.title,
+    content: req.body.content
+  };
+  const user = res.locals.user;
+
+  M
+    .Post
+    .updatePost(postObj, user)
+    .then(function (post) {
+
+      res.json(post);
+    })
+    .catch(function (err) {
+      console.error(err);
+      console.error(err.stack);
+
+      if (err.message === 'User not Found') {
+        res.json({
+          message: 'user not found',
+          error: err
+        });
+      } else {
+        res.json({
+          message: 'can\'t make token',
+          error: err
+        });
+      }
+    });
+});
+
 module.exports = router;

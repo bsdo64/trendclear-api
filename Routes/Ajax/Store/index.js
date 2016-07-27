@@ -354,33 +354,85 @@ router.get('/community/submit/forum', function (req, res, next) {
 });
 
 router.get('/community/submit', function (req, res, next) {
-  M
-    .Forum
-    .getPrefix(req.query.forumId)
-    .then(function (prefixes) {
-      const result = {
-        prefixes: prefixes
-      };
+  const user = res.locals.user;
+  if (req.query.postId && user) {
+    M
+      .Post
+      .findOneById(req.query.postId, 0, user)
+      .then(post => {
 
-      return M
-        .Forum
-        .getForumInfo(req.query.forumId)
-        .then(forum => {
-          result.forum = forum;
+        if (post.author_id === user.id) {
+          return M
+            .Forum
+            .getPrefix(post.forum_id)
+            .then(function (prefixes) {
+              return {
+                prefixes: prefixes
+              };
+            })
+            .then(function (result) {
 
-          res.json({
-            GnbStore: res.resultData.GnbStore,
-            LoginStore: res.resultData.LoginStore,
-            UserStore: res.resultData.UserStore,
-            SubmitStore: {
-              prefixes: result.prefixes,
-              forum: result.forum
-            },
-            ReportStore: res.resultData.ReportStore,
-            AuthStore: res.resultData.AuthStore
-          })
-        });
-    })
+              return M
+                .Forum
+                .getForumInfo(post.forum_id)
+                .then(forum => {
+                  result.forum = forum;
+
+                  res.json({
+                    GnbStore: res.resultData.GnbStore,
+                    LoginStore: res.resultData.LoginStore,
+                    UserStore: res.resultData.UserStore,
+                    SubmitStore: {
+                      prefixes: result.prefixes,
+                      forum: result.forum,
+                      postId: post.id,
+                      title: post.title,
+                      content: post.content,
+                      prefixId: post.prefix_id,
+                      type: 'mod',
+                      server: 'update'
+                    },
+                    ReportStore: res.resultData.ReportStore,
+                    AuthStore: res.resultData.AuthStore
+                  })
+                })
+            })
+        } else {
+
+          // Not author !
+          res.redirect('/')
+        }
+      });
+  } else {
+    M
+      .Forum
+      .getPrefix(req.query.forumId)
+      .then(function (prefixes) {
+        const result = {
+          prefixes: prefixes
+        };
+
+        return M
+          .Forum
+          .getForumInfo(req.query.forumId)
+          .then(forum => {
+            result.forum = forum;
+
+            res.json({
+              GnbStore: res.resultData.GnbStore,
+              LoginStore: res.resultData.LoginStore,
+              UserStore: res.resultData.UserStore,
+              SubmitStore: {
+                prefixes: result.prefixes,
+                forum: result.forum,
+                type: 'write'
+              },
+              ReportStore: res.resultData.ReportStore,
+              AuthStore: res.resultData.AuthStore
+            })
+          });
+      })
+  }
 });
 
 router.get('/search', function (req, res, next) {
