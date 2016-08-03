@@ -21,9 +21,9 @@
     "shortid": "^2.2.6",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
-    "trendclear-database": "0.0.32",
+    "trendclear-database": "0.0.33",
     "vn-api-client": "github:bsdo64/vn-api-client",
-    "vn-api-model": "^1.0.5"
+    "vn-api-model": "^1.0.6"
   },
   "devDependencies": {
     "morgan": "^1.7.0",
