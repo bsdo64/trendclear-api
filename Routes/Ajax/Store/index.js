@@ -10,15 +10,14 @@ _.mixin(require('lodash-deep'));
 
 router.use( function (req, res, next) {
 
-  M
-    .Club
-    .getGnbMenus()
-    .then(function(clubs) {
+  Promise
+    .resolve()
+    .then(function() {
 
       assign(res.resultData, {
         GnbStore: {
           openGnb: false,
-          gnbMenu: { openSideNow: null, data: clubs },
+          gnbMenu: { openSideNow: null, data: [] },
           categoryMenu: {}
         }
       });
@@ -50,48 +49,24 @@ router.use( function (req, res, next) {
 
     })
     .then(function() {
-      if (req.query.postId && req.query.forumId && req.query.categoryId) {
+      if (req.query.postId && req.query.forumId) {
         return M
-          .Club
-          .getClubMenusByCategoryId(req.query.categoryId)
-          .then(function(category) {
-
-            assign(res.resultData, {
-              GnbStore: {
-                categoryMenu: { categories: [category] }
-              }
-            });
-
-            return M
-              .Forum
-              .getForumInfo(req.query.forumId)
-          })
+          .Forum
+          .getForumInfo(req.query.forumId)
           .then(function (forum) {
 
             assign(res.resultData, {
               CommunityStore: {
                 forum: forum
               }
-            })
+            });
 
             next();
           })
-      } else if (req.query.forumId && req.query.categoryId) {
+      } else if (req.query.forumId) {
         return M
-          .Club
-          .getClubMenusByCategoryId(req.query.categoryId)
-          .then(function(category) {
-
-            assign(res.resultData, {
-              GnbStore: {
-                categoryMenu: { categories: [category] }
-              }
-            });
-
-            return M
-              .Forum
-              .getForumInfo(req.query.forumId)
-          })
+          .Forum
+          .getForumInfo(req.query.forumId)
           .then(function (forum) {
 
             assign(res.resultData, {
@@ -106,20 +81,6 @@ router.use( function (req, res, next) {
           })
           .then(function (result) {
             
-            next();
-          })
-      } else if (req.query.categoryId) {
-        return M
-          .Club
-          .getClubMenusByCategoryId(req.query.categoryId)
-          .then(function(category) {
-
-            assign(res.resultData, {
-              GnbStore: {
-                categoryMenu: { categories: [category] }
-              }
-            });
-
             next();
           })
       } else {
@@ -168,7 +129,6 @@ router.get('/', function (req, res, next) {
 
 router.get('/community', function (req, res, next) {
   const prop = {
-    categoryId: req.query.categoryId,
     forumId: req.query.forumId,
     postId: req.query.postId,
     page: (req.query.p - 1) >= 0 ? (req.query.p - 1) : 0,
@@ -180,7 +140,7 @@ router.get('/community', function (req, res, next) {
 
   const user = res.locals.user;
 
-  if (prop.categoryId && prop.forumId && prop.postId) {
+  if (prop.forumId && prop.postId) {
 
     Promise.join(
       M.Post.incrementView(prop, user),
@@ -244,7 +204,7 @@ router.get('/community', function (req, res, next) {
         })
       })
 
-  } else if (prop.categoryId && prop.forumId) {
+  } else if (prop.forumId) {
     M
       .Forum
       .getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix)
@@ -279,23 +239,6 @@ router.get('/community', function (req, res, next) {
           AuthStore: res.resultData.AuthStore
         })
       });
-  } else if (prop.categoryId) {
-    res.json({
-      CommunityStore: {
-        type: 'category'
-      },
-      GnbStore: {
-        openGnb: false,
-        gnbMenu: res.resultData.GnbStore.gnbMenu,
-        categoryMenu: {
-          categories: res.resultData.GnbStore.categoryMenu.categories
-        }
-      },
-      LoginStore: res.resultData.LoginStore,
-      UserStore: res.resultData.UserStore,
-      BestPostStore: {},
-      ReportStore: res.resultData.ReportStore,
-    })
   } else {
     res.json({
       GnbStore: {
@@ -416,6 +359,7 @@ router.get('/community/submit', function (req, res, next) {
           .Forum
           .getForumInfo(req.query.forumId)
           .then(forum => {
+            console.log(forum);
             result.forum = forum;
 
             res.json({
