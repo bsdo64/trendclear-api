@@ -23,7 +23,7 @@
     "socket.io-client": "^1.4.8",
     "trendclear-database": "0.0.33",
     "vn-api-client": "github:bsdo64/vn-api-client",
-    "vn-api-model": "^1.0.6"
+    "vn-api-model": "^1.0.7"
   },
   "devDependencies": {
     "morgan": "^1.7.0",
