@@ -5,6 +5,7 @@ const {signedSessionId} = require('../helper/func');
 const CheckUserHandler = require('./CheckUser');
 
 const SigninHandler = require('./Signin');
+const CollectionHandler = require('./Collection');
 const LoginHandler = require('./Login');
 const LogoutHandler = require('./Logout');
 const StoreHandler = require('./Store');
@@ -51,6 +52,7 @@ router.use('/store', StoreHandler);
 
 // define the home page route
 router.use('/signin', SigninHandler);
+router.use('/collection', CollectionHandler);
 router.use('/login', LoginHandler);
 router.use('/logout', LogoutHandler);
 router.use('/community', CommunityHandler);
