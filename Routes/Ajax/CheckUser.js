@@ -3,7 +3,7 @@ const assign = require('deep-assign');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
-const M = require('vn-api-model');
+const M = require('../../vn-api-model');
 
 module.exports = function (req, res, next) {
   const cookies = req.cookies;
@@ -34,7 +34,8 @@ module.exports = function (req, res, next) {
             skills: user.skills,
             notifications: {
               data: user.notifications
-            }
+            },
+            collections: user.collections
           },
           LoginStore: {
             isLogin: true,

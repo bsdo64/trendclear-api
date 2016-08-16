@@ -1,6 +1,6 @@
 const cookieParser = require('cookie-parser');
 const Cookie = require('cookie');
-const M = require('vn-api-model');
+const M = require('../../vn-api-model');
 
 module.exports = {
   joinHandler: function joinHandler(socket) {

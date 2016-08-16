@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const helper = require('../helper/func');
 
-const M = require('vn-api-model');
+const M = require('../../vn-api-model');
 
 router.post('/', function (req, res) {
   const sessionId = helper.signedSessionId(req.cookies.sessionId);

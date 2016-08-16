@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const helper = require('../helper/func');
 
-const M = require('vn-api-model');
+const M = require('../../vn-api-model');
 
 router.post('/post/:postId', function (req, res) {
   const postObj = {
