@@ -3,7 +3,7 @@ const router = express.Router();
 const moment = require('moment');
 const helper = require('../helper/func');
 
-const M = require('vn-api-model');
+const M = require('../../vn-api-model');
 
 router.get('/', function (req, res) {
   const page = req.query.page ? req.query.page - 1 : 0;

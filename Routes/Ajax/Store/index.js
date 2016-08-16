@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 const router = express.Router();
 const helper = require('../../helper/func');
 const assign = require('deep-assign');
-const M = require('vn-api-model');
+const M = require('../../../vn-api-model');
 const moment = require('moment');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));

@@ -1,0 +1,3 @@
+[submodule "vn-api-model"]
+	path = vn-api-model
+	url = git@github.com:bsdo64/vn-api-model.git
