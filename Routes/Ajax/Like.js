@@ -53,7 +53,6 @@ router.post('/comment/:commentId', function (req, res) {
     .then(function (commentLike) {
       if (commentLike) {
         if (commentLike === 1) {
-          console.log('commentLike : ', commentLike);
           res.json('ok');
         } else {
           res.json('nc');

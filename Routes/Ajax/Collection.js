@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 const helper = require('../helper/func');
 
 const M = require('../../vn-api-model');
@@ -121,6 +122,56 @@ router.delete('/:collectionId/forum/:forumId', function (req, res) {
     .then(forums => {
       res.json(forums);
     })
+});
+
+router.get('/:collectionId/posts', function (req, res) {
+  const collectionId = req.params.collectionId;
+  const page = parseInt(req.query.p, 10) > 0 ? parseInt(req.query.p, 10) - 1 : 0;
+  const user = res.locals.user;
+
+  M
+    .Collection
+    .getCollectionPosts(collectionId, page, user)
+    .then(function (posts) {
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      const limit = 10;
+      const nextPage = page + 1;
+      const data = {
+        data: posts.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      };
+
+      res.json(data);
+    })
+    .catch(function (err) {
+      console.error(err);
+      console.error(err.stack);
+
+      if (err.message === 'User not Found') {
+        res.json({
+          message: 'user not found',
+          error: err
+        });
+      } else {
+        res.json({
+          message: 'can\'t make token',
+          error: err
+        });
+      }
+    });
 });
 
 module.exports = router;
