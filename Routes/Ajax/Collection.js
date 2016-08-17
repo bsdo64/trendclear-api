@@ -126,7 +126,7 @@ router.delete('/:collectionId/forum/:forumId', function (req, res) {
 
 router.get('/:collectionId/posts', function (req, res) {
   const collectionId = req.params.collectionId;
-  const page = parseInt(req.query.p, 10) > 0 ? parseInt(req.query.p, 10) - 1 : 0;
+  const page = parseInt(req.query.page, 10) > 0 ? parseInt(req.query.page, 10) - 1 : 0;
   const user = res.locals.user;
 
   M
