@@ -341,10 +341,12 @@ router.get('/community/submit/forum', function (req, res, next) {
 
 router.get('/community/submit', function (req, res, next) {
   const user = res.locals.user;
-  if (req.query.postId && user) {
+  const {postId, forumId} = req.query;
+
+  if (postId && user) {
     M
       .Post
-      .findOneById(req.query.postId, 0, user)
+      .findOneById(postId, 0, user)
       .then(post => {
 
         if (post.author_id === user.id) {
@@ -389,10 +391,10 @@ router.get('/community/submit', function (req, res, next) {
           res.redirect('/')
         }
       });
-  } else {
+  } else if(forumId) {
     M
       .Forum
-      .getPrefix(req.query.forumId)
+      .getPrefix(forumId)
       .then(function (prefixes) {
         const result = {
           prefixes: prefixes
@@ -400,7 +402,7 @@ router.get('/community/submit', function (req, res, next) {
 
         return M
           .Forum
-          .getForumInfo(req.query.forumId)
+          .getForumInfo(forumId)
           .then(forum => {
             console.log(forum);
             result.forum = forum;
@@ -419,6 +421,17 @@ router.get('/community/submit', function (req, res, next) {
             })
           });
       })
+  } else {
+    res.json({
+      GnbStore: res.resultData.GnbStore,
+      LoginStore: res.resultData.LoginStore,
+      UserStore: res.resultData.UserStore,
+      SubmitStore: {
+        type: 'write'
+      },
+      ReportStore: res.resultData.ReportStore,
+      AuthStore: res.resultData.AuthStore
+    })
   }
 });
 
