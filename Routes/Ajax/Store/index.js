@@ -83,6 +83,18 @@ router.use( function (req, res, next) {
             
             next();
           })
+          .catch(function (err) {
+
+            assign(res.resultData, {
+              CommunityStore: {
+                forum: null
+              }
+            });
+
+            console.error(err.message);
+            next();
+          })
+
       } else {
         next();
       }
@@ -246,6 +258,13 @@ router.get('/community', function (req, res, next) {
           AuthStore: res.resultData.AuthStore
         })
       })
+      .catch(function (err) {
+        console.log(5);
+
+        console.error(err);
+        console.error(err.stack);
+
+      });
 
   } else if (prop.forumId) {
     M
@@ -281,7 +300,8 @@ router.get('/community', function (req, res, next) {
           ReportStore: res.resultData.ReportStore,
           AuthStore: res.resultData.AuthStore
         })
-      });
+      })
+
   } else {
     res.json({
       GnbStore: {
