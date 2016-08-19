@@ -15,6 +15,8 @@ const AjaxRouter = require('./Routes/Ajax/index');
 const NotiSocketHandler = require('./Routes/Socket/Noti');
 
 app.use(compression());
+app.set('trust proxy', true);
+
 if (process.env.NODE_ENV !== 'production') {
   app.use(logger('short'));
 } else {
