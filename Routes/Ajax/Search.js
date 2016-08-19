@@ -41,4 +41,16 @@ router.get('/', function (req, res) {
     })
 });
 
+router.get('/forum', function (req, res) {
+  const q = req.query.q;
+  const user = res.locals.user;
+
+  M
+    .Search
+    .findForumByQuery(q)
+    .then(function (totalForums) {
+      res.json(totalForums);
+    })
+});
+
 module.exports = router;

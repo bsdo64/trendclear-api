@@ -13,6 +13,7 @@ const CommunityHandler = require('./Community');
 const BestHandler = require('./Best');
 const UserHandler = require('./User');
 const LikeHandler = require('./Like');
+const ForumHandler = require('./Forum');
 const SearchHandler = require('./Search');
 const SettingHandler = require('./Setting');
 
@@ -59,6 +60,7 @@ router.use('/community', CommunityHandler);
 router.use('/best', BestHandler);
 router.use('/user', UserHandler);
 router.use('/like', LikeHandler);
+router.use('/forum', ForumHandler);
 router.use('/search', SearchHandler);
 router.use('/settings', SettingHandler);
 
