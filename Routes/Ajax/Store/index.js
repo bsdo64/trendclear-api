@@ -10,14 +10,20 @@ _.mixin(require('lodash-deep'));
 
 router.use( function (req, res, next) {
 
-  Promise
-    .resolve()
-    .then(function() {
+  return M
+    .Forum
+    .Db
+    .tc_categories
+    .query()
+    .where({type: 'venacle'})
+    .eager('[forums]')
+    .then(function(categories) {
+
 
       assign(res.resultData, {
         GnbStore: {
           openGnb: false,
-          gnbMenu: { openSideNow: null, data: [] },
+          gnbMenu: { openSideNow: null, data: categories },
           categoryMenu: {}
         }
       });
