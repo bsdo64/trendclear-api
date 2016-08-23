@@ -359,6 +359,18 @@ router.get('/signin', function (req, res, next) {
   });
 });
 
+router.get(['/community/settings', '/community/settings/foruminfo'], function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get(['/community/settings*'], function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get(['/community/settings/stat*'], function (req, res, next) {
+  res.json(res.resultData);
+});
+
 router.get('/community/submit/forum', function (req, res, next) {
 
   res.json(res.resultData);
