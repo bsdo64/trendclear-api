@@ -37,4 +37,24 @@ router.post('/', function (req, res) {
     })
 });
 
+router.put('/', function (req, res) {
+  const user = res.locals.user;
+  const forumObj = {
+    id: req.body.id,
+    body: {
+      sub_header: req.body.sub_header,
+      description: req.body.description,
+      rule: req.body.rule,
+      creator_id: user.id
+    }
+  };
+
+  M
+    .Forum
+    .patchForum(forumObj, user)
+    .then(forum => {
+      res.json(forum);
+    })
+});
+
 module.exports = router;
