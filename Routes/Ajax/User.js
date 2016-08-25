@@ -223,4 +223,50 @@ router.put('/noti/read', (req, res) => {
     })
 });
 
+router.post('/forum/follow', (req, res) => {
+  const user = res.locals.user;
+  const followObj = {
+    forumId: req.body.forumId
+  };
+
+  M
+    .Forum
+    .followForum(followObj, user)
+    .then(result => {
+      res.json(result)
+    })
+    .catch(err => {
+      console.log(err);
+      res.json({
+        code: null,
+        message: 'forum follow error',
+        error: err
+      })
+    })
+});
+
+router.post('/forum/unfollow', (req, res) => {
+  const user = res.locals.user;
+  const followObj = {
+    id: req.body.id,
+    forum_id: req.body.forum_id,
+    user_id: req.body.user_id,
+  };
+
+  M
+    .Forum
+    .unFollowForum(followObj, user)
+    .then(result => {
+      res.json(result)
+    })
+    .catch(err => {
+      console.log(err);
+      res.json({
+        code: null,
+        message: 'forum follow error',
+        error: err
+      })
+    })
+});
+
 module.exports = router;
