@@ -36,7 +36,8 @@ module.exports = function (req, res, next) {
               data: user.notifications
             },
             collections: user.collections,
-            follow_forums: user.follow_forums
+            follow_forums: user.follow_forums,
+            forumCreated: user.forumCreated
           },
           LoginStore: {
             isLogin: true,

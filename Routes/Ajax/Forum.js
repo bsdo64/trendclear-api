@@ -17,6 +17,44 @@ router.get('/', function (req, res) {
     })
 });
 
+router.get('/new', function (req, res) {
+  const user = res.locals.user;
+  const page = req.query.p;
+
+  M
+    .Forum
+    .getList({
+      order: {
+        column: 'created_at',
+        direction: 'DESC'
+      },
+      page: page || 1,
+      limit: 10
+    })
+    .then(forums => {
+      res.json(forums);
+    })
+});
+
+router.get('/hot', function (req, res) {
+  const user = res.locals.user;
+  const page = req.query.p;
+
+  M
+    .Forum
+    .getList({
+      order: {
+        column: 'created_at',
+        direction: 'DESC'
+      },
+      page: page || 1,
+      limit: 10
+    })
+    .then(forums => {
+      res.json(forums);
+    })
+});
+
 router.post('/', function (req, res) {
   const user = res.locals.user;
   const forumObj = {
@@ -26,7 +64,8 @@ router.post('/', function (req, res) {
     rule: req.body.rule,
     using: 1,
     order: 1,
-    creator_id: user.id
+    creator_id: user.id,
+    created_at: new Date()
   };
 
   M

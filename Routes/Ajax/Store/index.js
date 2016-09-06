@@ -1,4 +1,5 @@
 const express = require('express');
+const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../vn-api-model');
@@ -26,10 +27,55 @@ router.use( function (req, res, next) {
           categoryMenu: {}
         }
       });
+
+      return Promise.all([
+        M
+          .Forum
+          .getList({
+            order: {
+              column: 'created_at',
+              direction: 'DESC'
+            },
+            page: 1,
+            limit: 50,
+            eager: '[prefixes, creator.profile]'
+          }),
+        M
+          .Forum
+          .getHotList({
+            order: {
+              column: 'created_at',
+              direction: 'DESC'
+            },
+            page: 1,
+            limit: 50,
+            eager: '[prefixes, creator.profile]'
+          })
+      ])
     })
-    .then(function () {
+    .spread(function (newForums, hotForums) {
 
       assign(res.resultData, {
+        GnbStore: {
+          newForums: {
+            data: newForums.results,
+            collection: {
+              current_page: 1,
+              limit: 50,
+              next_page: (newForums.total > 10) ? 2 : null,
+              total: newForums.total
+            }
+          },
+          hotForums: {
+            data: hotForums.results,
+            collection: {
+              current_page: 1,
+              limit: 50,
+              next_page: (hotForums.total > 10) ? 2 : null,
+              total: hotForums.total
+            }
+          }
+        },
         ReportStore: {
           openReportModal: false,
           reportItem: [
