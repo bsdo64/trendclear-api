@@ -248,9 +248,8 @@ router.post('/forum/follow', (req, res) => {
 router.post('/forum/unfollow', (req, res) => {
   const user = res.locals.user;
   const followObj = {
-    id: req.body.id,
-    forum_id: req.body.forum_id,
-    user_id: req.body.user_id,
+    forum_id: req.body.id,
+    user_id: user.id,
   };
 
   M
