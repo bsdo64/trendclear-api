@@ -268,4 +268,57 @@ router.post('/forum/unfollow', (req, res) => {
     })
 });
 
+
+router.post('/report', (req, res) => {
+  const user = res.locals.user;
+  const reportObj = {
+    type: req.body.type,
+    type_id: req.body.typeId,
+    report_type: req.body.reportId,
+    description: req.body.description,
+    created_at: new Date(),
+    reporter_id: user.id
+  };
+
+  M
+    .User
+    .reportItem(reportObj, user)
+    .then(function (reportItem) {
+
+      res.json(reportItem)
+    })
+    .catch(err => {
+      console.error(err);
+      console.error(err.stack);
+
+      if (err.message === 'User not Found') {
+        res.json({
+          message: 'user not found',
+          error: err
+        });
+      } else {
+        res.json({
+          message: 'can\'t make token',
+          error: err
+        });
+      }
+    })
+});
+
+router.delete('/removeItem', (req, res) => {
+  const user = res.locals.user;
+  const deleteObj = {
+    type: req.body.type,
+    type_id: req.body.typeId,
+    user_id: user.id
+  };
+
+  M
+    .User
+    .deleteItem(deleteObj)
+    .then(deletedItem => {
+      res.json(deletedItem);
+    })
+});
+
 module.exports = router;
