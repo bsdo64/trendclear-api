@@ -56,6 +56,25 @@ router.post('/subComment', (req, res) => {
     });
 });
 
+router.put('/subComment', (req, res) => {
+  const commentObj = {
+    id: req.body.id,
+    content: req.body.content
+  };
+  const user = res.locals.user;
+  M
+    .Comment
+    .updateSubComment(commentObj, user)
+    .then((comment) => {
+      for (let j in comment) {
+        if (j === 'created_at') {
+          comment[j] = moment(comment[j]).format('YYYY-MM-DD HH:mm');
+        }
+      }
+      res.json(comment);
+    });
+});
+
 router.post('/comment', (req, res) => {
   const commentObj = {
     content: req.body.content,
