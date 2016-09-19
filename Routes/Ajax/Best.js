@@ -6,13 +6,16 @@ const helper = require('../helper/func');
 const M = require('../../vn-api-model');
 
 router.get('/', function (req, res) {
-  const page = req.query.page ? req.query.page - 1 : 0;
-  const user = res.locals.user;
-  const categoryValue = req.query.categoryValue;
+  const props = {
+    page: req.query.page ? req.query.page - 1 : 0,
+    user: res.locals.user,
+    forumIds: req.query.categoryValue,
+    listType: req.query.listType
+  };
 
   return M
     .Post
-    .bestPostList(page, user, categoryValue)
+    .bestPostList(props)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -25,7 +28,7 @@ router.get('/', function (req, res) {
       }
 
       const limit = 10;
-      const nextPage = page + 1;
+      const nextPage = props.page + 1;
       const data = {
         data: posts.results,
         collection: {

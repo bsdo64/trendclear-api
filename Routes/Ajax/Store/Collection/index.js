@@ -7,13 +7,17 @@ const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
 router.get('/:collectionId', function (req, res, next) {
-  const collectionId = req.params.collectionId;
-  const user = res.locals.user;
+  const props = {
+    collectionId : req.params.collectionId,
+    user : res.locals.user,
+    page: 0,
+    order: req.query.order
+  };
 
   M
     .Collection
-    .getCollectionPosts(collectionId, 0, user)
-    .then(function (posts) {
+    .getCollectionPosts(props)
+    .then(posts => {
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {

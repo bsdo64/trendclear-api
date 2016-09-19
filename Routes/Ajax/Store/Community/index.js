@@ -16,6 +16,7 @@ router.get('/', function (req, res, next) {
     ip: req.ip,
     forumSearch: req.query.forumSearch,
     forumPrefix: req.query.forumPrefix,
+    order: req.query.order
   };
 
   const user = res.locals.user;
@@ -24,7 +25,7 @@ router.get('/', function (req, res, next) {
 
     Promise.join(
       M.Post.incrementView(prop, user),
-      M.Forum.getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix),
+      M.Forum.getForumPostList(prop),
       M.Post.findOneById(prop.postId, prop.commentPage, user),
       function (first, postList, post) {
 
@@ -94,7 +95,7 @@ router.get('/', function (req, res, next) {
   } else if (prop.forumId) {
     M
       .Forum
-      .getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix)
+      .getForumPostList(prop)
       .then(function (posts) {
 
         for (let i in posts.results) {
@@ -163,6 +164,15 @@ router.get(['/settings/forumurl'], function (req, res, next) {
   res.json(res.resultData);
 });
 
+router.get(['/settings/forumprefix'], function (req, res, next) {
+  assign(res.resultData, {
+    ForumSettingStore: {
+      content: 'forumprefix'
+    }
+  });
+  res.json(res.resultData);
+});
+
 router.get(['/settings/announce'], function (req, res, next) {
   const prop = {
     forumId: req.query.forumId,
@@ -176,7 +186,7 @@ router.get(['/settings/announce'], function (req, res, next) {
 
   M
     .Forum
-    .getForumPostList(prop.forumId, prop.page, prop.forumSearch, prop.forumPrefix)
+    .getForumPostList(prop)
     .then(function (posts) {
 
       for (let i in posts.results) {

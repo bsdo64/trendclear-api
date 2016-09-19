@@ -125,13 +125,16 @@ router.delete('/:collectionId/forum/:forumId', function (req, res) {
 });
 
 router.get('/:collectionId/posts', function (req, res) {
-  const collectionId = req.params.collectionId;
-  const page = parseInt(req.query.page, 10) > 0 ? parseInt(req.query.page, 10) - 1 : 0;
-  const user = res.locals.user;
+  const props = {
+    collectionId: req.params.collectionId,
+    page: parseInt(req.query.page, 10) > 0 ? parseInt(req.query.page, 10) - 1 : 0,
+    user: res.locals.user,
+    order: req.query.order
+  };
 
   M
     .Collection
-    .getCollectionPosts(collectionId, page, user)
+    .getCollectionPosts(props)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -143,7 +146,7 @@ router.get('/:collectionId/posts', function (req, res) {
       }
 
       const limit = 10;
-      const nextPage = page + 1;
+      const nextPage = props.page + 1;
       const data = {
         data: posts.results,
         collection: {

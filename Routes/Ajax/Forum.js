@@ -96,4 +96,49 @@ router.put('/', function (req, res) {
     })
 });
 
+router.post('/prefix', (req, res) => {
+  const user = res.locals.user;
+  const prefixObj = {
+    forum_id: req.body.forumId,
+    name: req.body.prefixName
+  };
+
+  M
+    .Forum
+    .addPrefix(prefixObj)
+    .then(prefix => {
+      res.json(prefix);
+    })
+});
+
+router.put('/prefix', (req, res) => {
+  const user = res.locals.user;
+  const prefixObj = {
+    id: req.body.id,
+    forum_id: req.body.forumId,
+    name: req.body.prefixName
+  };
+
+  M
+    .Forum
+    .updatePrefix(prefixObj)
+    .then(prefix => {
+      res.json(prefix);
+    })
+});
+
+router.delete('/prefix', (req, res) => {
+  const user = res.locals.user;
+  const prefixObj = {
+    id: req.body.id
+  };
+
+  M
+    .Forum
+    .deletePrefix(prefixObj)
+    .then(prefix => {
+      res.json(prefix);
+    })
+});
+
 module.exports = router;

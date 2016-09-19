@@ -128,7 +128,7 @@ router.use( function (req, res, next) {
 
             return M
               .Forum
-              .getForumPostList(req.query.forumId, req.query.page)
+              .getForumPostList(req.query)
           })
           .then(function (result) {
             
@@ -153,11 +153,56 @@ router.use( function (req, res, next) {
 });
 
 router.get('/', function (req, res, next) {
-  const user = res.locals.user;
+  const props = {
+    user: res.locals.user,
+    page: req.query.page || 0
+  };
 
   M
     .Post
-    .bestPostList(0, user)
+    .bestPostList(props)
+    .then(function (posts) {
+
+      for (let i in posts.results) {
+        for (let j in posts.results[i]) {
+          if (j === 'created_at') {
+            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+          }
+        }
+      }
+
+      res.json({
+        GnbStore: res.resultData.GnbStore,
+        LoginStore: res.resultData.LoginStore,
+        UserStore: res.resultData.UserStore,
+        BestPostStore: {
+          posts: {
+            data: posts.results,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
+            }
+          }
+        },
+        ReportStore: res.resultData.ReportStore,
+        ListStore: res.resultData.ListStore,
+        AuthStore: res.resultData.AuthStore
+      })
+    });
+});
+
+router.get('/all', function (req, res, next) {
+  const props = {
+    user: res.locals.user,
+    page: req.query.page || 0,
+    listType: 'all'
+  };
+
+  M
+    .Post
+    .bestPostList(props)
     .then(function (posts) {
 
       for (let i in posts.results) {
