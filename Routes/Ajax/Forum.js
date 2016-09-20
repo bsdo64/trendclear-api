@@ -141,4 +141,34 @@ router.delete('/prefix', (req, res) => {
     })
 });
 
+router.post('/manager', (req, res) => {
+  const user = res.locals.user;
+  const obj = {
+    forum_id: req.body.forumId,
+    user_id: req.body.userId
+  };
+
+  M
+    .Forum
+    .addManager(obj)
+    .then(user => {
+      res.json(user);
+    })
+});
+
+router.delete('/manager', (req, res) => {
+  const user = res.locals.user;
+  const obj = {
+    id: req.body.id,
+    nick: req.body.nick
+  };
+
+  M
+    .Forum
+    .deletePrefix(obj)
+    .then(prefix => {
+      res.json(prefix);
+    })
+});
+
 module.exports = router;

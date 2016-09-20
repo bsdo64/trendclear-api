@@ -106,6 +106,14 @@ router.use( function (req, res, next) {
           .getForumInfo(req.query.forumId)
           .then(function (forum) {
 
+            for (let i in forum.announces) {
+              for (let j in forum.announces[i]) {
+                if (j === 'created_at') {
+                  forum.announces[i][j] = moment(forum.announces[i][j]).format('YYYY-MM-DD HH:mm');
+                }
+              }
+            }
+
             assign(res.resultData, {
               CommunityStore: {
                 forum: forum
@@ -119,6 +127,14 @@ router.use( function (req, res, next) {
           .Forum
           .getForumInfo(req.query.forumId)
           .then(function (forum) {
+
+            for (let i in forum.announces) {
+              for (let j in forum.announces[i]) {
+                if (j === 'created_at') {
+                  forum.announces[i][j] = moment(forum.announces[i][j]).format('YYYY-MM-DD HH:mm');
+                }
+              }
+            }
 
             assign(res.resultData, {
               CommunityStore: {

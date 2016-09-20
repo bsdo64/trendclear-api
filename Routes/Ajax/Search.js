@@ -53,4 +53,19 @@ router.get('/forum', function (req, res) {
     })
 });
 
+router.get('/users', function (req, res) {
+  const searchObj = {
+    nick: req.query.nick,
+    type: req.query.type || 'default'
+  };
+  const user = res.locals.user;
+
+  M
+    .Search
+    .findUsersByNick(searchObj)
+    .then(function (totalUsers) {
+      res.json(totalUsers);
+    })
+});
+
 module.exports = router;

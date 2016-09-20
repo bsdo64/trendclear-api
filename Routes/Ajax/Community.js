@@ -208,7 +208,8 @@ router.post('/submit', (req, res) => {
   const postObj = {
     title: req.body.title,
     content: req.body.content,
-    prefixId: req.body.prefixId
+    prefixId: req.body.prefixId,
+    isAnnounce: req.body.isAnnounce
   };
   const user = res.locals.user;
   
