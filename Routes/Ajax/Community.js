@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const moment = require('moment');
+const { moment } = require('../helper/func');
 const router = express.Router();
 
 const M = require('../../vn-api-model');
@@ -34,7 +34,7 @@ router.post('/subComment', (req, res) => {
     .submitSubComment(commentObj, user)
     .then(function (subComment) {
 
-      subComment.created_at = moment(subComment.created_at).format('YYYY-MM-DD HH:mm');
+      subComment.created_at = moment(subComment.created_at).fromNow();
       subComment.commentId = commentObj.commentId;
       res.json(subComment);
     })
@@ -68,7 +68,7 @@ router.put('/subComment', (req, res) => {
     .then((comment) => {
       for (let j in comment) {
         if (j === 'created_at') {
-          comment[j] = moment(comment[j]).format('YYYY-MM-DD HH:mm');
+          comment[j] = moment(comment[j]).fromNow();
         }
       }
       res.json(comment);
@@ -96,19 +96,19 @@ router.post('/comment', (req, res) => {
     .then((post) => {
       const author = post.author;
 
-      post.created_at = moment(post.created_at).format('YYYY-MM-DD HH:mm');
+      post.created_at = moment(post.created_at).fromNow();
 
       for (let i in post.comments) {
         for (let j in post.comments[i]) {
           if (j === 'created_at') {
-            post.comments[i][j] = moment(post.comments[i][j]).format('YYYY-MM-DD HH:mm');
+            post.comments[i][j] = moment(post.comments[i][j]).fromNow();
           }
 
           if (j === 'subComments') {
             for (let k in post.comments[i][j]) {
               for (let l in post.comments[i][j][k]) {
                 if (l === 'created_at') {
-                  post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).format('YYYY-MM-DD HH:mm');
+                  post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).fromNow();
                 }
               }
             }
@@ -197,7 +197,7 @@ router.put('/comment', (req, res) => {
     .then((comment) => {
       for (let j in comment) {
         if (j === 'created_at') {
-          comment[j] = moment(comment[j]).format('YYYY-MM-DD HH:mm');
+          comment[j] = moment(comment[j]).fromNow();
         }
       }
       res.json(comment);

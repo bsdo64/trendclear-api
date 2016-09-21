@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
-const moment = require('moment');
+const {moment} = require('../../../helper/func');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
@@ -29,12 +29,12 @@ router.get('/', function (req, res, next) {
       M.Post.findOneById(prop.postId, prop.commentPage, user),
       function (first, postList, post) {
 
-        post.created_at = moment(post.created_at).format('YYYY-MM-DD HH:mm');
+        post.created_at = moment(post.created_at).fromNow();
 
         for (let i in postList.results) {
           for (let j in postList.results[i]) {
             if (j === 'created_at') {
-              postList.results[i][j] = moment(postList.results[i][j]).format('YYYY-MM-DD HH:mm');
+              postList.results[i][j] = moment(postList.results[i][j]).fromNow();
             }
           }
         }
@@ -42,14 +42,14 @@ router.get('/', function (req, res, next) {
         for (let i in post.comments) {
           for (let j in post.comments[i]) {
             if (j === 'created_at') {
-              post.comments[i][j] = moment(post.comments[i][j]).format('YYYY-MM-DD HH:mm');
+              post.comments[i][j] = moment(post.comments[i][j]).fromNow();
             }
 
             if (j === 'subComments') {
               for (let k in post.comments[i][j]) {
                 for (let l in post.comments[i][j][k]) {
                   if (l === 'created_at') {
-                    post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).format('YYYY-MM-DD HH:mm');
+                    post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).fromNow();
                   }
                 }
               }
@@ -101,7 +101,7 @@ router.get('/', function (req, res, next) {
         for (let i in posts.results) {
           for (let j in posts.results[i]) {
             if (j === 'created_at') {
-              posts.results[i][j] = moment(posts.results[i][j]).format('MM-DD HH:mm');
+              posts.results[i][j] = moment(posts.results[i][j]).fromNow();
             }
           }
         }
@@ -192,7 +192,7 @@ router.get(['/settings/announce'], function (req, res, next) {
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
           if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).format('MM-DD HH:mm');
+            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
           }
         }
       }

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const moment = require('moment');
+const { moment } = require('../helper/func');
 
 const M = require('../../vn-api-model');
 
@@ -17,7 +17,7 @@ router.get('/likes', function (req, res) {
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
           if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
           }
         }
       }
@@ -52,7 +52,7 @@ router.get('/posts', function (req, res) {
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
           if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
           }
         }
       }
@@ -87,7 +87,7 @@ router.get('/comments', function (req, res) {
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
           if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).format('YYYY-MM-DD HH:mm');
+            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
           }
         }
       }
