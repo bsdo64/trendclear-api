@@ -171,4 +171,34 @@ router.delete('/manager', (req, res) => {
     })
 });
 
+router.delete('/announce', (req, res) => {
+  const user = res.locals.user;
+  const obj = {
+    forum_id: req.body.forumId,
+    post_id: req.body.postId
+  };
+
+  M
+    .Forum
+    .deleteAnnounce(obj)
+    .then(prefix => {
+      res.json(prefix);
+    })
+});
+
+router.post('/banUser', (req, res) => {
+  const user = res.locals.user;
+  const obj = {
+    forum_id: req.body.forumId,
+    user_id: req.body.userId
+  };
+
+  M
+    .Forum
+    .addBanUser(obj)
+    .then(prefix => {
+      res.json(prefix);
+    })
+});
+
 module.exports = router;

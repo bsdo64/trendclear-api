@@ -242,7 +242,8 @@ router.put('/submit', (req, res) => {
   const postObj = {
     postId: req.body.postId,
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    isAnnounce: req.body.isAnnounce
   };
   const user = res.locals.user;
 
