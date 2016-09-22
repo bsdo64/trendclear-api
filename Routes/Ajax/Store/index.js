@@ -376,4 +376,20 @@ router.get('/policies/terms', function (req, res, next) {
   res.json(res.resultData);
 });
 
+router.get('/ad', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/about', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/careers', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/help', function (req, res, next) {
+  res.json(res.resultData);
+});
+
 module.exports = router;
