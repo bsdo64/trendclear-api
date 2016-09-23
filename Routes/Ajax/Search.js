@@ -7,13 +7,14 @@ const M = require('../../vn-api-model');
 router.get('/', function (req, res) {
   const queryObj = {
     query: req.query.query,
+    order: req.query.order || 'new',
     page: parseInt(req.query.page, 10) - 1 || 0
   };
   const user = res.locals.user;
 
   M
     .Search
-    .listByQuery(queryObj.query, queryObj.page, user)
+    .listByQuery(queryObj.query, queryObj.page, queryObj.order, user)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -55,13 +56,14 @@ router.get('/forum', function (req, res) {
 router.get('/users', function (req, res) {
   const searchObj = {
     nick: req.query.nick,
+    forumId: req.query.forumId,
     type: req.query.type || 'default'
   };
   const user = res.locals.user;
 
   M
     .Search
-    .findUsersByNick(searchObj)
+    .findUsersByNick(searchObj, user)
     .then(function (totalUsers) {
       res.json(totalUsers);
     })

@@ -291,13 +291,14 @@ router.get('/signin', function (req, res, next) {
 router.get('/search', function (req, res, next) {
   const queryObj = {
     query: req.query.query,
+    order: req.query.order || 'new',
     page: req.query.page || 0
   };
   const user = res.locals.user;
 
   M
     .Search
-    .listByQuery(queryObj.query, queryObj.page, user)
+    .listByQuery(queryObj.query, queryObj.page, queryObj.order, user)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -376,10 +377,6 @@ router.get('/policies/terms', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get('/ad', function (req, res, next) {
-  res.json(res.resultData);
-});
-
 router.get('/about', function (req, res, next) {
   res.json(res.resultData);
 });
@@ -389,6 +386,10 @@ router.get('/careers', function (req, res, next) {
 });
 
 router.get('/help', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/advertisement', function (req, res, next) {
   res.json(res.resultData);
 });
 
