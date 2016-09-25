@@ -296,10 +296,15 @@ router.get('/search', function (req, res, next) {
   };
   const user = res.locals.user;
 
-  M
-    .Search
-    .listByQuery(queryObj.query, queryObj.page, queryObj.order, user)
-    .then(function (posts) {
+  Promise.join(
+    M
+      .Search
+      .listByQuery(queryObj.query, queryObj.page, queryObj.order, user),
+    M
+      .Search
+      .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)
+  )
+    .spread((posts, forums) => {
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
@@ -314,6 +319,15 @@ router.get('/search', function (req, res, next) {
         LoginStore: res.resultData.LoginStore,
         UserStore: res.resultData.UserStore,
         SearchStore: {
+          forum: {
+            data: forums,
+            collection: {
+              current_page: 1,
+              limit: 10,
+              next_page: (forums.total > 10) ? 2 : null,
+              total: forums.total
+            }
+          },
           search: {
             posts: posts,
             collection: {
