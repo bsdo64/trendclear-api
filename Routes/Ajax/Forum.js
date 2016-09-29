@@ -72,8 +72,8 @@ router.post('/', function (req, res) {
     .Forum
     .createForum(forumObj, user)
     .then(forum => {
-      res.json(forum);
-    })
+          res.json(forum);
+    });
 });
 
 router.put('/', function (req, res) {

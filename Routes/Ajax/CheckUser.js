@@ -37,7 +37,8 @@ module.exports = function (req, res, next) {
             },
             collections: user.collections,
             follow_forums: user.follow_forums,
-            forumCreated: user.forumCreated
+            forumCreated: user.forumCreated,
+            forumManaged: user.forumManaged,
           },
           LoginStore: {
             isLogin: true,

@@ -209,7 +209,11 @@ router.post('/submit', (req, res) => {
     title: req.body.title,
     content: req.body.content,
     prefixId: req.body.prefixId,
-    isAnnounce: req.body.isAnnounce
+    isAnnounce: req.body.isAnnounce,
+    width: req.body.width,
+    height: req.body.height,
+    postImages: req.body.postImages,
+    representingImage: req.body.representingImage
   };
   const user = res.locals.user;
   
@@ -243,7 +247,11 @@ router.put('/submit', (req, res) => {
     postId: req.body.postId,
     title: req.body.title,
     content: req.body.content,
-    isAnnounce: req.body.isAnnounce
+    isAnnounce: req.body.isAnnounce,
+    width: req.body.width,
+    height: req.body.height,
+    postImages: req.body.postImages,
+    representingImage: req.body.representingImage
   };
   const user = res.locals.user;
 
