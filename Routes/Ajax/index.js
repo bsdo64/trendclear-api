@@ -4,6 +4,8 @@ const {signedSessionId} = require('../helper/func');
 
 const CheckUserHandler = require('./CheckUser');
 
+const PostHandler = require('./Post');
+const LinkHandler = require('./Link');
 const SigninHandler = require('./Signin');
 const CollectionHandler = require('./Collection');
 const LoginHandler = require('./Login');
@@ -16,6 +18,7 @@ const LikeHandler = require('./Like');
 const ForumHandler = require('./Forum');
 const SearchHandler = require('./Search');
 const SettingHandler = require('./Setting');
+const ValidateHandler = require('./Validate');
 
 const now = require('performance-now');
 
@@ -52,6 +55,8 @@ router.use(startTime, CheckUserHandler, endTime);
 router.use('/store', StoreHandler);
 
 // define the home page route
+router.use('/post', PostHandler);
+router.use('/link', LinkHandler);
 router.use('/signin', SigninHandler);
 router.use('/collection', CollectionHandler);
 router.use('/login', LoginHandler);
@@ -63,10 +68,6 @@ router.use('/like', LikeHandler);
 router.use('/forum', ForumHandler);
 router.use('/search', SearchHandler);
 router.use('/settings', SettingHandler);
-
-// define the about route
-router.get('/about', function(req, res) {
-  
-});
+router.use('/validate', ValidateHandler);
 
 module.exports = router;

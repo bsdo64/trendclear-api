@@ -20,7 +20,6 @@ router.get('/', function (req, res) {
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
           if (j === 'created_at') {
-            console.log(posts.results[i][j]);
             posts.results[i][j] = moment(posts.results[i][j]).fromNow();
           }
         }

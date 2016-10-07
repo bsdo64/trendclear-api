@@ -130,6 +130,24 @@ router.post('/avatarImg', function (req, res) {
     });
 });
 
+router.delete('/avatarImg', (req, res) => {
+  const user = res.locals.user;
+
+  M
+    .User
+    .removeAvatarImg(user)
+    .then(result => {
+      res.json(result)
+    })
+    .catch(function (err) {
+      console.error(err);
+      res.json({
+        message: 'can\'t not delete image',
+        error: err
+      });
+    });
+});
+
 router.post('/levelup', (req, res) => {
   const user = res.locals.user;
   res.json(user.trendbox);
@@ -146,7 +164,6 @@ router.post('/setting/password', (req, res) => {
     .User
     .updatePassword(passwordObj, user)
     .then((result) => {
-      console.log(result);
       res.json('ok');
     })
     .catch(err => {
@@ -318,6 +335,20 @@ router.delete('/removeItem', (req, res) => {
     .deleteItem(deleteObj)
     .then(deletedItem => {
       res.json(deletedItem);
+    })
+});
+
+router.post('/resetPassword', (req, res) => {
+  const user = res.locals.user;
+  const findObj = {
+    email: req.body.email
+  };
+
+  M
+    .User
+    .resetPassword(findObj)
+    .then(user => {
+      res.json(user);
     })
 });
 

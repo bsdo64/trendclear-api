@@ -15,9 +15,9 @@ router.post('/', function (req, res) {
     .User
     .login(userObj, sessionId)
     .then(function (token) {
-      console.log('token: ', token);
+
       res.cookie('token', token, {
-        expires: new Date(Date.now() + (24 * 60 * 60 * 1000)),
+        maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         domain: process.env.NODE_ENV==='production' ? 'venacle.com': 'localhost'
       });

@@ -17,6 +17,7 @@ router.use( function (req, res, next) {
     .query()
     .where({type: 'venacle'})
     .eager('[forums]')
+    .orderBy('order')
     .then(function(categories) {
 
 
@@ -404,6 +405,10 @@ router.get('/help', function (req, res, next) {
 });
 
 router.get('/advertisement', function (req, res, next) {
+  res.json(res.resultData);
+});
+
+router.get('/member/find', (req, res) => {
   res.json(res.resultData);
 });
 

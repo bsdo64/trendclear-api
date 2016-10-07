@@ -20,72 +20,77 @@ router.get('/', function (req, res, next) {
   };
 
   const user = res.locals.user;
+  const visitor = res.locals.visitor;
 
   if (prop.forumId && prop.postId) {
 
-    Promise.join(
-      M.Post.incrementView(prop, user),
-      M.Forum.getForumPostList(prop),
-      M.Post.findOneById(prop.postId, prop.commentPage, user),
-      function (first, postList, post) {
+    M
+      .Post
+      .incrementView(prop, visitor)
+      .then(() => {
+        return new Promise.join(
+          M.Forum.getForumPostList(prop),
+          M.Post.findOneById(prop.postId, prop.commentPage, user),
 
-        post.created_at = moment(post.created_at).fromNow();
+          function (postList, post) {
 
-        for (let i in postList.results) {
-          for (let j in postList.results[i]) {
-            if (j === 'created_at') {
-              postList.results[i][j] = moment(postList.results[i][j]).fromNow();
-            }
-          }
-        }
+            post.created_at = moment(post.created_at).fromNow();
 
-        for (let i in post.comments) {
-          for (let j in post.comments[i]) {
-            if (j === 'created_at') {
-              post.comments[i][j] = moment(post.comments[i][j]).fromNow();
+            for (let i in postList.results) {
+              for (let j in postList.results[i]) {
+                if (j === 'created_at') {
+                  postList.results[i][j] = moment(postList.results[i][j]).fromNow();
+                }
+              }
             }
 
-            if (j === 'subComments') {
-              for (let k in post.comments[i][j]) {
-                for (let l in post.comments[i][j][k]) {
-                  if (l === 'created_at') {
-                    post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).fromNow();
+            for (let i in post.comments) {
+              for (let j in post.comments[i]) {
+                if (j === 'created_at') {
+                  post.comments[i][j] = moment(post.comments[i][j]).fromNow();
+                }
+
+                if (j === 'subComments') {
+                  for (let k in post.comments[i][j]) {
+                    for (let l in post.comments[i][j][k]) {
+                      if (l === 'created_at') {
+                        post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).fromNow();
+                      }
+                    }
                   }
                 }
               }
             }
-          }
-        }
 
-        const nextPage = parseInt(prop.page, 10) + 1;
+            const nextPage = parseInt(prop.page, 10) + 1;
 
-        res.json({
-          CommunityStore: {
-            type: 'post',
-            post: post,
-            forum: res.resultData.CommunityStore.forum,
-            "list": {
-              "page": nextPage,
-              "data": postList.results,
-              "total": postList.total,
-              "limit": 10,
-              collection: {
-                current_page: nextPage,
-                limit: 10,
-                next_page: (postList.total > 10) ? nextPage + 1 : null,
-                total: postList.total
-              }
-            }
-          },
-          GnbStore: res.resultData.GnbStore,
-          LoginStore: res.resultData.LoginStore,
-          UserStore: res.resultData.UserStore,
-          ReportStore: res.resultData.ReportStore,
-          AuthStore: res.resultData.AuthStore
-        })
+            res.json({
+              CommunityStore: {
+                type: 'post',
+                post: post,
+                forum: res.resultData.CommunityStore.forum,
+                "list": {
+                  "page": nextPage,
+                  "data": postList.results,
+                  "total": postList.total,
+                  "limit": 10,
+                  collection: {
+                    current_page: nextPage,
+                    limit: 10,
+                    next_page: (postList.total > 10) ? nextPage + 1 : null,
+                    total: postList.total
+                  }
+                }
+              },
+              GnbStore: res.resultData.GnbStore,
+              LoginStore: res.resultData.LoginStore,
+              UserStore: res.resultData.UserStore,
+              ReportStore: res.resultData.ReportStore,
+              AuthStore: res.resultData.AuthStore
+            })
+          })
       })
       .catch(function (err) {
-        console.log(5);
 
         console.error(err);
         console.error(err.stack);
@@ -432,7 +437,7 @@ router.get('/submit', function (req, res, next) {
           .Forum
           .getForumInfo(forumId)
           .then(forum => {
-            console.log(forum);
+
             result.forum = forum;
 
             res.json({

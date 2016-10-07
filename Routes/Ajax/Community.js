@@ -5,7 +5,7 @@ const { moment } = require('../helper/func');
 const router = express.Router();
 
 const M = require('../../vn-api-model');
-const Noti = require('vn-api-client').Noti;
+const Noti = require('vn-api-client').Socket.Noti;
 
 router.post('/post/view', (req, res) => {
   const viewObj = {

@@ -41,6 +41,34 @@ router.get('/', function (req, res) {
     })
 });
 
+router.get('/forum/list', (req, res) => {
+  const queryObj = {
+    query: req.query.query,
+    order: req.query.order || 'new',
+    page: parseInt(req.query.page, 10) - 1 || 0
+  };
+  const user = res.locals.user;
+
+  M
+    .Search
+    .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)
+    .then(forums => {
+      const limit = 10;
+      const nextPage = queryObj.page + 1;
+      const data = {
+        data: forums.results,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < forums.total) ? (nextPage + 1) : null,
+          total: forums.total
+        }
+      };
+
+      res.json(data);
+    })
+});
+
 router.get('/forum', function (req, res) {
   const q = req.query.q;
   const user = res.locals.user;
