@@ -19,6 +19,8 @@ const ForumHandler = require('./Forum');
 const SearchHandler = require('./Search');
 const SettingHandler = require('./Setting');
 const ValidateHandler = require('./Validate');
+const VenacleStoreHandler = require('./VenacleStore');
+const VenalinkHandler = require('./Venalink');
 
 const now = require('performance-now');
 
@@ -58,6 +60,8 @@ router.use('/store', StoreHandler);
 router.use('/post', PostHandler);
 router.use('/link', LinkHandler);
 router.use('/signin', SigninHandler);
+router.use('/venastore', VenacleStoreHandler);
+router.use('/venalink', VenalinkHandler);
 router.use('/collection', CollectionHandler);
 router.use('/login', LoginHandler);
 router.use('/logout', LogoutHandler);

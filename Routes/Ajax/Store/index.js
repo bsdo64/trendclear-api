@@ -255,6 +255,7 @@ router.get('/all', function (req, res, next) {
 router.use('/collection', require('./Collection'));
 router.use('/community', require('./Community'));
 router.use('/activity', require('./Activity'));
+router.use('/user', require('./User'));
 
 router.get('/signin', function (req, res, next) {
 
