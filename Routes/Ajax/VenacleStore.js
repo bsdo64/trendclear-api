@@ -25,10 +25,11 @@ router.post('/purchase/item', (req, res) => {
   M
     .VenacleStore
     .purchaseItem(itemObj, user)
-    .spread((account, inventories) => {
+    .spread((account, inventories, trendbox) => {
       res.json({
         account: account,
-        inventories: inventories
+        inventories: inventories,
+        trendbox: trendbox,
       });
     })
     .catch(err => {

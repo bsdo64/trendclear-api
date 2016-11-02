@@ -89,7 +89,7 @@ router.delete('/:id', function (req, res) {
 
 router.get('/:collectionId/forum', function (req, res) {
   const collectionId = req.params.collectionId;
-  const user = res.locals.user;
+
 
   M
     .Collection

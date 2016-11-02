@@ -1,3 +1,5 @@
+'use strict';
+
 const cookieParser = require('cookie-parser');
 const assign = require('deep-assign');
 

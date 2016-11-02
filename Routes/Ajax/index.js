@@ -54,24 +54,27 @@ router.use(function timeLog(req, res, next) {
 
 router.use(startTime, CheckUserHandler, endTime);
 
+// Store data
+
 router.use('/store', StoreHandler);
 
-// define the home page route
-router.use('/post', PostHandler);
-router.use('/link', LinkHandler);
-router.use('/signin', SigninHandler);
-router.use('/venastore', VenacleStoreHandler);
-router.use('/venalink', VenalinkHandler);
-router.use('/collection', CollectionHandler);
-router.use('/login', LoginHandler);
-router.use('/logout', LogoutHandler);
-router.use('/community', CommunityHandler);
+// Ajax fragment
+
 router.use('/best', BestHandler);
+router.use('/collection', CollectionHandler);
+router.use('/community', CommunityHandler);
+router.use('/forum', ForumHandler);
 router.use('/user', UserHandler);
 router.use('/like', LikeHandler);
-router.use('/forum', ForumHandler);
+router.use('/link', LinkHandler);
+router.use('/login', LoginHandler);
+router.use('/logout', LogoutHandler);
+router.use('/post', PostHandler);
 router.use('/search', SearchHandler);
 router.use('/settings', SettingHandler);
+router.use('/signin', SigninHandler);
 router.use('/validate', ValidateHandler);
+router.use('/venalink', VenalinkHandler);
+router.use('/venastore', VenacleStoreHandler);
 
 module.exports = router;

@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const htmlToText = require('html-to-text');
-const cookieParser = require('cookie-parser');
 const helper = require('../helper/func');
 const M = require('../../vn-api-model');
 const {Point} = require('vn-api-client').Socket;
-const parser = require('ua-parser-js');
 
 router.get('/post/m/:linkId', function (req, res) {
   "use strict";
@@ -92,7 +90,8 @@ router.get('/post/:linkId', function (req, res, next) {
           type: 'post',
           type_id: post.id,
           visitor_uid: visitor.device.visitor_uid,
-          clicked_at: new Date()
+          clicked_at: new Date(),
+          user_id: user ? user.id : null
         };
 
         M

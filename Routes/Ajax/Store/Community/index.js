@@ -7,7 +7,7 @@ const {moment} = require('../../../helper/func');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
   const prop = {
     forumId: req.query.forumId,
     postId: req.query.postId,
@@ -151,7 +151,7 @@ router.get('/', function (req, res, next) {
 
 });
 
-router.get(['/settings', '/settings/foruminfo'], function (req, res, next) {
+router.get(['/settings', '/settings/foruminfo'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'foruminfo'
@@ -160,7 +160,7 @@ router.get(['/settings', '/settings/foruminfo'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/forumurl'], function (req, res, next) {
+router.get(['/settings/forumurl'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'forumurl'
@@ -169,7 +169,7 @@ router.get(['/settings/forumurl'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/forumprefix'], function (req, res, next) {
+router.get(['/settings/forumprefix'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'forumprefix'
@@ -178,7 +178,7 @@ router.get(['/settings/forumprefix'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/announce'], function (req, res, next) {
+router.get(['/settings/announce'], function (req, res) {
   const prop = {
     forumId: req.query.forumId,
     postId: req.query.postId,
@@ -231,7 +231,7 @@ router.get(['/settings/announce'], function (req, res, next) {
     });
 });
 
-router.get(['/settings/writepost'], function (req, res, next) {
+router.get(['/settings/writepost'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'writepost'
@@ -240,7 +240,7 @@ router.get(['/settings/writepost'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/writecomment'], function (req, res, next) {
+router.get(['/settings/writecomment'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'writecomment'
@@ -249,7 +249,7 @@ router.get(['/settings/writecomment'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/share'], function (req, res, next) {
+router.get(['/settings/share'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'share'
@@ -258,7 +258,7 @@ router.get(['/settings/share'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/promotion'], function (req, res, next) {
+router.get(['/settings/promotion'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'promotion'
@@ -267,7 +267,7 @@ router.get(['/settings/promotion'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/managers'], function (req, res, next) {
+router.get(['/settings/managers'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'managers'
@@ -276,7 +276,7 @@ router.get(['/settings/managers'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/banlist'], function (req, res, next) {
+router.get(['/settings/banlist'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'banlist'
@@ -285,7 +285,7 @@ router.get(['/settings/banlist'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/spams'], function (req, res, next) {
+router.get(['/settings/spams'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'spams'
@@ -294,7 +294,7 @@ router.get(['/settings/spams'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/spamreports'], function (req, res, next) {
+router.get(['/settings/spamreports'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'spamreports'
@@ -303,7 +303,7 @@ router.get(['/settings/spamreports'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat'], function (req, res, next) {
+router.get(['/settings/stat'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat'
@@ -312,7 +312,7 @@ router.get(['/settings/stat'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/forum'], function (req, res, next) {
+router.get(['/settings/stat/forum'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_forum'
@@ -321,7 +321,7 @@ router.get(['/settings/stat/forum'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/views'], function (req, res, next) {
+router.get(['/settings/stat/views'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_views'
@@ -330,7 +330,7 @@ router.get(['/settings/stat/views'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/visitors'], function (req, res, next) {
+router.get(['/settings/stat/visitors'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_visitors'
@@ -339,7 +339,7 @@ router.get(['/settings/stat/visitors'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/likerank'], function (req, res, next) {
+router.get(['/settings/stat/likerank'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_likerank'
@@ -348,7 +348,7 @@ router.get(['/settings/stat/likerank'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/commentrank'], function (req, res, next) {
+router.get(['/settings/stat/commentrank'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_commentrank'
@@ -357,7 +357,7 @@ router.get(['/settings/stat/commentrank'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/viewrank'], function (req, res, next) {
+router.get(['/settings/stat/viewrank'], function (req, res) {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_viewrank'
@@ -366,13 +366,13 @@ router.get(['/settings/stat/viewrank'], function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get('/submit/forum', function (req, res, next) {
+router.get('/submit/forum', function (req, res) {
 
   res.json(res.resultData);
 
 });
 
-router.get('/submit', function (req, res, next) {
+router.get('/submit', function (req, res) {
   const user = res.locals.user;
   const {postId, forumId} = req.query;
 
