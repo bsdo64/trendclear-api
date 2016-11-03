@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../helper/func');
+const { moment } = require('../../helper/func');
 
-const M = require('../../vn-api-model');
+const M = require('../../../vn-api-model/index');
 
 router.get('/', function (req, res) {
   const props = {
@@ -17,13 +17,12 @@ router.get('/', function (req, res) {
     .bestPostList(props)
     .then(function (posts) {
 
-      for (let i in posts.results) {
-        for (let j in posts.results[i]) {
-          if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
-          }
+      posts.results = posts.results.map(post => {
+        if (post.created_at) {
+          post.created_at = moment(post.created_at).fromNow();
         }
-      }
+        return post;
+      });
 
       const limit = 10;
       const nextPage = props.page + 1;

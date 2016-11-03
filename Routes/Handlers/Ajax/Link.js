@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const htmlToText = require('html-to-text');
-const helper = require('../helper/func');
-const M = require('../../vn-api-model');
+const helper = require('../../helper/func');
+const M = require('../../../vn-api-model/index');
 const {Point} = require('vn-api-client').Socket;
 
 router.get('/post/m/:linkId', function (req, res) {

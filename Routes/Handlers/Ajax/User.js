@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../helper/func');
+const { moment } = require('../../helper/func');
 
-const M = require('../../vn-api-model');
+const M = require('../../../vn-api-model/index');
 
 router.get('/likes', function (req, res) {
   const page = req.query.page ? req.query.page - 1 : 0;

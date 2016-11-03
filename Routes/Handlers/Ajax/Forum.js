@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const moment = require('moment');
-const helper = require('../helper/func');
+const helper = require('../../helper/func');
 
-const M = require('../../vn-api-model');
+const M = require('../../../vn-api-model/index');
 
 router.get('/', function (req, res) {
   const title = req.query.title;

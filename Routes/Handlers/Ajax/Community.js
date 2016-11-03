@@ -1,10 +1,10 @@
 'use strict';
 
 const express = require('express');
-const { moment } = require('../helper/func');
+const { moment } = require('../../helper/func');
 const router = express.Router();
 
-const M = require('../../vn-api-model');
+const M = require('../../../vn-api-model/index');
 const Noti = require('vn-api-client').Socket.Noti;
 
 router.post('/post/view', (req, res) => {

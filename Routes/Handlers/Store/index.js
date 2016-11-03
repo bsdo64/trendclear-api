@@ -180,13 +180,12 @@ router.get('/', function (req, res, next) {
     .bestPostList(props)
     .then(function (posts) {
 
-      for (let i in posts.results) {
-        for (let j in posts.results[i]) {
-          if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
-          }
+      posts.results = posts.results.map(post => {
+        if (post.created_at) {
+          post.created_at = moment(post.created_at).fromNow();
         }
-      }
+        return post;
+      });
 
       res.json({
         GnbStore: res.resultData.GnbStore,

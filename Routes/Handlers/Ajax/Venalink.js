@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../helper/func');
+const helper = require('../../helper/func');
 const htmlToText = require('html-to-text');
 const {Point} = require('vn-api-client').Socket;
-const M = require('../../vn-api-model');
+const M = require('../../../vn-api-model/index');
 const co = require('co');
 
 router.get('/', (req, res) => {
