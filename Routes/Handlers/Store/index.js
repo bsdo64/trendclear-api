@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../vn-api-model');
-const {moment} = require('../../helper/func');
+const {moment} = require('../../Util/helper/func');
 const _ = require('lodash');
 
 _.mixin(require('lodash-deep'));
@@ -22,6 +22,9 @@ router.use( function (req, res, next) {
 
 
       assign(res.resultData, {
+        ModalStore: {
+          openModal: false
+        },
         GnbStore: {
           openGnb: false,
           gnbMenu: { openSideNow: null, data: categories },
@@ -187,10 +190,7 @@ router.get('/', function (req, res, next) {
         return post;
       });
 
-      res.json({
-        GnbStore: res.resultData.GnbStore,
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
+      assign(res.resultData, {
         BestPostStore: {
           posts: {
             data: posts.results,
@@ -201,11 +201,10 @@ router.get('/', function (req, res, next) {
               total: posts.total
             }
           }
-        },
-        ReportStore: res.resultData.ReportStore,
-        ListStore: res.resultData.ListStore,
-        AuthStore: res.resultData.AuthStore
-      })
+        }
+      });
+
+      res.json(res.resultData);
     });
 });
 
@@ -229,10 +228,7 @@ router.get('/all', function (req, res, next) {
         }
       }
 
-      res.json({
-        GnbStore: res.resultData.GnbStore,
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
+      assign(res.resultData, {
         BestPostStore: {
           posts: {
             data: posts.results,
@@ -244,10 +240,9 @@ router.get('/all', function (req, res, next) {
             }
           }
         },
-        ReportStore: res.resultData.ReportStore,
-        ListStore: res.resultData.ListStore,
-        AuthStore: res.resultData.AuthStore
-      })
+      });
+
+      res.json(res.resultData);
     });
 });
 
@@ -258,35 +253,32 @@ router.use('/user', require('./User'));
 
 router.get('/signin', function (req, res, next) {
 
-  res.json({
+  assign(res.resultData, {
     GnbStore: {
       openGnb: false,
       gnbMenu: res.resultData.GnbStore.gnbMenu,
       categoryMenu: {
         categories: [{
-          "id": 3,
-          "title": "회원가입",
-          "order": 0,
-          "using": true,
-          "category_groups": [
+          id: 3,
+          title: '회원가입',
+          order: 0,
+          using: true,
+          category_groups: [
             {
-              "using": "1",
-              "id": 5,
-              "title": "회원가입",
-              "order": "0",
-              "club_id": 3,
-              "description": "회원가입"
+              using: '1',
+              id: 5,
+              title: '회원가입',
+              order: '0',
+              club_id: 3,
+              description: '회원가입'
             }
           ]
         }]
       }
-    },
-    LoginStore: res.resultData.LoginStore,
-    UserStore: res.resultData.UserStore,
-    BestPostStore: {},
-    ReportStore: res.resultData.ReportStore,
-    AuthStore: res.resultData.AuthStore
+    }
   });
+
+  res.json(res.resultData);
 });
 
 router.get('/search', function (req, res, next) {
@@ -315,10 +307,7 @@ router.get('/search', function (req, res, next) {
         }
       }
 
-      res.json({
-        GnbStore: res.resultData.GnbStore,
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
+      assign(res.resultData, {
         SearchStore: {
           forum: {
             data: forums,
@@ -351,10 +340,8 @@ router.get('/search', function (req, res, next) {
             }
           }
         },
-        ReportStore: res.resultData.ReportStore,
-        AuthStore: res.resultData.AuthStore
-      })
-    })
+      });
+    });
 });
 
 router.get('/setting', function (req, res, next) {

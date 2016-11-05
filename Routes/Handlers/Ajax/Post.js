@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const htmlToText = require('html-to-text');
 
-const helper = require('../../helper/func');
+const helper = require('../../Util/helper/func');
 const M = require('../../../vn-api-model/index');
 
 router.get('/meta/:postId', function (req, res) {

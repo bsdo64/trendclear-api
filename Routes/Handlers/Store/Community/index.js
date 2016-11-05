@@ -3,7 +3,8 @@ const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
-const {moment} = require('../../../helper/func');
+const co = require('co');
+const { moment } = require('../../../Util/helper/func');
 const _ = require('lodash');
 _.mixin(require('lodash-deep'));
 
@@ -22,133 +23,111 @@ router.get('/', function (req, res) {
   const user = res.locals.user;
   const visitor = res.locals.visitor;
 
-  if (prop.forumId && prop.postId) {
+  co(function* RouterHandler() {
+    if (prop.forumId && prop.postId) {
+      const [ , postList, post] = yield [
+        M.Post.incrementView(prop, visitor),
+        M.Forum.getForumPostList(prop),
+        M.Post.findOneById(prop.postId, prop.commentPage, user),
+      ];
 
-    M
-      .Post
-      .incrementView(prop, visitor)
-      .then(() => {
-        return new Promise.join(
-          M.Forum.getForumPostList(prop),
-          M.Post.findOneById(prop.postId, prop.commentPage, user),
+      post.created_at = moment(post.created_at).fromNow();
 
-          function (postList, post) {
-
-            post.created_at = moment(post.created_at).fromNow();
-
-            for (let i in postList.results) {
-              for (let j in postList.results[i]) {
-                if (j === 'created_at') {
-                  postList.results[i][j] = moment(postList.results[i][j]).fromNow();
-                }
-              }
-            }
-
-            for (let i in post.comments) {
-              for (let j in post.comments[i]) {
-                if (j === 'created_at') {
-                  post.comments[i][j] = moment(post.comments[i][j]).fromNow();
-                }
-
-                if (j === 'subComments') {
-                  for (let k in post.comments[i][j]) {
-                    for (let l in post.comments[i][j][k]) {
-                      if (l === 'created_at') {
-                        post.comments[i][j][k][l] = moment(post.comments[i][j][k][l]).fromNow();
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            const nextPage = parseInt(prop.page, 10) + 1;
-
-            res.json({
-              CommunityStore: {
-                type: 'post',
-                post: post,
-                forum: res.resultData.CommunityStore.forum,
-                "list": {
-                  "page": nextPage,
-                  "data": postList.results,
-                  "total": postList.total,
-                  "limit": 10,
-                  collection: {
-                    current_page: nextPage,
-                    limit: 10,
-                    next_page: (postList.total > 10) ? nextPage + 1 : null,
-                    total: postList.total
-                  }
-                }
-              },
-              GnbStore: res.resultData.GnbStore,
-              LoginStore: res.resultData.LoginStore,
-              UserStore: res.resultData.UserStore,
-              ReportStore: res.resultData.ReportStore,
-              AuthStore: res.resultData.AuthStore
-            })
-          })
-      })
-      .catch(function (err) {
-
-        console.error(err);
-        console.error(err.stack);
-
+      postList.results = postList.results.map((post) => {
+        if (post.created_at) {
+          post.created_at = moment(post.created_at).fromNow();
+        }
+        return post;
       });
 
-  } else if (prop.forumId) {
-    M
-      .Forum
-      .getForumPostList(prop)
-      .then(function (posts) {
+      post.comments = post.comments.map((comment) => {
+        if (comment.created_at) {
+          comment.created_at = moment(comment.created_at).fromNow();
+        }
 
-        for (let i in posts.results) {
-          for (let j in posts.results[i]) {
-            if (j === 'created_at') {
-              posts.results[i][j] = moment(posts.results[i][j]).fromNow();
+        if (comment.subComments) {
+          comment.subComments = comment.subComments.map((subComment) => {
+            if (subComment.created_at) {
+              subComment.created_at = moment(subComment.created_at).fromNow();
+            }
+            return subComment;
+          });
+        }
+        return comment;
+      });
+
+      const nextPage = parseInt(prop.page, 10) + 1;
+
+      res.json({
+        CommunityStore: {
+          type: 'post',
+          post: post,
+          forum: res.resultData.CommunityStore.forum,
+          list: {
+            page: nextPage,
+            data: postList.results,
+            total: postList.total,
+            limit: 10,
+            collection: {
+              current_page: nextPage,
+              limit: 10,
+              next_page: (postList.total > 10) ? nextPage + 1 : null,
+              total: postList.total
             }
           }
-        }
+        },
+        GnbStore: res.resultData.GnbStore,
+        LoginStore: res.resultData.LoginStore,
+        UserStore: res.resultData.UserStore,
+        ReportStore: res.resultData.ReportStore,
+        AuthStore: res.resultData.AuthStore
+      });
+    } else if (prop.forumId) {
+      const posts = yield M.Forum.getForumPostList(prop);
 
-        res.json({
-          CommunityStore: {
-            type: 'forum',
-            forum : res.resultData.CommunityStore.forum,
-            list: {
-              "data": posts.results,
-              collection: {
-                current_page: parseInt(prop.page, 10) + 1,
-                limit: 10,
-                next_page: (posts.total > 10) ? 2 : null,
-                total: posts.total
-              }
+      posts.results = posts.results.map((post) => {
+        if (post.created_at) {
+          post.created_at = moment(post.created_at).fromNow();
+        }
+        return post;
+      });
+
+      res.json({
+        CommunityStore: {
+          type: 'forum',
+          forum: res.resultData.CommunityStore.forum,
+          list: {
+            data: posts.results,
+            collection: {
+              current_page: parseInt(prop.page, 10) + 1,
+              limit: 10,
+              next_page: (posts.total > 10) ? 2 : null,
+              total: posts.total
             }
-          },
-          GnbStore: res.resultData.GnbStore,
-          LoginStore: res.resultData.LoginStore,
-          UserStore: res.resultData.UserStore,
-          ReportStore: res.resultData.ReportStore,
-          AuthStore: res.resultData.AuthStore
-        })
-      })
-
-  } else {
-    res.json({
-      GnbStore: {
-        openGnb: false,
-        gnbMenu: res.resultData.GnbStore.gnbMenu,
-        categoryMenu: {
-          categories: res.resultData.GnbStore.categoryMenu.categories
-        }
-      },
-      LoginStore: res.resultData.LoginStore,
-      UserStore: res.resultData.UserStore,
-      BestPostStore: {},
-      ReportStore: res.resultData.ReportStore,
-    });
-  }
-
+          }
+        },
+        GnbStore: res.resultData.GnbStore,
+        LoginStore: res.resultData.LoginStore,
+        UserStore: res.resultData.UserStore,
+        ReportStore: res.resultData.ReportStore,
+        AuthStore: res.resultData.AuthStore
+      });
+    } else {
+      res.json({
+        GnbStore: {
+          openGnb: false,
+          gnbMenu: res.resultData.GnbStore.gnbMenu,
+          categoryMenu: {
+            categories: res.resultData.GnbStore.categoryMenu.categories
+          }
+        },
+        LoginStore: res.resultData.LoginStore,
+        UserStore: res.resultData.UserStore,
+        BestPostStore: {},
+        ReportStore: res.resultData.ReportStore,
+      });
+    }
+  });
 });
 
 router.get(['/settings', '/settings/foruminfo'], function (req, res) {
@@ -207,7 +186,7 @@ router.get(['/settings/announce'], function (req, res) {
           type: 'forum',
           forum : res.resultData.CommunityStore.forum,
           list: {
-            "data": posts.results,
+            data: posts.results,
             collection: {
               current_page: parseInt(prop.page, 10) + 1,
               limit: 10,

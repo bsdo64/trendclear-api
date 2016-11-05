@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../../helper/func');
-
+const { moment } = require('../../Util/helper/func');
+const co = require('co');
 const M = require('../../../vn-api-model/index');
 
 router.get('/likes', function (req, res) {
@@ -12,7 +12,6 @@ router.get('/likes', function (req, res) {
     .Post
     .likePostList(page, user)
     .then(posts => {
-      "use strict";
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
@@ -47,7 +46,6 @@ router.get('/posts', function (req, res) {
     .Post
     .myWritePostList(page, user)
     .then(posts => {
-      "use strict";
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
@@ -82,7 +80,6 @@ router.get('/comments', function (req, res) {
     .Post
     .myWriteCommentPostList(page, user)
     .then(posts => {
-      "use strict";
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
@@ -330,12 +327,9 @@ router.delete('/removeItem', (req, res) => {
     user_id: user.id
   };
 
-  M
-    .User
-    .deleteItem(deleteObj)
-    .then(deletedItem => {
-      res.json(deletedItem);
-    })
+  co(function* RouterHandler() {
+    res.json(yield M.User.deleteItem(deleteObj));
+  });
 });
 
 router.post('/resetPassword', (req, res) => {
@@ -344,12 +338,9 @@ router.post('/resetPassword', (req, res) => {
     email: req.body.email
   };
 
-  M
-    .User
-    .resetPassword(findObj)
-    .then(user => {
-      res.json(user);
-    })
+  co(function* RouterHandler() {
+    res.json(yield M.User.resetPassword(findObj));
+  });
 });
 
 module.exports = router;

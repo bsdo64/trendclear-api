@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../helper/func');
+const helper = require('../../Util/helper/func');
 const htmlToText = require('html-to-text');
 const {Point} = require('vn-api-client').Socket;
 const M = require('../../../vn-api-model/index');

@@ -1,21 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../../helper/func');
+const { moment } = require('../../Util/helper/func');
+const co = require('co');
 
 const M = require('../../../vn-api-model/index');
 
-router.get('/', function (req, res) {
+router.get('/', (req, res) => {
   const user = res.locals.user;
 
-  M
-    .Collection
-    .getUserCollections(user)
-    .then(collections => {
-      res.json(collections);
-    })
+  co(function*() {
+    res.json(yield M.Collection.getUserCollections(user));
+  })
 });
 
-router.post('/', function (req, res) {
+router.post('/', (req, res) => {
   const collectionObj = {
     title: req.body.title,
     password: req.body.description,
@@ -23,33 +21,26 @@ router.post('/', function (req, res) {
   };
   const user = res.locals.user;
 
-  M
-    .Collection
-    .createCollection({
-      title: collectionObj.title,
-      password: collectionObj.description,
-      isPrivate: collectionObj.isPrivate,
-      creator_id: user.id
-    })
-    .then(collection => {
-      res.json(collection);
-    })
+  co(function*() {
+    res.json(yield M.Collection.createCollection({
+        title: collectionObj.title,
+        password: collectionObj.description,
+        isPrivate: collectionObj.isPrivate,
+        creator_id: user.id
+    }));
+  });
 });
 
-router.get('/:id', function (req, res) {
+router.get('/:id', (req, res) => {
   const collectionId = req.params.id;
   const user = res.locals.user;
 
-  M
-    .Collection
-    .getCollectionById(collectionId, user)
-    .first()
-    .then(collections => {
-      res.json(collections);
-    })
+  co(function*() {
+    res.json(yield M.Collection.getCollectionById(collectionId, user))
+  })
 });
 
-router.put('/:id', function (req, res) {
+router.put('/:id', (req, res) => {
   const collectionId = req.params.id;
   const collectionObj = {
     title: req.body.title,
@@ -58,72 +49,57 @@ router.put('/:id', function (req, res) {
   };
   const user = res.locals.user;
 
-  M
-    .Collection
-    .updateCollection(collectionId, {
-      title: collectionObj.title,
-      password: collectionObj.description,
-      isPrivate: collectionObj.isPrivate,
-      creator_id: user.id
-    })
-    .then(updatedCollection => {
-      res.json(updatedCollection);
-    })
+  co(function*() {
+    res.json(yield M.Collection.updateCollection(collectionId, {
+        title: collectionObj.title,
+        password: collectionObj.description,
+        isPrivate: collectionObj.isPrivate,
+        creator_id: user.id
+    }));
+  })
 });
 
-router.delete('/:id', function (req, res) {
+router.delete('/:id', (req, res) => {
   const collectionId = req.params.id;
   const user = res.locals.user;
 
-  M
-    .Collection
-    .deleteCollection(collectionId, user)
-    .then(numDeleted => {
-      if (numDeleted) {
-        res.json('ok');
-      } else {
-        res.json(false);
-      }
-    })
+  co(function*() {
+    const numDeleted = yield M.Collection.deleteCollection(collectionId, user);
+    if (numDeleted) {
+      res.json('ok');
+    } else {
+      res.json(false);
+    }
+  })
 });
 
-router.get('/:collectionId/forum', function (req, res) {
+router.get('/:collectionId/forum', (req, res) => {
   const collectionId = req.params.collectionId;
 
-
-  M
-    .Collection
-    .getForums(collectionId)
-    .then(forums => {
-      res.json(forums);
-    })
+  co(function*() {
+    res.json(yield M.Collection.getForums(collectionId));
+  })
 });
 
-router.post('/:collectionId/forum', function (req, res) {
+router.post('/:collectionId/forum', (req, res) => {
   const collectionId = req.params.collectionId;
   const forumId = req.body.forumId;
 
-  M
-    .Collection
-    .addForum(collectionId, forumId)
-    .then(forums => {
-      res.json(forums);
-    })
+  co(function*() {
+    res.json(yield M.Collection.addForum(collectionId, forumId));
+  })
 });
 
-router.delete('/:collectionId/forum/:forumId', function (req, res) {
+router.delete('/:collectionId/forum/:forumId', (req, res) => {
   const collectionId = req.params.collectionId;
   const forumId = req.params.forumId;
 
-  M
-    .Collection
-    .removeForum(collectionId, forumId)
-    .then(forums => {
-      res.json(forums);
-    })
+  co(function*() {
+    res.json(yield M.Collection.removeForum(collectionId, forumId));
+  })
 });
 
-router.get('/:collectionId/posts', function (req, res) {
+router.get('/:collectionId/posts', (req, res) => {
   const props = {
     collectionId: req.params.collectionId,
     page: parseInt(req.query.page, 10) > 0 ? parseInt(req.query.page, 10) - 1 : 0,
@@ -131,49 +107,43 @@ router.get('/:collectionId/posts', function (req, res) {
     order: req.query.order
   };
 
-  M
-    .Collection
-    .getCollectionPosts(props)
-    .then(function (posts) {
+  co(function*() {
+    const posts = yield M.Collection.getCollectionPosts(props);
+    const limit = 10;
+    const nextPage = props.page + 1;
 
-      for (let i in posts.results) {
-        for (let j in posts.results[i]) {
-          if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
-          }
-        }
+    posts.results = posts.results.map(post => {
+      if (post.created_at) {
+        post.created_at = moment(post.created_at).fromNow();
       }
+      return post;
+    });
 
-      const limit = 10;
-      const nextPage = props.page + 1;
-      const data = {
-        data: posts.results,
-        collection: {
-          current_page: nextPage,
-          limit: limit,
-          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
-          total: posts.total
-        }
-      };
-
-      res.json(data);
-    })
-    .catch(function (err) {
-      console.error(err);
-      console.error(err.stack);
-
-      if (err.message === 'User not Found') {
-        res.json({
-          message: 'user not found',
-          error: err
-        });
-      } else {
-        res.json({
-          message: 'can\'t make token',
-          error: err
-        });
+    res.json({
+      data: posts.results,
+      collection: {
+        current_page: nextPage,
+        limit: limit,
+        next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+        total: posts.total
       }
     });
+  }).catch((err) => {
+    console.error(err);
+    console.error(err.stack);
+
+    if (err.message === 'User not Found') {
+      res.json({
+        message: 'user not found',
+        error: err
+      });
+    } else {
+      res.json({
+        message: 'can\'t make token',
+        error: err
+      });
+    }
+  });
 });
 
 module.exports = router;

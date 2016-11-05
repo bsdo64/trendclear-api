@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../helper/func');
+const helper = require('../../Util/helper/func');
+const co = require('co');
 
 const M = require('../../../vn-api-model/index');
 
@@ -22,19 +23,16 @@ router.post('/purchase/item', (req, res) => {
     code: req.body.code
   };
 
-  M
-    .VenacleStore
-    .purchaseItem(itemObj, user)
-    .spread((account, inventories, trendbox) => {
-      res.json({
-        account: account,
-        inventories: inventories,
-        trendbox: trendbox,
-      });
-    })
-    .catch(err => {
-      res.json(err);
-    })
+  co(function* Handler() {
+    const [account, inventories, trendbox] = yield M.VenacleStore.purchaseItem(itemObj, user);
+    res.json({
+      account: account,
+      inventories: inventories,
+      trendbox: trendbox,
+    });
+  }).catch(err => {
+    res.json(err);
+  });
 });
 
 module.exports = router;

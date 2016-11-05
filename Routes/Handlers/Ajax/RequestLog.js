@@ -1,7 +1,7 @@
 /**
  * Created by dobyeongsu on 2016. 11. 2..
  */
-const {signedSessionId} = require('../../helper/func');
+const {signedSessionId} = require('../../Util/helper/func');
 
 module.exports = function RequestLog(req, res, next) {
 

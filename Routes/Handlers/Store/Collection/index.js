@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
-const {moment} = require('../../../helper/func');
+const {moment} = require('../../../Util/helper/func');
 const _ = require('lodash');
 
 _.mixin(require('lodash-deep'));
