@@ -4,246 +4,192 @@ const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../vn-api-model');
 const {moment} = require('../../Util/helper/func');
-const _ = require('lodash');
+const co = require('co');
 
-_.mixin(require('lodash-deep'));
+router.use((req, res, next) => {
 
-router.use( function (req, res, next) {
+  co(function* RouterHandler() {
 
-  return M
-    .Forum
-    .Db
-    .tc_categories
-    .query()
-    .where({type: 'venacle'})
-    .eager('[forums]')
-    .orderBy('order')
-    .then(function(categories) {
-
-
-      assign(res.resultData, {
-        ModalStore: {
-          openModal: false
-        },
-        GnbStore: {
-          openGnb: false,
-          gnbMenu: { openSideNow: null, data: categories },
-          categoryMenu: {}
-        }
-      });
-
-      return Promise.all([
-        M
-          .Forum
-          .getList({
-            order: {
-              column: 'created_at',
-              direction: 'DESC'
-            },
-            page: 1,
-            limit: 50,
-            eager: '[prefixes, creator.profile]'
-          }),
-        M
-          .Forum
-          .getHotList({
-            order: {
-              column: 'created_at',
-              direction: 'DESC'
-            },
-            page: 1,
-            limit: 50,
-            eager: '[prefixes, creator.profile]'
-          })
-      ])
-    })
-    .spread(function (newForums, hotForums) {
-
-      assign(res.resultData, {
-        GnbStore: {
-          newForums: {
-            data: newForums.results,
-            collection: {
-              current_page: 1,
-              limit: 50,
-              next_page: (newForums.total > 10) ? 2 : null,
-              total: newForums.total
-            }
+    const [categories, newForums, hotForums] = yield [
+      M
+        .Forum
+        .Db
+        .tc_categories
+        .query()
+        .where({type: 'venacle'})
+        .eager('[forums]')
+        .orderBy('order'),
+      M
+        .Forum
+        .getList({
+          order: {
+            column: 'created_at',
+            direction: 'DESC'
           },
-          hotForums: {
-            data: hotForums.results,
-            collection: {
-              current_page: 1,
-              limit: 50,
-              next_page: (hotForums.total > 10) ? 2 : null,
-              total: hotForums.total
-            }
+          page: 1,
+          limit: 50,
+          eager: '[prefixes, creator.profile]'
+        }),
+      M
+        .Forum
+        .getHotList({
+          order: {
+            column: 'created_at',
+            direction: 'DESC'
+          },
+          page: 1,
+          limit: 50,
+          eager: '[prefixes, creator.profile]'
+        })
+    ];
+
+    assign(res.resultData, {
+      ModalStore: {
+        openModal: false
+      },
+      GnbStore: {
+        openGnb: false,
+        gnbMenu: { openSideNow: null, data: categories },
+        categoryMenu: {},
+        newForums: {
+          data: newForums.results,
+          collection: {
+            current_page: 1,
+            limit: 50,
+            next_page: (newForums.total > 10) ? 2 : null,
+            total: newForums.total
           }
         },
-        ReportStore: {
-          openReportModal: false,
-          reportItem: [
-            {
-              id: 1,
-              message: '불쾌하거나 흥미없는 내용입니다.'
-            },
-            {
-              id: 2,
-              message: '스팸성 글입니다.'
-            },
-            {
-              id: 3,
-              message: '인신공격, 불법, 허위 내용을 유포하고 있습니다.'
-            }
-          ],
-          selectItem: 1,
-          successReport: false
-        },
-        ListStore: {}
+        hotForums: {
+          data: hotForums.results,
+          collection: {
+            current_page: 1,
+            limit: 50,
+            next_page: (hotForums.total > 10) ? 2 : null,
+            total: hotForums.total
+          }
+        }
+      },
+      ReportStore: {
+        openReportModal: false,
+        reportItem: [
+          {
+            id: 1,
+            message: '불쾌하거나 흥미없는 내용입니다.'
+          },
+          {
+            id: 2,
+            message: '스팸성 글입니다.'
+          },
+          {
+            id: 3,
+            message: '인신공격, 불법, 허위 내용을 유포하고 있습니다.'
+          }
+        ],
+        selectItem: 1,
+        successReport: false
+      },
+      ListStore: {}
+    });
+
+    if (req.query.forumId) {
+      const forum = yield M
+        .Forum
+        .getForumInfo(req.query.forumId);
+
+      forum.announces = forum.announces.map(announce => {
+        if (announce.created_at) {
+          announce.created_at = moment(announce.created_at).fromNow();
+        }
+        return announce;
       });
 
-    })
-    .then(function() {
-      if (req.query.postId && req.query.forumId) {
-        return M
-          .Forum
-          .getForumInfo(req.query.forumId)
-          .then(function (forum) {
+      assign(res.resultData, {
+        CommunityStore: {
+          forum: forum
+        }
+      });
+    }
 
-            for (let i in forum.announces) {
-              for (let j in forum.announces[i]) {
-                if (j === 'created_at') {
-                  forum.announces[i][j] = moment(forum.announces[i][j]).fromNow();
-                }
-              }
-            }
+    next();
 
-            assign(res.resultData, {
-              CommunityStore: {
-                forum: forum
-              }
-            });
+  }).catch((err) => {
 
-            next();
-          })
-      } else if (req.query.forumId) {
-        return M
-          .Forum
-          .getForumInfo(req.query.forumId)
-          .then(function (forum) {
-
-            for (let i in forum.announces) {
-              for (let j in forum.announces[i]) {
-                if (j === 'created_at') {
-                  forum.announces[i][j] = moment(forum.announces[i][j]).fromNow();
-                }
-              }
-            }
-
-            assign(res.resultData, {
-              CommunityStore: {
-                forum: forum
-              }
-            });
-
-            return M
-              .Forum
-              .getForumPostList(req.query)
-          })
-          .then(function (result) {
-            
-            next();
-          })
-          .catch(function (err) {
-
-            assign(res.resultData, {
-              CommunityStore: {
-                forum: null
-              }
-            });
-
-            console.error(err.message);
-            next();
-          })
-
-      } else {
-        next();
-      }
-    })
+    next(err);
+  });
 });
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
   const props = {
     user: res.locals.user,
     page: req.query.page || 0
   };
 
-  M
-    .Post
-    .bestPostList(props)
-    .then(function (posts) {
+  co(function* RouterHandler() {
+    const posts = yield M
+      .Post
+      .bestPostList(props);
 
-      posts.results = posts.results.map(post => {
-        if (post.created_at) {
-          post.created_at = moment(post.created_at).fromNow();
-        }
-        return post;
-      });
+    posts.results = posts.results.map(post => {
+      if (post.created_at) {
+        post.created_at = moment(post.created_at).fromNow();
+      }
+      return post;
+    });
 
-      assign(res.resultData, {
-        BestPostStore: {
-          posts: {
-            data: posts.results,
-            collection: {
-              current_page: 1,
-              limit: 10,
-              next_page: (posts.total > 10) ? 2 : null,
-              total: posts.total
-            }
+    assign(res.resultData, {
+      BestPostStore: {
+        posts: {
+          data: posts.results,
+          collection: {
+            current_page: 1,
+            limit: 10,
+            next_page: (posts.total > 10) ? 2 : null,
+            total: posts.total
           }
         }
-      });
-
-      res.json(res.resultData);
+      }
     });
+
+    res.json(res.resultData);
+  });
 });
 
-router.get('/all', function (req, res, next) {
+router.get('/all', (req, res) => {
   const props = {
     user: res.locals.user,
     page: req.query.page || 0,
     listType: 'all'
   };
 
-  M
-    .Post
-    .bestPostList(props)
-    .then(function (posts) {
+  co(function* RouterHandler() {
+    const posts = yield M
+      .Post
+      .bestPostList(props);
 
-      for (let i in posts.results) {
-        for (let j in posts.results[i]) {
-          if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
+    posts.results = posts.results.map(post => {
+      if (post.created_at) {
+        post.created_at = moment(post.created_at).fromNow();
+      }
+      return post;
+    });
+
+    assign(res.resultData, {
+      BestPostStore: {
+        posts: {
+          data: posts.results,
+          collection: {
+            current_page: 1,
+            limit: 10,
+            next_page: (posts.total > 10) ? 2 : null,
+            total: posts.total
           }
         }
-      }
-
-      assign(res.resultData, {
-        BestPostStore: {
-          posts: {
-            data: posts.results,
-            collection: {
-              current_page: 1,
-              limit: 10,
-              next_page: (posts.total > 10) ? 2 : null,
-              total: posts.total
-            }
-          }
-        },
-      });
-
-      res.json(res.resultData);
+      },
     });
+
+    res.json(res.resultData);
+  });
 });
 
 router.use('/collection', require('./Collection'));
@@ -251,7 +197,7 @@ router.use('/community', require('./Community'));
 router.use('/activity', require('./Activity'));
 router.use('/user', require('./User'));
 
-router.get('/signin', function (req, res, next) {
+router.get('/signin', (req, res) => {
 
   assign(res.resultData, {
     GnbStore: {
@@ -281,7 +227,7 @@ router.get('/signin', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get('/search', function (req, res, next) {
+router.get('/search', (req, res) => {
   const queryObj = {
     query: req.query.query,
     order: req.query.order || 'new',
@@ -289,62 +235,64 @@ router.get('/search', function (req, res, next) {
   };
   const user = res.locals.user;
 
-  Promise.join(
-    M
-      .Search
-      .listByQuery(queryObj.query, queryObj.page, queryObj.order, user),
-    M
-      .Search
-      .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)
-  )
-    .spread((posts, forums) => {
+  co(function* RouterHandler() {
+    const [posts, forums] = yield [
+      M
+        .Search
+        .listByQuery(queryObj.query, queryObj.page, queryObj.order, user),
+      M
+        .Search
+        .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)
+    ];
 
-      for (let i in posts.results) {
-        for (let j in posts.results[i]) {
-          if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
-          }
+    for (let i in posts.results) {
+      for (let j in posts.results[i]) {
+        if (j === 'created_at') {
+          posts.results[i][j] = moment(posts.results[i][j]).fromNow();
         }
       }
+    }
 
-      assign(res.resultData, {
-        SearchStore: {
-          forum: {
-            data: forums,
-            collection: {
-              current_page: 1,
-              limit: 10,
-              next_page: (forums.total > 10) ? 2 : null,
-              total: forums.total
-            }
-          },
-          search: {
-            posts: posts,
-            collection: {
-              current_page: 1,
-              limit: 10,
-              next_page: (posts.total > 10) ? 2 : null,
-              total: posts.total
-            }
-          },
-          query: queryObj.query
-        },
-        BestPostStore: {
-          posts: {
-            data: posts.results,
-            collection: {
-              current_page: 1,
-              limit: 10,
-              next_page: (posts.total > 10) ? 2 : null,
-              total: posts.total
-            }
+    assign(res.resultData, {
+      SearchStore: {
+        forum: {
+          data: forums,
+          collection: {
+            current_page: 1,
+            limit: 10,
+            next_page: (forums.total > 10) ? 2 : null,
+            total: forums.total
           }
         },
-      });
+        search: {
+          posts: posts,
+          collection: {
+            current_page: 1,
+            limit: 10,
+            next_page: (posts.total > 10) ? 2 : null,
+            total: posts.total
+          }
+        },
+        query: queryObj.query
+      },
+      BestPostStore: {
+        posts: {
+          data: posts.results,
+          collection: {
+            current_page: 1,
+            limit: 10,
+            next_page: (posts.total > 10) ? 2 : null,
+            total: posts.total
+          }
+        }
+      },
     });
+
+    res.json(res.resultData);
+  });
 });
 
-router.get('/setting', function (req, res, next) {
+router.get('/setting', (req, res) => {
   assign(res.resultData, {
     SettingStore: {
       page: 'password'
@@ -353,7 +301,7 @@ router.get('/setting', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get('/setting/password', function (req, res, next) {
+router.get('/setting/password', (req, res) => {
   assign(res.resultData, {
     SettingStore: {
       page: 'password'
@@ -362,7 +310,7 @@ router.get('/setting/password', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get('/setting/profile', function (req, res, next) {
+router.get('/setting/profile', (req, res) => {
   assign(res.resultData, {
     SettingStore: {
       page: 'profile'
@@ -371,27 +319,27 @@ router.get('/setting/profile', function (req, res, next) {
   res.json(res.resultData);
 });
 
-router.get(['/policies', '/policies/privacy'], function (req, res, next) {
+router.get(['/policies', '/policies/privacy'], (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/policies/terms', function (req, res, next) {
+router.get('/policies/terms', (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/about', function (req, res, next) {
+router.get('/about', (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/careers', function (req, res, next) {
+router.get('/careers', (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/help', function (req, res, next) {
+router.get('/help', (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/advertisement', function (req, res, next) {
+router.get('/advertisement', (req, res) => {
   res.json(res.resultData);
 });
 

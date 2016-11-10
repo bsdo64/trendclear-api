@@ -1,14 +1,11 @@
 const express = require('express');
-const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
 const co = require('co');
 const { moment } = require('../../../Util/helper/func');
-const _ = require('lodash');
-_.mixin(require('lodash-deep'));
 
-router.get('/', function (req, res) {
+router.get('/', (req, res) => {
   const prop = {
     forumId: req.query.forumId,
     postId: req.query.postId,
@@ -58,7 +55,7 @@ router.get('/', function (req, res) {
 
       const nextPage = parseInt(prop.page, 10) + 1;
 
-      res.json({
+      assign(res.resultData, {
         CommunityStore: {
           type: 'post',
           post: post,
@@ -75,13 +72,11 @@ router.get('/', function (req, res) {
               total: postList.total
             }
           }
-        },
-        GnbStore: res.resultData.GnbStore,
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
-        ReportStore: res.resultData.ReportStore,
-        AuthStore: res.resultData.AuthStore
+        }
       });
+
+      res.json(res.resultData);
+
     } else if (prop.forumId) {
       const posts = yield M.Forum.getForumPostList(prop);
 
@@ -92,7 +87,7 @@ router.get('/', function (req, res) {
         return post;
       });
 
-      res.json({
+      assign(res.resultData, {
         CommunityStore: {
           type: 'forum',
           forum: res.resultData.CommunityStore.forum,
@@ -105,13 +100,11 @@ router.get('/', function (req, res) {
               total: posts.total
             }
           }
-        },
-        GnbStore: res.resultData.GnbStore,
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
-        ReportStore: res.resultData.ReportStore,
-        AuthStore: res.resultData.AuthStore
+        }
       });
+
+      res.json(res.resultData);
+
     } else {
       res.json({
         GnbStore: {
@@ -121,16 +114,13 @@ router.get('/', function (req, res) {
             categories: res.resultData.GnbStore.categoryMenu.categories
           }
         },
-        LoginStore: res.resultData.LoginStore,
-        UserStore: res.resultData.UserStore,
         BestPostStore: {},
-        ReportStore: res.resultData.ReportStore,
       });
     }
   });
 });
 
-router.get(['/settings', '/settings/foruminfo'], function (req, res) {
+router.get(['/settings', '/settings/foruminfo'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'foruminfo'
@@ -139,7 +129,7 @@ router.get(['/settings', '/settings/foruminfo'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/forumurl'], function (req, res) {
+router.get(['/settings/forumurl'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'forumurl'
@@ -148,7 +138,7 @@ router.get(['/settings/forumurl'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/forumprefix'], function (req, res) {
+router.get(['/settings/forumprefix'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'forumprefix'
@@ -157,7 +147,7 @@ router.get(['/settings/forumprefix'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/announce'], function (req, res) {
+router.get(['/settings/announce'], (req, res) => {
   const prop = {
     forumId: req.query.forumId,
     postId: req.query.postId,
@@ -173,13 +163,12 @@ router.get(['/settings/announce'], function (req, res) {
     .getForumPostList(prop)
     .then(function (posts) {
 
-      for (let i in posts.results) {
-        for (let j in posts.results[i]) {
-          if (j === 'created_at') {
-            posts.results[i][j] = moment(posts.results[i][j]).fromNow();
-          }
+      posts.results = posts.results.map((post) => {
+        if (post.created_at) {
+          post.created_at = moment(post.created_at).fromNow();
         }
-      }
+        return post;
+      });
 
       res.json({
         CommunityStore: {
@@ -206,11 +195,11 @@ router.get(['/settings/announce'], function (req, res) {
         UserStore: res.resultData.UserStore,
         ReportStore: res.resultData.ReportStore,
         AuthStore: res.resultData.AuthStore
-      })
+      });
     });
 });
 
-router.get(['/settings/writepost'], function (req, res) {
+router.get(['/settings/writepost'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'writepost'
@@ -219,7 +208,7 @@ router.get(['/settings/writepost'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/writecomment'], function (req, res) {
+router.get(['/settings/writecomment'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'writecomment'
@@ -228,7 +217,7 @@ router.get(['/settings/writecomment'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/share'], function (req, res) {
+router.get(['/settings/share'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'share'
@@ -237,7 +226,7 @@ router.get(['/settings/share'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/promotion'], function (req, res) {
+router.get(['/settings/promotion'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'promotion'
@@ -246,7 +235,7 @@ router.get(['/settings/promotion'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/managers'], function (req, res) {
+router.get(['/settings/managers'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'managers'
@@ -255,7 +244,7 @@ router.get(['/settings/managers'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/banlist'], function (req, res) {
+router.get(['/settings/banlist'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'banlist'
@@ -264,7 +253,7 @@ router.get(['/settings/banlist'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/spams'], function (req, res) {
+router.get(['/settings/spams'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'spams'
@@ -273,7 +262,7 @@ router.get(['/settings/spams'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/spamreports'], function (req, res) {
+router.get(['/settings/spamreports'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'spamreports'
@@ -282,7 +271,7 @@ router.get(['/settings/spamreports'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat'], function (req, res) {
+router.get(['/settings/stat'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat'
@@ -291,7 +280,7 @@ router.get(['/settings/stat'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/forum'], function (req, res) {
+router.get(['/settings/stat/forum'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_forum'
@@ -300,7 +289,7 @@ router.get(['/settings/stat/forum'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/views'], function (req, res) {
+router.get(['/settings/stat/views'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_views'
@@ -309,7 +298,7 @@ router.get(['/settings/stat/views'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/visitors'], function (req, res) {
+router.get(['/settings/stat/visitors'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_visitors'
@@ -318,7 +307,7 @@ router.get(['/settings/stat/visitors'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/likerank'], function (req, res) {
+router.get(['/settings/stat/likerank'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_likerank'
@@ -327,7 +316,7 @@ router.get(['/settings/stat/likerank'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/commentrank'], function (req, res) {
+router.get(['/settings/stat/commentrank'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_commentrank'
@@ -336,7 +325,7 @@ router.get(['/settings/stat/commentrank'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get(['/settings/stat/viewrank'], function (req, res) {
+router.get(['/settings/stat/viewrank'], (req, res) => {
   assign(res.resultData, {
     ForumSettingStore: {
       content: 'stat_viewrank'
@@ -345,13 +334,13 @@ router.get(['/settings/stat/viewrank'], function (req, res) {
   res.json(res.resultData);
 });
 
-router.get('/submit/forum', function (req, res) {
+router.get('/submit/forum', (req, res) => {
 
   res.json(res.resultData);
 
 });
 
-router.get('/submit', function (req, res) {
+router.get('/submit', (req, res) => {
   const user = res.locals.user;
   const {postId, forumId} = req.query;
 
@@ -394,13 +383,13 @@ router.get('/submit', function (req, res) {
                     },
                     ReportStore: res.resultData.ReportStore,
                     AuthStore: res.resultData.AuthStore
-                  })
-                })
-            })
+                  });
+                });
+            });
         } else {
 
           // Not author !
-          res.redirect('/')
+          res.redirect('/');
         }
       });
   } else if(forumId) {
@@ -430,9 +419,9 @@ router.get('/submit', function (req, res) {
               },
               ReportStore: res.resultData.ReportStore,
               AuthStore: res.resultData.AuthStore
-            })
+            });
           });
-      })
+      });
   } else {
     res.json({
       GnbStore: res.resultData.GnbStore,
@@ -443,7 +432,7 @@ router.get('/submit', function (req, res) {
       },
       ReportStore: res.resultData.ReportStore,
       AuthStore: res.resultData.AuthStore
-    })
+    });
   }
 });
 

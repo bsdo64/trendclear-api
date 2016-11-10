@@ -3,11 +3,8 @@ const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
 const {moment} = require('../../../Util/helper/func');
-const _ = require('lodash');
 
-_.mixin(require('lodash-deep'));
-
-router.get('/:collectionId', function (req, res, next) {
+router.get('/:collectionId', (req, res) => {
   const props = {
     collectionId : req.params.collectionId,
     user : res.locals.user,
@@ -46,11 +43,11 @@ router.get('/:collectionId', function (req, res, next) {
         ReportStore: res.resultData.ReportStore,
         ListStore: res.resultData.ListStore,
         AuthStore: res.resultData.AuthStore
-      })
+      });
     });
 });
 
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
   res.redirect('/');
 });
 

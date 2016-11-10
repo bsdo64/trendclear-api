@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const helper = require('../../Util/helper/func');
 const htmlToText = require('html-to-text');
-const {Point} = require('vn-api-client').Socket;
+const {Point, Venalink} = require('vn-api-client').Socket;
 const M = require('../../../vn-api-model/index');
 const co = require('co');
 
@@ -17,8 +17,7 @@ router.get('/', (req, res) => {
     })
 });
 
-router.get('/post/m/:linkId', function (req, res) {
-  "use strict";
+router.get('/post/m/:linkId', (req, res) => {
   const user = res.locals.user;
 
   // 메타 제공 시스템
@@ -76,11 +75,10 @@ router.get('/post/m/:linkId', function (req, res) {
 });
 
 const errorHandler = (error) => {
-  console.error(error);
+  res.json(err);
 };
 
-router.get('/post/:linkId', function (req, res, next) {
-  "use strict";
+router.get('/post/:linkId', (req, res) => {
 
   const visitor = res.locals.visitor;
   const user = res.locals.user;
@@ -136,6 +134,11 @@ router.post('/activate', (req, res) => {
     const [venalink, trendbox, inventories] = yield M.Venalink.checkVenalinkItem(venalinkObj, user);
 
     if (venalink) {
+
+      Venalink.emit('new venalink', {
+        venalink: venalink
+      });
+
       res.json({
         success: true,
         venalink: venalink,
@@ -152,10 +155,9 @@ router.post('/activate', (req, res) => {
     }
 
   }).catch(err => {
-      console.log(err);
 
-      res.json(err);
-    })
+    res.json(err);
+  });
 });
 
 router.post('/participate', (req, res) => {
@@ -184,10 +186,8 @@ router.post('/participate', (req, res) => {
     }
 
   }).catch(err => {
-      console.log(err);
-
-      res.json(err);
-    })
+    res.json(err);
+  });
 });
 
 module.exports = router;

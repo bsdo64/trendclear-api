@@ -3,9 +3,6 @@ const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
 const {moment} = require('../../../Util/helper/func');
-const _ = require('lodash');
-
-_.mixin(require('lodash-deep'));
 
 router.use((req, res, next) => {
   const user = res.locals.user;
@@ -22,18 +19,17 @@ router.use((req, res, next) => {
       next();
     })
     .catch(err => {
-      next(err)
+      next(err);
     });
 });
 
-router.get(['/', '/likes'], function (req, res, next) {
+router.get(['/', '/likes'], (req, res) => {
   const user = res.locals.user;
 
   return M
     .Post
     .likePostList(0, user)
     .then(posts => {
-      "use strict";
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
@@ -62,14 +58,13 @@ router.get(['/', '/likes'], function (req, res, next) {
     });
 });
 
-router.get('/posts', function (req, res, next) {
+router.get('/posts', (req, res) => {
   const user = res.locals.user;
 
   return M
     .Post
     .myWritePostList(0, user)
     .then(posts => {
-      "use strict";
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
@@ -98,14 +93,13 @@ router.get('/posts', function (req, res, next) {
     });
 });
 
-router.get('/comments', function (req, res, next) {
+router.get('/comments', (req, res) => {
   const user = res.locals.user;
 
   return M
     .Post
     .myWriteCommentPostList(0, user)
     .then(posts => {
-      "use strict";
 
       for (let i in posts.results) {
         for (let j in posts.results[i]) {
