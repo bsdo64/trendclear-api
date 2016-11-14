@@ -66,6 +66,10 @@ module.exports = function (req, res, next) {
           openLoginModal: false,
           loginSuccess: false,
           loginFail: false
+        },
+        AuthStore: {
+          isLogin: false,
+          userId: null
         }
       });
 
