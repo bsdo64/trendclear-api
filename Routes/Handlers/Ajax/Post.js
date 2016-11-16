@@ -12,7 +12,7 @@ router.get('/meta/:postId', function (req, res) {
   // 메타 제공 시스템
 
   let defaultData = {
-    production: process.env.NODE_ENV ? true : false,
+    production: !!process.env.NODE_ENV,
 
     title: '베나클',
     meta: [
