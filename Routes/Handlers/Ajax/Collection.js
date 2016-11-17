@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
   co(function*() {
     res.json(yield M.Collection.getUserCollections(user));
-  })
+  });
 });
 
 router.post('/', (req, res) => {
@@ -23,10 +23,10 @@ router.post('/', (req, res) => {
 
   co(function*() {
     res.json(yield M.Collection.createCollection({
-        title: collectionObj.title,
-        password: collectionObj.description,
-        isPrivate: collectionObj.isPrivate,
-        creator_id: user.id
+      title: collectionObj.title,
+      password: collectionObj.description,
+      isPrivate: collectionObj.isPrivate,
+      creator_id: user.id
     }));
   });
 });
@@ -36,8 +36,8 @@ router.get('/:id', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    res.json(yield M.Collection.getCollectionById(collectionId, user))
-  })
+    res.json(yield M.Collection.getCollectionById(collectionId, user));
+  });
 });
 
 router.put('/:id', (req, res) => {
@@ -51,12 +51,12 @@ router.put('/:id', (req, res) => {
 
   co(function*() {
     res.json(yield M.Collection.updateCollection(collectionId, {
-        title: collectionObj.title,
-        password: collectionObj.description,
-        isPrivate: collectionObj.isPrivate,
-        creator_id: user.id
+      title: collectionObj.title,
+      password: collectionObj.description,
+      isPrivate: collectionObj.isPrivate,
+      creator_id: user.id
     }));
-  })
+  });
 });
 
 router.delete('/:id', (req, res) => {
@@ -70,7 +70,7 @@ router.delete('/:id', (req, res) => {
     } else {
       res.json(false);
     }
-  })
+  });
 });
 
 router.get('/:collectionId/forum', (req, res) => {
@@ -78,7 +78,7 @@ router.get('/:collectionId/forum', (req, res) => {
 
   co(function*() {
     res.json(yield M.Collection.getForums(collectionId));
-  })
+  });
 });
 
 router.post('/:collectionId/forum', (req, res) => {
@@ -87,7 +87,7 @@ router.post('/:collectionId/forum', (req, res) => {
 
   co(function*() {
     res.json(yield M.Collection.addForum(collectionId, forumId));
-  })
+  });
 });
 
 router.delete('/:collectionId/forum/:forumId', (req, res) => {
@@ -96,7 +96,7 @@ router.delete('/:collectionId/forum/:forumId', (req, res) => {
 
   co(function*() {
     res.json(yield M.Collection.removeForum(collectionId, forumId));
-  })
+  });
 });
 
 router.get('/:collectionId/posts', (req, res) => {

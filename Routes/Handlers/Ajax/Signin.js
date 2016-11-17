@@ -47,7 +47,7 @@ router.post('/checkEmailDup', function (req, res, next) {
     .then(function (dup) {
 
       res.status(200).json(dup);
-    })
+    });
 });
 
 router.post('/checkNickDup', function (req, res, next) {
@@ -58,7 +58,7 @@ router.post('/checkNickDup', function (req, res, next) {
     .then(function (dup) {
 
       res.status(200).json(dup);
-    })
+    });
 });
 
 router.post('/requestEmailVerify', function (req, res, next) {
