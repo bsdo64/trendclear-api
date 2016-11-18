@@ -24,7 +24,6 @@ router.get('/likes', function (req, res) {
       const limit = 10;
       const nextPage = page + 1;
       const data = {
-        type: 'likePostList',
         data: posts.results,
         collection: {
           current_page: nextPage,
@@ -58,7 +57,6 @@ router.get('/posts', function (req, res) {
       const limit = 10;
       const nextPage = page + 1;
       const data = {
-        type: 'myWritePostList',
         data: posts.results,
         collection: {
           current_page: nextPage,
@@ -92,7 +90,6 @@ router.get('/comments', function (req, res) {
       const limit = 10;
       const nextPage = page + 1;
       const data = {
-        type: 'myWriteCommentPostList',
         data: posts.results,
         collection: {
           current_page: nextPage,
