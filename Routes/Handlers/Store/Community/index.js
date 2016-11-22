@@ -61,10 +61,7 @@ router.get('/', (req, res) => {
           post: post,
           forum: res.resultData.CommunityStore.forum,
           list: {
-            page: nextPage,
             data: postList.results,
-            total: postList.total,
-            limit: 10,
             collection: {
               current_page: nextPage,
               limit: 10,

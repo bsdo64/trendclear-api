@@ -74,8 +74,9 @@ router.post('/comment', (req, res) => {
   co(function* routerHandler() {
     const newComment = yield M.Comment.submitComment(commentObj, user);
     const post = yield M.Post.findOneById(commentObj.postId, 0, user);
-    const author = post.author;
+    const author = newComment.author;
 
+    post.author = author;
     post.created_at = moment(post.created_at).fromNow();
 
     post.comments = post.comments.map((comment) => {

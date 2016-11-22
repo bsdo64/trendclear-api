@@ -142,7 +142,7 @@ router.delete('/avatarImg', (req, res) => {
     });
 });
 
-router.post('/levelup', (req, res) => {
+router.get('/levelup', (req, res) => {
   const user = res.locals.user;
   res.json(user.trendbox);
 });
