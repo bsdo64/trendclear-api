@@ -23,7 +23,7 @@ router.get('/post/m/:linkId', (req, res) => {
   // 메타 제공 시스템
 
   let defaultMetaData = {
-    production: process.env.NODE_ENV ? true : false,
+    production: !!process.env.NODE_ENV,
 
     title: '베나클',
     meta: [
@@ -135,9 +135,7 @@ router.post('/activate', (req, res) => {
 
     if (venalink) {
 
-      Venalink.emit('new venalink', {
-        venalink: venalink
-      });
+      Venalink.emit('add venalink cron job', venalink);
 
       res.json({
         success: true,
