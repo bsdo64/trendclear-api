@@ -296,7 +296,7 @@ router.post('/report', (req, res) => {
     .reportItem(reportObj, user)
     .then(function (reportItem) {
 
-      res.json(reportItem)
+      res.json(reportItem);
     })
     .catch(err => {
       console.error(err);

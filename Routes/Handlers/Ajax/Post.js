@@ -6,7 +6,6 @@ const helper = require('../../Util/helper/func');
 const M = require('../../../vn-api-model/index');
 
 router.get('/meta/:postId', function (req, res) {
-  "use strict";
   const user = res.locals.user;
 
   // 메타 제공 시스템
@@ -34,7 +33,6 @@ router.get('/meta/:postId', function (req, res) {
         eager: null
       }, user)
       .then(post => {
-        "use strict";
 
         if (post) {
           post.content = htmlToText.fromString(post.content, {
