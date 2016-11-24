@@ -24,9 +24,9 @@ const ErrorHandler = (req, res) => {
   };
 };
 
-router.post('/post/:postId', (req, res) => {
+router.post('/post', (req, res) => {
   const postObj = {
-    postId: req.params.postId
+    postId: req.body.postId
   };
   const user = res.locals.user;
 
@@ -44,9 +44,9 @@ router.post('/post/:postId', (req, res) => {
   }).catch(ErrorHandler(req, res))
 });
 
-router.post('/comment/:commentId', (req, res) => {
+router.post('/comment', (req, res) => {
   const commentObj = {
-    commentId: req.params.commentId
+    commentId: req.body.commentId
   };
   const user = res.locals.user;
 
@@ -64,9 +64,9 @@ router.post('/comment/:commentId', (req, res) => {
   }).catch(ErrorHandler(req, res));
 });
 
-router.post('/subComment/:subCommentId', (req, res) => {
+router.post('/subComment', (req, res) => {
   const commentObj = {
-    subCommentId: req.params.subCommentId
+    subCommentId: req.body.subCommentId
   };
   const user = res.locals.user;
 

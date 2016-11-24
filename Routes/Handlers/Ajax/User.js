@@ -142,11 +142,6 @@ router.delete('/avatarImg', (req, res) => {
     });
 });
 
-router.post('/levelup', (req, res) => {
-  const user = res.locals.user;
-  res.json(user.trendbox);
-});
-
 router.post('/setting/password', (req, res) => {
   const passwordObj = {
     oldPassword: req.body.oldPassword,
