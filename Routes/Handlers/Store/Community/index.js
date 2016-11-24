@@ -368,7 +368,7 @@ router.get('/submit', (req, res) => {
                     GnbStore: res.resultData.GnbStore,
                     LoginStore: res.resultData.LoginStore,
                     UserStore: res.resultData.UserStore,
-                    SubmitStore: {
+                    SubmitPostStore: {
                       prefixes: result.prefixes,
                       forum: result.forum,
                       postId: post.id,
@@ -409,7 +409,7 @@ router.get('/submit', (req, res) => {
               GnbStore: res.resultData.GnbStore,
               LoginStore: res.resultData.LoginStore,
               UserStore: res.resultData.UserStore,
-              SubmitStore: {
+              SubmitPostStore: {
                 prefixes: result.prefixes,
                 forum: result.forum,
                 type: 'write'
@@ -424,7 +424,7 @@ router.get('/submit', (req, res) => {
       GnbStore: res.resultData.GnbStore,
       LoginStore: res.resultData.LoginStore,
       UserStore: res.resultData.UserStore,
-      SubmitStore: {
+      SubmitPostStore: {
         type: 'write'
       },
       ReportStore: res.resultData.ReportStore,

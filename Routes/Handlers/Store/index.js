@@ -294,7 +294,7 @@ router.get('/search', (req, res) => {
 
 router.get('/setting', (req, res) => {
   assign(res.resultData, {
-    SettingStore: {
+    UserSettingStore: {
       page: 'password'
     }
   });
@@ -303,7 +303,7 @@ router.get('/setting', (req, res) => {
 
 router.get('/setting/password', (req, res) => {
   assign(res.resultData, {
-    SettingStore: {
+    UserSettingStore: {
       page: 'password'
     }
   });
@@ -312,7 +312,7 @@ router.get('/setting/password', (req, res) => {
 
 router.get('/setting/profile', (req, res) => {
   assign(res.resultData, {
-    SettingStore: {
+    UserSettingStore: {
       page: 'profile'
     }
   });

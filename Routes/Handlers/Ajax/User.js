@@ -131,6 +131,7 @@ router.delete('/avatarImg', (req, res) => {
     .User
     .removeAvatarImg(user)
     .then(result => {
+
       res.json(result)
     })
     .catch(function (err) {
@@ -217,7 +218,7 @@ router.put('/noti/read', (req, res) => {
     .User
     .readNoti(notiReadObj, user)
     .then(result => {
-      res.json(result)
+      res.json(result);
     })
     .catch(err => {
       console.log(err);
