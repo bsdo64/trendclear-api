@@ -83,7 +83,7 @@ router.get('/post/:linkId', (req, res) => {
         user_id: user ? user.id : null,
       };
 
-      const [existLog] = yield [
+      const [existLog, newExistLog] = yield [
         M.Post.Db.tc_link_click_logs
           .query()
           .where({
@@ -97,11 +97,51 @@ router.get('/post/:linkId', (req, res) => {
       ];
 
       if (!existLog) {
-        yield M.Trendbox.incrementPointT(post.author, 5)();
+
+        const trade = yield M.Post.Db
+          .tc_trades
+          .query()
+          .insert({
+            action: 'sharelink_new_visitor',
+            sender_type: 'venacle',
+            sender_id: null,
+            target_type: 'sharelink_post',
+            target_id: post.id,
+            receiver_type: 'user',
+            receiver_id: post.author.id,
+            amount_r: 0,
+            amount_t: 5,
+            created_at: new Date()
+          });
+
+        const beforeAccount = yield M.Post.Db
+          .tc_user_point_accounts
+          .query()
+          .where({
+            user_id: post.author.id
+          })
+          .orderBy('created_at', 'DESC')
+          .first();
+
+        const newAccount = yield M.Post.Db
+          .tc_user_point_accounts
+          .query()
+          .insert({
+            type: 'deposit',
+            point_type: 'TP',
+            total_r: beforeAccount.total_r + trade.amount_r,
+            total_t: beforeAccount.total_t + trade.amount_t,
+            trade_id: trade.id,
+            user_id: post.author.id,
+            created_at: new Date()
+          });
+
+        yield M.Trendbox.resetPoint(post.author, newAccount)();
 
         Point.emit('send point', {
           to: post.author.nick,
           data: { TP: 5 },
+          userId: post.author.id
         });
       }
     }

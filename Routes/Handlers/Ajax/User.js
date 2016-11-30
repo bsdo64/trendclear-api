@@ -336,4 +336,20 @@ router.post('/resetPassword', (req, res) => {
   });
 });
 
+router.post('/payback/rp', (req, res) => {
+  const user = res.locals.user;
+  const paybackRPObj = {
+    userVenalinkId: req.body.userVenalinkId
+  };
+
+  co(function* RouterHandler() {
+    yield M.Venalink.checkPaybackRP(paybackRPObj, user);
+
+    res.json({
+      list: yield M.Venalink.participatedVenalinkList(user),
+      userId: user.id
+    });
+  })
+});
+
 module.exports = router;

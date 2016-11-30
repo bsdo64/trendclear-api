@@ -3,6 +3,12 @@ const router = express.Router();
 const assign = require('deep-assign');
 const M = require('../../../../vn-api-model');
 
+router.get('/chargePoint', (req, res) => {
+  const user = res.locals.user;
+
+  res.json(res.resultData);
+});
+
 router.get(['/points'], (req, res) => {
   const user = res.locals.user;
 

@@ -103,14 +103,7 @@ router.get('/post/:linkId', (req, res) => {
       } else {
 
         // increment R point
-        const participantUser = yield M.Venalink.payParticipantR(req.params.linkId, user);
-
-        Point.emit('send point', {
-          to: participantUser.nick,
-          data: {
-            RP: 5
-          }
-        });
+        yield M.Venalink.payParticipantR(req.params.linkId, user);
 
         res.json(post);
       }
@@ -135,7 +128,7 @@ router.post('/activate', (req, res) => {
 
     if (venalink) {
 
-      Venalink.emit('add venalink cron job', venalink);
+      Venalink.emit('add venalink cron job', {venalink, userId: user.id});
 
       res.json({
         success: true,

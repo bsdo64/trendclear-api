@@ -74,12 +74,15 @@ router.post('/comment', (req, res) => {
   co(function* routerHandler() {
     const newComment = yield M.Comment.submitComment(commentObj, user);
     const post = yield M.Post.findOneById(commentObj.postId, 0, user);
-    const author = newComment.author;
+    const postAuthor = post.author;
 
-    post.author = author;
     post.created_at = moment(post.created_at).fromNow();
 
     post.comments = post.comments.map((comment) => {
+      if (comment.id === newComment.id) {
+        comment.author = newComment.author;
+      }
+
       if (comment.created_at) {
         comment.created_at = moment(comment.created_at).fromNow();
       }
@@ -96,15 +99,15 @@ router.post('/comment', (req, res) => {
     });
 
     // Noti section
-    if (post && author && (author.id !== user.id)) {
-      const noti = yield author
+    if (post && postAuthor && (postAuthor.id !== user.id)) {
+      const noti = yield postAuthor
         .$relatedQuery('notifications')
         .where('type', 'comment_write')
         .andWhere('target_id', post.id)
         .first();
 
       if (noti) {
-        yield author
+        yield postAuthor
           .$relatedQuery('notifications')
           .patch({
             read: false,
@@ -113,7 +116,7 @@ router.post('/comment', (req, res) => {
           })
           .where('id', noti.id);
       } else {
-        yield author
+        yield postAuthor
           .$relatedQuery('notifications')
           .insert({
             type: 'comment_write',
@@ -124,7 +127,7 @@ router.post('/comment', (req, res) => {
           });
       }
 
-      const notis = yield author
+      const notis = yield postAuthor
         .$relatedQuery('notifications')
         .select('*', 'tc_user_notifications.id as id', 'tc_posts.id as post_id')
         .join('tc_posts', 'tc_posts.id', 'tc_user_notifications.target_id')
@@ -132,7 +135,7 @@ router.post('/comment', (req, res) => {
         .limit(10)
         .orderBy('receive_at', 'DESC');
 
-      NotiSocketCli.emit('send noti', { notis, to: author.nick });
+      NotiSocketCli.emit('send noti', { notis, to: postAuthor.nick, userId: postAuthor.id });
     }
 
     res.json(post);
