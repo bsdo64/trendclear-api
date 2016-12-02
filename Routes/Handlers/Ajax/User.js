@@ -347,6 +347,7 @@ router.post('/payback/rp', (req, res) => {
 
     res.json({
       list: yield M.Venalink.participatedVenalinkList(user),
+      trendbox: yield M.User.getUserTrendbox(user),
       userId: user.id
     });
   })

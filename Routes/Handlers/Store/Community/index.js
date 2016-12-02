@@ -14,7 +14,8 @@ router.get('/', (req, res) => {
     ip: req.ip,
     forumSearch: req.query.forumSearch,
     forumPrefix: req.query.forumPrefix,
-    order: req.query.order
+    order: req.query.order,
+    comment_order: req.query.comment_order,
   };
 
   const user = res.locals.user;
@@ -25,7 +26,7 @@ router.get('/', (req, res) => {
       const [ , postList, post] = yield [
         M.Post.incrementView(prop, visitor),
         M.Forum.getForumPostList(prop),
-        M.Post.findOneById(prop.postId, prop.commentPage, user),
+        M.Post.findOneById(prop, user),
       ];
 
       post.created_at = moment(post.created_at).fromNow();
@@ -339,12 +340,12 @@ router.get('/submit/forum', (req, res) => {
 
 router.get('/submit', (req, res) => {
   const user = res.locals.user;
-  const {postId, forumId} = req.query;
+  const {postId, forumId, commentPage} = req.query;
 
   if (postId && user) {
     M
       .Post
-      .findOneById(postId, 0, user)
+      .findOneById({postId, commentPage}, user)
       .then(post => {
 
         if (post.author_id === user.id) {
