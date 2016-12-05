@@ -76,8 +76,31 @@ module.exports = function (req, res, next) {
       next();
     }
   }).catch(err => {
-      console.error(err);
 
-      next();
-    })
+    M
+      .User
+      .checkUUID(req)
+      .then(visitor => {
+
+        res.locals.visitor = visitor;
+
+        assign(res.resultData, {
+          UserStore: {
+            user: null
+          },
+          LoginStore: {
+            isLogin: false,
+            openLoginModal: false,
+            loginSuccess: false,
+            loginFail: false
+          },
+          AuthStore: {
+            isLogin: false,
+            userId: null
+          }
+        });
+
+        next();
+      });
+  });
 };
