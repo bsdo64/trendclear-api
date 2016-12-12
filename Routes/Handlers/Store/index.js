@@ -49,7 +49,7 @@ router.use((req, res, next) => {
       },
       GnbStore: {
         openGnb: false,
-        gnbMenu: { openSideNow: null, data: categories },
+        gnbMenu: { data: categories },
         categoryMenu: {},
         newForums: {
           data: newForums.results,
