@@ -196,6 +196,7 @@ router.use('/collection', require('./Collection'));
 router.use('/community', require('./Community'));
 router.use('/activity', require('./Activity'));
 router.use('/user', require('./User'));
+router.use('/help', require('./Help'));
 
 router.get('/signin', (req, res) => {
 
@@ -332,10 +333,6 @@ router.get('/about', (req, res) => {
 });
 
 router.get('/careers', (req, res) => {
-  res.json(res.resultData);
-});
-
-router.get('/help', (req, res) => {
   res.json(res.resultData);
 });
 

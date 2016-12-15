@@ -5,6 +5,7 @@ const StoreHandler = require('./../Store/index');
 const {
   Best,
   CheckUser,
+  Point,
   Collection,
   Community,
   Forum,
@@ -41,6 +42,7 @@ router.use('/community', Community);
 router.use('/forum', Forum);
 router.use('/user', User);
 router.use('/like', Like);
+router.use('/point', Point);
 router.use('/link', Link);
 router.use('/login', Login);
 router.use('/logout', Logout);
