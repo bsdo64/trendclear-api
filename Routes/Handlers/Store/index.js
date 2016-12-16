@@ -44,9 +44,6 @@ router.use((req, res, next) => {
     ];
 
     assign(res.resultData, {
-      ModalStore: {
-        openModal: false
-      },
       GnbStore: {
         openGnb: false,
         gnbMenu: { data: categories },
