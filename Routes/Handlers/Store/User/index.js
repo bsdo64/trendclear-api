@@ -26,6 +26,23 @@ router.get(['/points'], (req, res) => {
     });
 });
 
+router.get('/points/chargeLog', (req, res) => {
+  const user = res.locals.user;
+
+  M
+    .Point
+    .getPaymentList(user)
+    .then(list => {
+      assign(res.resultData, {
+        UserStore: {
+          payments: list
+        }
+      });
+
+      res.json(res.resultData);
+    });
+});
+
 router.get(['/venalinks', '/venalinks/active'], (req, res) => {
   const user = res.locals.user;
 
