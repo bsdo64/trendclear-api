@@ -143,7 +143,7 @@ router.post('/check/rp', (req, res) => {
 
       const paymentResultFromIamport = paymentResultFromIamportXHR.body.response;
 
-      yield M.Point.setPayment({
+      const payment = yield M.Point.setPayment({
         amount: paymentResultFromIamport.amount,
         apply_num: paymentResultFromIamport.apply_num,
         buyer_addr: paymentResultFromIamport.buyer_addr,
@@ -180,6 +180,9 @@ router.post('/check/rp', (req, res) => {
       });
 
       if (paymentResultFromIamport.status == 'paid' && paymentResultFromIamport.amount == amount) {
+
+        yield M.Point.chargeRP(payment, user);
+
         res.json({
           message: 'success',
           error: false,
@@ -214,7 +217,6 @@ router.post('/check/rp', (req, res) => {
 });
 
 router.post('/noti', (req, res) => {
-  const user = res.locals.user;
   const imp_uid = req.body.imp_uid;
   const merchant_uid = req.body.merchant_uid;
 
@@ -271,13 +273,15 @@ router.post('/noti', (req, res) => {
         vbank_holder: paymentResultFromIamport.vbank_holder,
         vbank_name: paymentResultFromIamport.vbank_name,
         vbank_num: paymentResultFromIamport.vbank_num
-      }, user);
+      });
 
-      res.json(req.body);
+      res.json(paymentResultFromIamport);
     }
 
     catch (err) {
-      res.json(req.body);
+      console.error(err);
+
+      res.json(err);
     }
   });
 });

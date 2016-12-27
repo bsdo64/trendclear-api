@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     .getItems()
     .then(items => {
       res.json({items: items});
-    })
+    });
 });
 
 router.get('/post/m/:linkId', (req, res) => {
@@ -74,8 +74,10 @@ router.get('/post/m/:linkId', (req, res) => {
   }
 });
 
-const errorHandler = (error) => {
-  res.json(err);
+const errorHandler = (res) => {
+  return (error) => {
+    res.json(error);
+  };
 };
 
 router.get('/post/:linkId', (req, res) => {
@@ -110,7 +112,7 @@ router.get('/post/:linkId', (req, res) => {
     } else {
       res.json(post);
     }
-  }).catch(errorHandler)
+  }).catch(errorHandler(res));
 });
 
 router.post('/activate', (req, res) => {
