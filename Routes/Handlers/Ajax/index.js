@@ -26,9 +26,11 @@ const {
   VenacleStore
 } = require('require-dir')();
 
+const logTimer = new TimeLog('CheckUser');
+
 router.use(NoCache);
 router.use(RequestLog);
-router.use(TimeLog.Start, CheckUser, TimeLog.End);
+router.use(logTimer.startRouteHandler, CheckUser, logTimer.endRouteHandler);
 
 // Store data
 

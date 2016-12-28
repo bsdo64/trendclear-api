@@ -1,5 +1,3 @@
-'use strict';
-
 const {signedSessionId} = require('../../Util/helper/func');
 const assign = require('deep-assign');
 const co = require('co');
