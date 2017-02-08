@@ -353,4 +353,31 @@ router.post('/payback/rp', (req, res) => {
   })
 });
 
+router.get('/points', (req, res) => {
+  const user = res.locals.user;
+  const page = req.query.p;
+  const pointType = req.query.pointType || 'TP';
+
+  M
+    .Point
+    .getUserAccountList({
+      where: {
+        user_id: user.id,
+        point_type: pointType
+      },
+      order: {
+        column: 'created_at',
+        direction: 'DESC'
+      },
+      page: page || 1,
+      limit: 10
+    }, user)
+    .then(forums => {
+      res.json(forums);
+    })
+    .catch((e) => {
+      res.json(e);
+    });
+});
+
 module.exports = router;
