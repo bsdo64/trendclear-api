@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const htmlToText = require('html-to-text');
-
-const helper = require('../../Util/helper/func');
-const M = require('../../../vn-api-model/index');
+const { model } = require('util/func');
 
 router.get('/meta/:postId', function (req, res) {
   const user = res.locals.user;
@@ -25,7 +23,7 @@ router.get('/meta/:postId', function (req, res) {
   };
 
   if (req.params.postId) {
-    M
+    model
       .Post
       .findOne({
         where: {id: req.params.postId},

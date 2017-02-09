@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
+const { model } = require('util/func');
 const co = require('co');
-
-const M = require('../../../vn-api-model/index');
 
 router.get('/', (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .VenacleStore
     .getItems()
     .then(items => {
@@ -24,7 +22,7 @@ router.post('/purchase/item', (req, res) => {
   };
 
   co(function* Handler() {
-    const [account, inventories, trendbox] = yield M.VenacleStore.purchaseItem(itemObj, user);
+    const [account, inventories, trendbox] = yield model.VenacleStore.purchaseItem(itemObj, user);
     res.json({
       account: account,
       inventories: inventories,

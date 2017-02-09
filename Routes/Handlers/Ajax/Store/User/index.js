@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const assign = require('deep-assign');
-const M = require('../../../../vn-api-model');
+const {model} = require('util/func');
+
 
 router.get('/chargePoint', (req, res) => {
   const user = res.locals.user;
@@ -12,7 +13,7 @@ router.get('/chargePoint', (req, res) => {
 router.get(['/points'], (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .User
     .getPointAccount(user)
     .then(account => {
@@ -29,7 +30,7 @@ router.get(['/points'], (req, res) => {
 router.get('/points/chargeLog', (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .Point
     .getPaymentList(user)
     .then(list => {
@@ -46,7 +47,7 @@ router.get('/points/chargeLog', (req, res) => {
 router.get(['/venalinks', '/venalinks/active'], (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .Venalink
     .activatedVenalinkList(user)
     .then(venalinks => {
@@ -63,7 +64,7 @@ router.get(['/venalinks', '/venalinks/active'], (req, res) => {
 router.get('/venalinks/share', (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .Venalink
     .participatedVenalinkList(user)
     .then(participated => {

@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const assign = require('deep-assign');
-const M = require('../../../../vn-api-model');
-const {moment} = require('../../../Util/helper/func');
+const {moment, model} = require('util/func');
 
 router.use((req, res, next) => {
   const user = res.locals.user;
 
-  M
+  model
     .User
     .getActivityMeta(user)
     .then((meta) => {
@@ -26,7 +25,7 @@ router.use((req, res, next) => {
 router.get(['/', '/likes'], (req, res) => {
   const user = res.locals.user;
 
-  return M
+  return model
     .Post
     .likePostList(0, user)
     .then(posts => {
@@ -61,7 +60,7 @@ router.get(['/', '/likes'], (req, res) => {
 router.get('/posts', (req, res) => {
   const user = res.locals.user;
 
-  return M
+  return model
     .Post
     .myWritePostList(0, user)
     .then(posts => {
@@ -96,7 +95,7 @@ router.get('/posts', (req, res) => {
 router.get('/comments', (req, res) => {
   const user = res.locals.user;
 
-  return M
+  return model
     .Post
     .myWriteCommentPostList(0, user)
     .then(posts => {

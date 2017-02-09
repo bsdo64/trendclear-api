@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
+const { signedSessionId, model } = require('util/func');
 const co = require('co');
 
-const M = require('../../../vn-api-model/index');
+
 
 router.post('/', function (req, res) {
   const userObj = {
     email: req.body.email,
     password: req.body.password
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const sessionId = signedSessionId(req.cookies.sessionId);
 
   co(function* RouterHandler() {
-    const token = yield M.User.login(userObj, sessionId);
+    const token = yield model.User.login(userObj, sessionId);
     res.cookie('token', token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,

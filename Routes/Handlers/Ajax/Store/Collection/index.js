@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const assign = require('deep-assign');
-const M = require('../../../../vn-api-model');
-const {moment} = require('../../../Util/helper/func');
+const {model, moment} = require('util/func');
 
 router.get('/:collectionId', (req, res) => {
   const props = {
@@ -12,7 +11,7 @@ router.get('/:collectionId', (req, res) => {
     order: req.query.order
   };
 
-  M
+  model
     .Collection
     .getCollectionPosts(props)
     .then(posts => {

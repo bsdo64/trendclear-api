@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const assign = require('deep-assign');
-const M = require('../../../../vn-api-model');
 const co = require('co');
-const { moment } = require('../../../Util/helper/func');
+const {model, moment} = require('util/func');
 
 router.get('/', (req, res) => {
   const prop = {
@@ -24,9 +23,9 @@ router.get('/', (req, res) => {
   co(function* RouterHandler() {
     if (prop.forumId && prop.postId) {
       const [ , postList, post] = yield [
-        M.Post.incrementView(prop, visitor),
-        M.Forum.getForumPostList(prop),
-        M.Post.findOneById(prop, user),
+        model.Post.incrementView(prop, visitor),
+        model.Forum.getForumPostList(prop),
+        model.Post.findOneById(prop, user),
       ];
 
       post.created_at = moment(post.created_at).fromNow();
@@ -76,7 +75,7 @@ router.get('/', (req, res) => {
       res.json(res.resultData);
 
     } else if (prop.forumId) {
-      const posts = yield M.Forum.getForumPostList(prop);
+      const posts = yield model.Forum.getForumPostList(prop);
 
       posts.results = posts.results.map((post) => {
         if (post.created_at) {
@@ -156,7 +155,7 @@ router.get(['/settings/announce'], (req, res) => {
     forumPrefix: req.query.forumPrefix,
   };
 
-  M
+  model
     .Forum
     .getForumPostList(prop)
     .then(function (posts) {
@@ -343,13 +342,13 @@ router.get('/submit', (req, res) => {
   const {postId, forumId, commentPage} = req.query;
 
   if (postId && user) {
-    M
+    model
       .Post
       .findOneById({postId, commentPage}, user)
       .then(post => {
 
         if (post.author_id === user.id) {
-          return M
+          return model
             .Forum
             .getPrefix(post.forum_id)
             .then(function (prefixes) {
@@ -359,7 +358,7 @@ router.get('/submit', (req, res) => {
             })
             .then(function (result) {
 
-              return M
+              return model
                 .Forum
                 .getForumInfo(post.forum_id)
                 .then(forum => {
@@ -391,7 +390,7 @@ router.get('/submit', (req, res) => {
         }
       });
   } else if(forumId) {
-    M
+    model
       .Forum
       .getPrefix(forumId)
       .then(function (prefixes) {
@@ -399,7 +398,7 @@ router.get('/submit', (req, res) => {
           prefixes: prefixes
         };
 
-        return M
+        return model
           .Forum
           .getForumInfo(forumId)
           .then(forum => {

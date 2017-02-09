@@ -1,8 +1,6 @@
-"use strict";
+const app = require('../server');
+app.set('port', process.env.PORT || 3001);
 
-const server = require('../server');
-//app.set('port', process.env.port || 3001);
-
-server.listen(3001, () => {
-  console.log('Api server listen port :', 3001);
+app.listen(3001, () => {
+  console.log('Api server listen port :', app.get('port'));
 });

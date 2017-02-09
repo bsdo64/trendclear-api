@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../../Util/helper/func');
+const { moment, model} = require('util/func');
 const co = require('co');
-const M = require('../../../vn-api-model/index');
+
 
 const ErrorHandler = (req, res) => {
   return (err) => {
@@ -32,7 +32,7 @@ router.get('/', (req, res) => {
   };
 
   co(function*() {
-    const posts = yield M.Post.bestPostList(props);
+    const posts = yield model.Post.bestPostList(props);
     const limit = 10;
     const nextPage = props.page + 1;
 
@@ -64,7 +64,7 @@ router.post('/submit', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    res.json(yield M.Post.submitPost(postObj, user, req.body.query));
+    res.json(yield model.Post.submitPost(postObj, user, req.body.query));
   }).catch(ErrorHandler(req, res));
 });
 

@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
-
-const M = require('../../../vn-api-model/index');
+const { signedSessionId, model } = require('util/func');
 
 router.post('/', function (req, res) {
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const sessionId = signedSessionId(req.cookies.sessionId);
 
-  return M
+  return model
     .User
     .logout(null, sessionId)
     .then(function (token) {

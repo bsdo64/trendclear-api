@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
+const { model } = require('util/func');
 const htmlToText = require('html-to-text');
 const {Point, Venalink} = require('vn-api-client').Socket;
-const M = require('../../../vn-api-model/index');
+
 const co = require('co');
 
 router.get('/', (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .VenacleStore
     .getItems()
     .then(items => {
@@ -46,7 +46,7 @@ router.get('/post/m/:linkId', (req, res) => {
         onlyOne: true,
         eager: 'author'
       };
-      const post = yield M.Post.findOneByVenalinkUid(req.params.linkId, postOptions, user);
+      const post = yield model.Post.findOneByVenalinkUid(req.params.linkId, postOptions, user);
 
       if (post) {
         post.content = htmlToText.fromString(post.content, {
@@ -91,11 +91,11 @@ router.get('/post/:linkId', (req, res) => {
       onlyOne: true,
       eager: 'author'
     };
-    const post = yield M.Post.findOneByVenalinkUid(req.params.linkId, postOptions, user);
+    const post = yield model.Post.findOneByVenalinkUid(req.params.linkId, postOptions, user);
 
     if (post) {
-      const existLog = yield M.Venalink.findVenalinkClickLogs(req.params.linkId, post, visitor);
-      const clickLog = yield M.Venalink.createVenalinkClickLogs(req.params.linkId, req.headers.referer, post, visitor, user);
+      const existLog = yield model.Venalink.findVenalinkClickLogs(req.params.linkId, post, visitor);
+      const clickLog = yield model.Venalink.createVenalinkClickLogs(req.params.linkId, req.headers.referer, post, visitor, user);
 
       if (existLog) {
 
@@ -105,7 +105,7 @@ router.get('/post/:linkId', (req, res) => {
       } else {
 
         // increment R point
-        yield M.Venalink.payParticipantR(req.params.linkId, user);
+        yield model.Venalink.payParticipantR(req.params.linkId, user);
 
         res.json(post);
       }
@@ -126,7 +126,7 @@ router.post('/activate', (req, res) => {
   };
 
   co(function* () {
-    const [venalink, trendbox, inventories] = yield M.Venalink.checkVenalinkItem(venalinkObj, user);
+    const [venalink, trendbox, inventories] = yield model.Venalink.checkVenalinkItem(venalinkObj, user);
 
     if (venalink) {
 
@@ -162,7 +162,7 @@ router.post('/participate', (req, res) => {
   };
 
   co(function* () {
-    const [participateVenalink, inventories] = yield M.Venalink.checkVenalinkParticipate(venalinkObj, user);
+    const [participateVenalink, inventories] = yield model.Venalink.checkVenalinkParticipate(venalinkObj, user);
 
     if (participateVenalink) {
       res.json({
