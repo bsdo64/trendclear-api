@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { model } = require('util/func');
 
-
-
 router.get('/forum/create', (req, res) => {
   const validateObj = {
     title: req.query.title
