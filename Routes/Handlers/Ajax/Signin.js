@@ -4,9 +4,8 @@ const helper = require('../../Util/helper/func');
 
 const M = require('../../../vn-api-model/index');
 
-
 router.post('/', function (req, res, next) {
-  var newUserObj = {
+  const newUserObj = {
     email: req.body.signinEmail,
     password: req.body.password,
     nick: req.body.signinNick,
@@ -38,7 +37,7 @@ router.post('/', function (req, res, next) {
     });
 });
 
-// define the home page route
+
 router.post('/checkEmailDup', function (req, res, next) {
 
   M

@@ -346,16 +346,22 @@ router.post('/payback/rp', (req, res) => {
     yield M.Venalink.checkPaybackRP(paybackRPObj, user);
 
     res.json({
-      list: yield M.Venalink.participatedVenalinkList(user),
+      list: yield M.Venalink.makeQuery('tc_user_has_venalinks', {
+        where: { user_id: user.id },
+        eager: ['venalink.participants'],
+        order: {
+          column: 'request_at',
+          direction: 'DESC'
+        }}),
       trendbox: yield M.User.getUserTrendbox(user),
       userId: user.id
     });
-  })
+  });
 });
 
 router.get('/points', (req, res) => {
   const user = res.locals.user;
-  const page = req.query.p;
+  const page = parseInt(req.query.p - 1) || 0;
   const pointType = req.query.pointType || 'TP';
 
   M
@@ -369,11 +375,46 @@ router.get('/points', (req, res) => {
         column: 'created_at',
         direction: 'DESC'
       },
-      page: page || 1,
-      limit: 10
+      page: parseInt(page), // (start from 0)
+      limit: 20
     }, user)
-    .then(forums => {
-      res.json(forums);
+    .then(data => {
+
+      res.json({
+        data: data,
+        target: 'user',
+        targetId: user.id
+      });
+    })
+    .catch((e) => {
+      res.json(e);
+    });
+});
+
+router.get('/points/chargeLog', (req, res) => {
+  const user = res.locals.user;
+  const page = parseInt(req.query.p - 1) || 0;
+
+  M
+    .Point
+    .getPaymentList({
+      page: page,
+      limit: 20,
+      where: {
+        user_id: user.id
+      },
+      order: {
+        column: 'id',
+        direction: 'ASC'
+      }
+    })
+    .then(data => {
+
+      res.json({
+        data: data,
+        target: 'user',
+        targetId: user.id
+      });
     })
     .catch((e) => {
       res.json(e);

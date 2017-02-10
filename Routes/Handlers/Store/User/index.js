@@ -31,7 +31,17 @@ router.get('/points/chargeLog', (req, res) => {
 
   M
     .Point
-    .getPaymentList(user)
+    .getPaymentList({
+      page: 0,
+      limit: 20,
+      where: {
+        user_id: user.id
+      },
+      order: {
+        column: 'id',
+        direction: 'ASC'
+      }
+    })
     .then(list => {
       assign(res.resultData, {
         UserStore: {
@@ -48,11 +58,20 @@ router.get(['/venalinks', '/venalinks/active'], (req, res) => {
 
   M
     .Venalink
-    .activatedVenalinkList(user)
-    .then(venalinks => {
+    .makeQuery('tc_venalinks', {
+      page: 0,
+      limit: 20,
+      where: { user_id: user.id },
+      eager: ['participants'],
+      order: {
+        column: 'active_at',
+        direction: 'DESC'
+      }
+    })
+    .then(list => {
       assign(res.resultData, {
         UserStore: {
-          venalinks: venalinks
+          venalinks: list
         }
       });
 
@@ -65,7 +84,16 @@ router.get('/venalinks/share', (req, res) => {
 
   M
     .Venalink
-    .participatedVenalinkList(user)
+    .makeQuery('tc_user_has_venalinks', {
+      page: 0,
+      limit: 20,
+      where: { user_id: user.id },
+      eager: ['venalink.participants'],
+      order: {
+        column: 'request_at',
+        direction: 'DESC'
+      }
+    })
     .then(participated => {
       assign(res.resultData, {
         UserStore: {
