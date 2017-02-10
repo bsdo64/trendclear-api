@@ -132,7 +132,7 @@ router.delete('/avatarImg', (req, res) => {
     .removeAvatarImg(user)
     .then(result => {
 
-      res.json(result)
+      res.json(result);
     })
     .catch(function (err) {
       console.error(err);
@@ -163,15 +163,15 @@ router.post('/setting/password', (req, res) => {
           code: 1,
           message: 'password change error',
           error: err
-        })
+        });
       } else {
         res.json({
           code: null,
           message: 'password change error',
           error: err
-        })
+        });
       }
-    })
+    });
 });
 
 
@@ -197,15 +197,15 @@ router.post('/setting/profile', (req, res) => {
           code: 1,
           message: 'password change error',
           error: err
-        })
+        });
       } else {
         res.json({
           code: null,
           message: 'profile change error',
           error: err
-        })
+        });
       }
-    })
+    });
 });
 
 router.put('/noti/read', (req, res) => {
@@ -226,8 +226,8 @@ router.put('/noti/read', (req, res) => {
         code: null,
         message: 'noti read error',
         error: err
-      })
-    })
+      });
+    });
 });
 
 router.post('/forum/follow', (req, res) => {
@@ -240,7 +240,7 @@ router.post('/forum/follow', (req, res) => {
     .Forum
     .followForum(followObj, user)
     .then(result => {
-      res.json(result)
+      res.json(result);
     })
     .catch(err => {
       console.log(err);
@@ -248,8 +248,8 @@ router.post('/forum/follow', (req, res) => {
         code: null,
         message: 'forum follow error',
         error: err
-      })
-    })
+      });
+    });
 });
 
 router.post('/forum/unfollow', (req, res) => {
@@ -263,7 +263,7 @@ router.post('/forum/unfollow', (req, res) => {
     .Forum
     .unFollowForum(followObj, user)
     .then(result => {
-      res.json(result)
+      res.json(result);
     })
     .catch(err => {
       console.log(err);
@@ -271,8 +271,8 @@ router.post('/forum/unfollow', (req, res) => {
         code: null,
         message: 'forum follow error',
         error: err
-      })
-    })
+      });
+    });
 });
 
 
@@ -309,7 +309,7 @@ router.post('/report', (req, res) => {
           error: err
         });
       }
-    })
+    });
 });
 
 router.delete('/removeItem', (req, res) => {
@@ -395,7 +395,7 @@ router.get('/points/chargeLog', (req, res) => {
   const user = res.locals.user;
   const page = parseInt(req.query.p - 1) || 0;
 
-  M
+  model
     .Point
     .getPaymentList({
       page: page,
