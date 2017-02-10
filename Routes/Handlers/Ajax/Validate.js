@@ -1,15 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
-
-const M = require('../../../vn-api-model/index');
+const { model } = require('util/func');
 
 router.get('/forum/create', (req, res) => {
   const validateObj = {
     title: req.query.title
   };
 
-  M
+  model
     .Forum
     .validateCreate(validateObj)
     .then(forum => {

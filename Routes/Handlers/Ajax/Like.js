@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
+const { model } = require('util/func');
 const co =  require('co');
 
-const M = require('../../../vn-api-model/index');
+
 
 const ErrorHandler = (req, res) => {
   return (err) => {
@@ -31,7 +31,7 @@ router.post('/post', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    const postLike = yield M.Post.likePost(postObj, user);
+    const postLike = yield model.Post.likePost(postObj, user);
     if (postLike) {
       if (postLike === 1) {
         res.json('ok');
@@ -51,7 +51,7 @@ router.post('/comment', (req, res) => {
   const user = res.locals.user;
 
   co(function* () {
-    const commentLike = yield M.Comment.likeComment(commentObj, user);
+    const commentLike = yield model.Comment.likeComment(commentObj, user);
     if (commentLike) {
       if (commentLike === 1) {
         res.json('ok');
@@ -71,7 +71,7 @@ router.post('/subComment', (req, res) => {
   const user = res.locals.user;
 
   co(function* () {
-    const subCommentLike = yield M.Comment.likeSubComment(commentObj, user);
+    const subCommentLike = yield model.Comment.likeSubComment(commentObj, user);
     if (subCommentLike) {
 
       if (subCommentLike === 1) {

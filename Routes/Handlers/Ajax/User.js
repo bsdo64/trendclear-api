@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../../Util/helper/func');
+const { moment, model } = require('util/func');
 const co = require('co');
-const M = require('../../../vn-api-model/index');
+
 
 router.get('/likes', function (req, res) {
   const page = req.query.page ? req.query.page - 1 : 0;
   const user = res.locals.user;
 
-  return M
+  return model
     .Post
     .likePostList(page, user)
     .then(posts => {
@@ -41,7 +41,7 @@ router.get('/posts', function (req, res) {
   const page = req.query.page ? req.query.page - 1 : 0;
   const user = res.locals.user;
 
-  return M
+  return model
     .Post
     .myWritePostList(page, user)
     .then(posts => {
@@ -74,7 +74,7 @@ router.get('/comments', function (req, res) {
   const page = req.query.page ? req.query.page - 1 : 0;
   const user = res.locals.user;
 
-  return M
+  return model
     .Post
     .myWriteCommentPostList(page, user)
     .then(posts => {
@@ -109,7 +109,7 @@ router.post('/avatarImg', function (req, res) {
   };
   const user = res.locals.user;
   
-  M
+  model
     .User
     .updateAvatarImg(imgObj, user)
     .then(function (result) {
@@ -127,7 +127,7 @@ router.post('/avatarImg', function (req, res) {
 router.delete('/avatarImg', (req, res) => {
   const user = res.locals.user;
 
-  M
+  model
     .User
     .removeAvatarImg(user)
     .then(result => {
@@ -150,7 +150,7 @@ router.post('/setting/password', (req, res) => {
   };
   const user = res.locals.user;
   
-  M
+  model
     .User
     .updatePassword(passwordObj, user)
     .then((result) => {
@@ -182,7 +182,7 @@ router.post('/setting/profile', (req, res) => {
     birth: req.body.birth
   };
 
-  M
+  model
     .User
     .updateProfile(profileObj, user)
     .then((profile) => {
@@ -214,7 +214,7 @@ router.put('/noti/read', (req, res) => {
     id: req.body.id
   };
   
-  M
+  model
     .User
     .readNoti(notiReadObj, user)
     .then(result => {
@@ -236,7 +236,7 @@ router.post('/forum/follow', (req, res) => {
     forumId: req.body.forumId
   };
 
-  M
+  model
     .Forum
     .followForum(followObj, user)
     .then(result => {
@@ -259,7 +259,7 @@ router.post('/forum/unfollow', (req, res) => {
     user_id: user.id,
   };
 
-  M
+  model
     .Forum
     .unFollowForum(followObj, user)
     .then(result => {
@@ -287,7 +287,7 @@ router.post('/report', (req, res) => {
     reporter_id: user.id
   };
 
-  M
+  model
     .User
     .reportItem(reportObj, user)
     .then(function (reportItem) {
@@ -321,7 +321,7 @@ router.delete('/removeItem', (req, res) => {
   };
 
   co(function* RouterHandler() {
-    res.json(yield M.User.deleteItem(deleteObj));
+    res.json(yield model.User.deleteItem(deleteObj));
   });
 });
 
@@ -332,7 +332,7 @@ router.post('/resetPassword', (req, res) => {
   };
 
   co(function* RouterHandler() {
-    res.json(yield M.User.resetPassword(findObj));
+    res.json(yield model.User.resetPassword(findObj));
   });
 });
 
@@ -343,17 +343,17 @@ router.post('/payback/rp', (req, res) => {
   };
 
   co(function* RouterHandler() {
-    yield M.Venalink.checkPaybackRP(paybackRPObj, user);
+    yield model.Venalink.checkPaybackRP(paybackRPObj, user);
 
     res.json({
-      list: yield M.Venalink.makeQuery('tc_user_has_venalinks', {
+      list: yield model.Venalink.makeQuery('tc_user_has_venalinks', {
         where: { user_id: user.id },
         eager: ['venalink.participants'],
         order: {
           column: 'request_at',
           direction: 'DESC'
         }}),
-      trendbox: yield M.User.getUserTrendbox(user),
+      trendbox: yield model.User.getUserTrendbox(user),
       userId: user.id
     });
   });
@@ -364,7 +364,7 @@ router.get('/points', (req, res) => {
   const page = parseInt(req.query.p - 1) || 0;
   const pointType = req.query.pointType || 'TP';
 
-  M
+  model
     .Point
     .getUserAccountList({
       where: {

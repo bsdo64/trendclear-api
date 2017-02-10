@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
-
-const M = require('../../../vn-api-model/index');
+const { moment, model } = require('util/func');
 
 router.get('/', function (req, res) {
   const title = req.query.title;
   const user = res.locals.user;
 
-  M
+  model
     .Forum
     .getForumList(title, 'title')
     .then(forums => {
@@ -20,7 +18,7 @@ router.get('/new', function (req, res) {
   const user = res.locals.user;
   const page = req.query.p;
 
-  M
+  model
     .Forum
     .getList({
       order: {
@@ -39,7 +37,7 @@ router.get('/hot', function (req, res) {
   const user = res.locals.user;
   const page = req.query.p;
 
-  M
+  model
     .Forum
     .getList({
       order: {
@@ -67,7 +65,7 @@ router.post('/', function (req, res) {
     created_at: new Date()
   };
 
-  M
+  model
     .Forum
     .createForum(forumObj, user)
     .then(forum => {
@@ -87,7 +85,7 @@ router.put('/', function (req, res) {
     }
   };
 
-  M
+  model
     .Forum
     .patchForum(forumObj, user)
     .then(forum => {
@@ -102,7 +100,7 @@ router.post('/prefix', (req, res) => {
     name: req.body.prefixName
   };
 
-  M
+  model
     .Forum
     .addPrefix(prefixObj)
     .then(prefix => {
@@ -118,7 +116,7 @@ router.put('/prefix', (req, res) => {
     name: req.body.prefixName
   };
 
-  M
+  model
     .Forum
     .updatePrefix(prefixObj)
     .then(prefix => {
@@ -132,7 +130,7 @@ router.delete('/prefix', (req, res) => {
     id: req.body.id
   };
 
-  M
+  model
     .Forum
     .deletePrefix(prefixObj)
     .then(prefix => {
@@ -147,7 +145,7 @@ router.post('/manager', (req, res) => {
     user_id: req.body.userId
   };
 
-  M
+  model
     .Forum
     .addManager(obj)
     .then(user => {
@@ -162,7 +160,7 @@ router.delete('/manager', (req, res) => {
     user_id: req.body.userId
   };
 
-  M
+  model
     .Forum
     .deleteManager(obj)
     .then(prefix => {
@@ -177,7 +175,7 @@ router.delete('/announce', (req, res) => {
     post_id: req.body.postId
   };
 
-  M
+  model
     .Forum
     .deleteAnnounce(obj)
     .then(prefix => {
@@ -192,7 +190,7 @@ router.post('/banUser', (req, res) => {
     user_id: req.body.userId
   };
 
-  M
+  model
     .Forum
     .addBanUser(obj)
     .then(prefix => {
@@ -207,7 +205,7 @@ router.delete('/banUser', (req, res) => {
     user_id: req.body.userId
   };
 
-  M
+  model
     .Forum
     .deleteBanUser(obj)
     .then(prefix => {

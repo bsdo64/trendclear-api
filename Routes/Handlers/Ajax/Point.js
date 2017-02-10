@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const request = require('superagent');
 const co = require('co');
-const M = require('../../../vn-api-model/index');
+const { model } = require('util/func');
 
 router.post('/check/rp', (req, res) => {
   /* card
@@ -143,7 +143,7 @@ router.post('/check/rp', (req, res) => {
 
       const paymentResultFromIamport = paymentResultFromIamportXHR.body.response;
 
-      const payment = yield M.Point.setPayment({
+      const payment = yield model.Point.setPayment({
         amount: paymentResultFromIamport.amount,
         apply_num: paymentResultFromIamport.apply_num,
         buyer_addr: paymentResultFromIamport.buyer_addr,
@@ -181,7 +181,7 @@ router.post('/check/rp', (req, res) => {
 
       if (paymentResultFromIamport.status == 'paid' && paymentResultFromIamport.amount == amount) {
 
-        yield M.Point.chargeRP(payment, user);
+        yield model.Point.chargeRP(payment, user);
 
         res.json({
           message: 'success',
@@ -241,7 +241,7 @@ router.post('/noti', (req, res) => {
 
       const paymentResultFromIamport = paymentResultFromIamportXHR.body.response;
 
-      yield M.Point.updatePaymentByNoti({
+      yield model.Point.updatePaymentByNoti({
         amount: paymentResultFromIamport.amount,
         apply_num: paymentResultFromIamport.apply_num,
         buyer_addr: paymentResultFromIamport.buyer_addr,

@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../../Util/helper/func');
-
-const M = require('../../../vn-api-model/index');
+const { moment, model } = require('util/func');
 
 router.get('/', function (req, res) {
   const queryObj = {
@@ -12,7 +10,7 @@ router.get('/', function (req, res) {
   };
   const user = res.locals.user;
 
-  M
+  model
     .Search
     .listByQuery(queryObj.query, queryObj.page, queryObj.order, user)
     .then(function (posts) {
@@ -49,7 +47,7 @@ router.get('/forum/list', (req, res) => {
   };
   const user = res.locals.user;
 
-  M
+  model
     .Search
     .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)
     .then(forums => {
@@ -73,7 +71,7 @@ router.get('/forum', function (req, res) {
   const q = req.query.q;
   const user = res.locals.user;
 
-  M
+  model
     .Search
     .findForumByQuery(q)
     .then(function (totalForums) {
@@ -89,7 +87,7 @@ router.get('/users', function (req, res) {
   };
   const user = res.locals.user;
 
-  M
+  model
     .Search
     .findUsersByNick(searchObj, user)
     .then(function (totalUsers) {

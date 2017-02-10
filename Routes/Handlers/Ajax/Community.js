@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const { moment } = require('../../Util/helper/func');
+const { moment, model } = require('util/func');
 const co = require('co');
-const M = require('../../../vn-api-model/index');
+
 const NotiSocketCli = require('vn-api-client').Socket.Noti;
 
 const errorHandler = (req, res) => (err) => {
@@ -28,7 +28,7 @@ router.post('/post/view', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    res.json(yield M.Post.incrementView(viewObj, user));
+    res.json(yield model.Post.incrementView(viewObj, user));
   }).catch(errorHandler(req, res));
 });
 
@@ -40,7 +40,7 @@ router.post('/subComment', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    const subComment = yield M.Comment.submitSubComment(commentObj, user);
+    const subComment = yield model.Comment.submitSubComment(commentObj, user);
     subComment.created_at = moment(subComment.created_at).fromNow();
     subComment.commentId = commentObj.commentId;
     res.json(subComment);
@@ -55,7 +55,7 @@ router.put('/subComment', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    const comment = yield M.Comment.updateSubComment(commentObj, user);
+    const comment = yield model.Comment.updateSubComment(commentObj, user);
 
     if (comment.created_at) {
       comment.created_at = moment(comment.created_at).fromNow();
@@ -72,8 +72,8 @@ router.post('/comment', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    const newComment = yield M.Comment.submitComment(commentObj, user);
-    const post = yield M.Post.findOneById({ postId: commentObj.postId, commentPage: 0 }, user);
+    const newComment = yield model.Comment.submitComment(commentObj, user);
+    const post = yield model.Post.findOneById({ postId: commentObj.postId, commentPage: 0 }, user);
     const postAuthor = post.author;
 
     post.created_at = moment(post.created_at).fromNow();
@@ -151,7 +151,7 @@ router.put('/comment', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    const comment = yield M.Comment.updateComment(commentObj, user);
+    const comment = yield model.Comment.updateComment(commentObj, user);
     if (comment.created_at) {
       comment.created_at = moment(comment.created_at).fromNow();
     }
@@ -173,7 +173,7 @@ router.post('/submit', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    res.json(yield M.Post.submitPost(postObj, user, req.body.query));
+    res.json(yield model.Post.submitPost(postObj, user, req.body.query));
   }).catch(errorHandler(req, res));
 });
 
@@ -191,7 +191,7 @@ router.put('/submit', (req, res) => {
   const user = res.locals.user;
 
   co(function* routerHandler() {
-    res.json(yield M.Post.updatePost(postObj, user));
+    res.json(yield model.Post.updatePost(postObj, user));
   }).catch(errorHandler(req, res));
 });
 

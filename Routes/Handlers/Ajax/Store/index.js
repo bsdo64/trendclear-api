@@ -2,8 +2,7 @@ const express = require('express');
 const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
-const M = require('../../../vn-api-model');
-const {moment} = require('../../Util/helper/func');
+const {moment, model} = require('util/func');
 const co = require('co');
 
 router.use((req, res, next) => {
@@ -11,7 +10,7 @@ router.use((req, res, next) => {
   co(function* RouterHandler() {
 
     const [categories, newForums, hotForums] = yield [
-      M
+      model
         .Forum
         .Db
         .tc_categories
@@ -19,7 +18,7 @@ router.use((req, res, next) => {
         .where({type: 'venacle'})
         .eager('[forums]')
         .orderBy('order'),
-      M
+      model
         .Forum
         .getList({
           order: {
@@ -30,7 +29,7 @@ router.use((req, res, next) => {
           limit: 50,
           eager: '[prefixes, creator.profile]'
         }),
-      M
+      model
         .Forum
         .getHotList({
           order: {
@@ -90,7 +89,7 @@ router.use((req, res, next) => {
     });
 
     if (req.query.forumId) {
-      const forum = yield M
+      const forum = yield model
         .Forum
         .getForumInfo(req.query.forumId);
 
@@ -123,7 +122,7 @@ router.get('/', (req, res) => {
   };
 
   co(function* RouterHandler() {
-    const posts = yield M
+    const posts = yield model
       .Post
       .bestPostList(props);
 
@@ -160,7 +159,7 @@ router.get('/all', (req, res) => {
   };
 
   co(function* RouterHandler() {
-    const posts = yield M
+    const posts = yield model
       .Post
       .bestPostList(props);
 
@@ -189,11 +188,11 @@ router.get('/all', (req, res) => {
   });
 });
 
-router.use('/collection', require('./Collection'));
-router.use('/community', require('./Community'));
-router.use('/activity', require('./Activity'));
-router.use('/user', require('./User'));
-router.use('/help', require('./Help'));
+router.use('/collection', require('./Collection/index'));
+router.use('/community', require('./Community/index'));
+router.use('/activity', require('./Activity/index'));
+router.use('/user', require('./User/index'));
+router.use('/help', require('./Help/index'));
 
 router.get('/signin', (req, res) => {
 
@@ -235,10 +234,10 @@ router.get('/search', (req, res) => {
 
   co(function* RouterHandler() {
     const [posts, forums] = yield [
-      M
+      model
         .Search
         .listByQuery(queryObj.query, queryObj.page, queryObj.order, user),
-      M
+      model
         .Search
         .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)
     ];

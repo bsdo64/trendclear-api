@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const htmlToText = require('html-to-text');
 const co = require('co');
-const M = require('../../../vn-api-model/index');
+const { model } = require('util/func');
 const { Point } = require('vn-api-client').Socket;
 
 router.get('/post/m/:linkId', (req, res) => {
@@ -27,7 +27,7 @@ router.get('/post/m/:linkId', (req, res) => {
 
   co(function* RouteHandler() {
     if (req.params.linkId) {
-      const post = yield M
+      const post = yield model
         .Post
         .findOne({
           where: { link_id: req.params.linkId },
@@ -63,7 +63,7 @@ router.get('/post/:linkId', (req, res) => {
   // 실질적인 방문자 추적 시스템
 
   co(function* RouteHandler() {
-    const post = yield M
+    const post = yield model
       .Post
       .findOne({
         where: { link_id: req.params.linkId },
@@ -84,7 +84,7 @@ router.get('/post/:linkId', (req, res) => {
       };
 
       const [existLog, newExistLog] = yield [
-        M.Post.Db.tc_link_click_logs
+        model.Post.Db.tc_link_click_logs
           .query()
           .where({
             link_id: post.link_id,
@@ -93,12 +93,12 @@ router.get('/post/:linkId', (req, res) => {
             type_id: post.id,
           })
           .first(),
-        M.Post.Db.tc_link_click_logs.query().insert(log),
+        model.Post.Db.tc_link_click_logs.query().insert(log),
       ];
 
       if (!existLog) {
 
-        const trade = yield M.Post.Db
+        const trade = yield model.Post.Db
           .tc_trades
           .query()
           .insert({
@@ -114,7 +114,7 @@ router.get('/post/:linkId', (req, res) => {
             created_at: new Date()
           });
 
-        const beforeAccount = yield M.Post.Db
+        const beforeAccount = yield model.Post.Db
           .tc_user_point_accounts
           .query()
           .where({
@@ -123,7 +123,7 @@ router.get('/post/:linkId', (req, res) => {
           .orderBy('created_at', 'DESC')
           .first();
 
-        const newAccount = yield M.Post.Db
+        const newAccount = yield model.Post.Db
           .tc_user_point_accounts
           .query()
           .insert({
@@ -136,7 +136,7 @@ router.get('/post/:linkId', (req, res) => {
             created_at: new Date()
           });
 
-        yield M.Trendbox.resetPoint(post.author, newAccount)();
+        yield model.Trendbox.resetPoint(post.author, newAccount)();
 
         Point.emit('send point', {
           to: post.author.nick,

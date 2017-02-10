@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const helper = require('../../Util/helper/func');
-
-const M = require('../../../vn-api-model/index');
+const { signedSessionId, model } = require('util/func');
 
 router.post('/', function (req, res, next) {
   const newUserObj = {
@@ -15,9 +13,9 @@ router.post('/', function (req, res, next) {
     day: req.body.day,
     birth: req.body.birth
   };
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const sessionId = signedSessionId(req.cookies.sessionId);
 
-  return M
+  return model
     .User
     .signin(newUserObj, sessionId)
     .then(function (result) {
@@ -40,7 +38,7 @@ router.post('/', function (req, res, next) {
 
 router.post('/checkEmailDup', function (req, res, next) {
 
-  M
+  model
     .User
     .checkEmailDup(req.body.email)
     .then(function (dup) {
@@ -51,7 +49,7 @@ router.post('/checkEmailDup', function (req, res, next) {
 
 router.post('/checkNickDup', function (req, res, next) {
 
-  M
+  model
     .User
     .checkNickDup(req.body.nick)
     .then(function (dup) {
@@ -62,9 +60,9 @@ router.post('/checkNickDup', function (req, res, next) {
 
 router.post('/requestEmailVerify', function (req, res, next) {
 
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const sessionId = signedSessionId(req.cookies.sessionId);
 
-  M
+  model
     .User
     .requestEmailVerifyCode(req.body.email, sessionId)
     .then(function (result) {
@@ -80,9 +78,9 @@ router.post('/requestEmailVerify', function (req, res, next) {
 });
 
 router.post('/checkEmailCodeVerify', function (req, res, next) {
-  const sessionId = helper.signedSessionId(req.cookies.sessionId);
+  const sessionId = signedSessionId(req.cookies.sessionId);
   
-    M
+    model
       .User
       .checkVerifyCode(req.body.verifyCode, sessionId)
       .then(function (result) {

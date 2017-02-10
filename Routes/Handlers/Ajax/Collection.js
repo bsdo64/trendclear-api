@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { moment } = require('../../Util/helper/func');
+const { moment, model } = require('util/func');
 const co = require('co');
 
-const M = require('../../../vn-api-model/index');
+
 
 router.get('/', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    res.json(yield M.Collection.getUserCollections(user));
+    res.json(yield model.Collection.getUserCollections(user));
   });
 });
 
@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    res.json(yield M.Collection.createCollection({
+    res.json(yield model.Collection.createCollection({
       title: collectionObj.title,
       password: collectionObj.description,
       isPrivate: collectionObj.isPrivate,
@@ -36,7 +36,7 @@ router.get('/:id', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    res.json(yield M.Collection.getCollectionById(collectionId, user));
+    res.json(yield model.Collection.getCollectionById(collectionId, user));
   });
 });
 
@@ -50,7 +50,7 @@ router.put('/:id', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    res.json(yield M.Collection.updateCollection(collectionId, {
+    res.json(yield model.Collection.updateCollection(collectionId, {
       title: collectionObj.title,
       password: collectionObj.description,
       isPrivate: collectionObj.isPrivate,
@@ -64,7 +64,7 @@ router.delete('/:id', (req, res) => {
   const user = res.locals.user;
 
   co(function*() {
-    const numDeleted = yield M.Collection.deleteCollection(collectionId, user);
+    const numDeleted = yield model.Collection.deleteCollection(collectionId, user);
     if (numDeleted) {
       res.json('ok');
     } else {
@@ -77,7 +77,7 @@ router.get('/:collectionId/forum', (req, res) => {
   const collectionId = req.params.collectionId;
 
   co(function*() {
-    res.json(yield M.Collection.getForums(collectionId));
+    res.json(yield model.Collection.getForums(collectionId));
   });
 });
 
@@ -86,7 +86,7 @@ router.post('/:collectionId/forum', (req, res) => {
   const forumId = req.body.forumId;
 
   co(function*() {
-    res.json(yield M.Collection.addForum(collectionId, forumId));
+    res.json(yield model.Collection.addForum(collectionId, forumId));
   });
 });
 
@@ -95,7 +95,7 @@ router.delete('/:collectionId/forum/:forumId', (req, res) => {
   const forumId = req.params.forumId;
 
   co(function*() {
-    res.json(yield M.Collection.removeForum(collectionId, forumId));
+    res.json(yield model.Collection.removeForum(collectionId, forumId));
   });
 });
 
@@ -108,7 +108,7 @@ router.get('/:collectionId/posts', (req, res) => {
   };
 
   co(function*() {
-    const posts = yield M.Collection.getCollectionPosts(props);
+    const posts = yield model.Collection.getCollectionPosts(props);
     const limit = 10;
     const nextPage = props.page + 1;
 

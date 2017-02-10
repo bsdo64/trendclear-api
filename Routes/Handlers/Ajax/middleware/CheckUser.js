@@ -1,8 +1,9 @@
-const {signedSessionId} = require('../../Util/helper/func');
 const assign = require('deep-assign');
 const co = require('co');
-
-const M = require('../../../vn-api-model/index');
+const {
+  signedSessionId,
+  model
+} = require('util/func');
 
 module.exports = function (req, res, next) {
   co(function* () {
@@ -12,8 +13,8 @@ module.exports = function (req, res, next) {
 
     res.resultData = {};
 
-    const user = yield M.User.checkUserAuth(sessionId, token);
-    res.locals.visitor = yield M.User.checkUUID(req, sessionId, token, user);
+    const user = yield model.User.checkUserAuth(sessionId, token);
+    res.locals.visitor = yield model.User.checkUUID(req, sessionId, token, user);
 
     if (user) {
       res.locals.user = user;
@@ -75,7 +76,7 @@ module.exports = function (req, res, next) {
     }
   }).catch(err => {
 
-    M
+    model
       .User
       .checkUUID(req)
       .then(visitor => {

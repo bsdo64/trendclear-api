@@ -1,17 +1,13 @@
-'use strict';
+global.rootPath = __dirname;
 
-const Express = require('express');
+const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const compression = require('compression');
-const app = Express();
+const app = express();
 
-const server = require('http').Server(app);
-const AjaxRouter = require('./Routes/Handlers/Ajax/index');
-
-app.use(compression());
-app.set('trust proxy', true);
+const AjaxRouter = require('./Routes/Handlers/Ajax');
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(logger('short'));
@@ -19,10 +15,12 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(logger('common'));
 }
 
+app.use(compression());
+app.set('trust proxy', true);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/ajax', AjaxRouter);
 
-module.exports = server;
+module.exports = app;
