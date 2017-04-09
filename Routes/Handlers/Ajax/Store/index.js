@@ -188,12 +188,13 @@ router.get('/all', (req, res) => {
   });
 });
 
-router.use('/collection', require('./Collection/index'));
-router.use('/community', require('./Community/index'));
-router.use('/club', require('./Community/index'));
-router.use('/activity', require('./Activity/index'));
-router.use('/user', require('./User/index'));
-router.use('/help', require('./Help/index'));
+router.use('/collection', require('./Collection/index.js'));
+router.use('/community', require('./Community/index.js'));
+router.use('/club', require('./Community/index.js'));
+router.use('/submit', require('./Submit/index.js'));
+router.use('/activity', require('./Activity/index.js'));
+router.use('/user', require('./User/index.js'));
+router.use('/help', require('./Help/index.js'));
 
 router.get('/signin', (req, res) => {
 
