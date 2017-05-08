@@ -28,15 +28,13 @@
     "socket.io": "^1.7.4",
     "socket.io-client": "^1.7.4",
     "ua-parser-js": "^0.7.10",
-    "vn-api-client": "git+ssh://git@github.com/bsdo64/vn-api-client",
+    "vn-api-client": "^1.0.2",
     "xoauth2": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.0.1",
-    "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-react": "^6.10.3",
     "morgan": "^1.8.1"
   },
   "scripts": {
