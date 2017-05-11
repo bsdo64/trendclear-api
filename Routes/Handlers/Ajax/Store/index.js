@@ -189,7 +189,6 @@ router.get('/all', (req, res) => {
 });
 
 router.use('/collection', require('./Collection/index.js'));
-router.use('/community', require('./Community/index.js'));
 router.use('/club', require('./Community/index.js'));
 router.use('/submit', require('./Submit/index.js'));
 router.use('/activity', require('./Activity/index.js'));

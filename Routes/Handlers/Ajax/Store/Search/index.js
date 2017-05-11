@@ -11,12 +11,13 @@ router.get('/', (req, res) => {
     page: req.query.page || 0
   };
   const user = res.locals.user;
+  const visitor = res.locals.visitor;
 
   co(function* RouterHandler() {
     const [posts, forums] = yield [
       model
         .Search
-        .listByQuery(queryObj.query, queryObj.page, queryObj.order, user),
+        .listByQuery(queryObj.query, queryObj.page, queryObj.order, user, visitor),
       model
         .Search
         .listForumByQuery(queryObj.query, queryObj.page, queryObj.order, user)

@@ -29,6 +29,9 @@ router.get('/:collectionId', (req, res) => {
         LoginStore: res.resultData.LoginStore,
         UserStore: res.resultData.UserStore,
         CollectionBestPostStore: {
+          collection: {
+            id: props.collectionId
+          },
           posts: {
             data: posts.results,
             collection: {
@@ -44,10 +47,6 @@ router.get('/:collectionId', (req, res) => {
         AuthStore: res.resultData.AuthStore
       });
     });
-});
-
-router.get('/', (req, res) => {
-  res.redirect('/');
 });
 
 module.exports = router;

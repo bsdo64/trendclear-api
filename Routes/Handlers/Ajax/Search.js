@@ -9,10 +9,11 @@ router.get('/', function (req, res) {
     page: parseInt(req.query.page, 10) - 1 || 0
   };
   const user = res.locals.user;
+  const visitor = res.locals.visitor;
 
   model
     .Search
-    .listByQuery(queryObj.query, queryObj.page, queryObj.order, user)
+    .listByQuery(queryObj.query, queryObj.page, queryObj.order, user, visitor)
     .then(function (posts) {
 
       for (let i in posts.results) {
@@ -36,7 +37,7 @@ router.get('/', function (req, res) {
       };
 
       res.json(data);
-    })
+    });
 });
 
 router.get('/forum/list', (req, res) => {
@@ -64,7 +65,7 @@ router.get('/forum/list', (req, res) => {
       };
 
       res.json(data);
-    })
+    });
 });
 
 router.get('/forum', function (req, res) {
@@ -92,7 +93,16 @@ router.get('/users', function (req, res) {
     .findUsersByNick(searchObj, user)
     .then(function (totalUsers) {
       res.json(totalUsers);
-    })
+    });
+});
+
+router.get('/queryRank', function (req, res) {
+  model
+    .Search
+    .findQueryRank()
+    .then(function (result) {
+      res.json(result);
+    });
 });
 
 module.exports = router;
