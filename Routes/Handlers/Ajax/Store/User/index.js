@@ -3,6 +3,7 @@ const router = express.Router();
 const assign = require('deep-assign');
 const {model} = require('util/func');
 
+router.use('/activity', require('./Activity.js'));
 
 router.get('/chargePoint', (req, res) => {
   const user = res.locals.user;

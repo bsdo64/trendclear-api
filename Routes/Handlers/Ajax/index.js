@@ -7,6 +7,7 @@ const {
   Point,
   Collection,
   Community,
+  Club,
   Forum,
   Like,
   Link,
@@ -42,6 +43,7 @@ router.use('/store', StoreHandler);
 
 router.use('/best', Best);
 router.use('/collection', Collection);
+router.use('/club', Club);
 router.use('/community', Community);
 router.use('/forum', Forum);
 router.use('/like', Like);

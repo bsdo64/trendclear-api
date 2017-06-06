@@ -1,5 +1,4 @@
 const express = require('express');
-const Promise = require('bluebird');
 const router = express.Router();
 const assign = require('deep-assign');
 const {moment, model} = require('util/func');
@@ -191,7 +190,7 @@ router.get('/all', (req, res) => {
 router.use('/collection', require('./Collection/index.js'));
 router.use('/club', require('./Community/index.js'));
 router.use('/submit', require('./Submit/index.js'));
-router.use('/activity', require('./Activity/index.js'));
+router.use('/activity', require('./User/Activity.js'));
 router.use('/user', require('./User/index.js'));
 router.use('/help', require('./Help/index.js'));
 router.use('/search', require('./Search/index.js'));

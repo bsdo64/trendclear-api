@@ -39,7 +39,8 @@ module.exports = function (req, res, next) {
           follow_forums: user.follow_forums,
           forumCreated: user.forumCreated,
           forumManaged: user.forumManaged,
-          inventories: user.inventories
+          inventories: user.inventories,
+          latestSeen: user.latestSeen,
         },
         LoginStore: {
           isLogin: true,

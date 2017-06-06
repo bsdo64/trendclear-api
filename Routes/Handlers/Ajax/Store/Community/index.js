@@ -57,7 +57,6 @@ router.get('/', (req, res) => {
 
       assign(res.resultData, {
         CommunityStore: {
-          type: 'post',
           post: post,
           forum: res.resultData.CommunityStore.forum,
           list: {
@@ -86,7 +85,6 @@ router.get('/', (req, res) => {
 
       assign(res.resultData, {
         CommunityStore: {
-          type: 'forum',
           forum: res.resultData.CommunityStore.forum,
           list: {
             data: posts.results,
@@ -169,7 +167,6 @@ router.get(['/settings/announce'], (req, res) => {
 
       res.json({
         CommunityStore: {
-          type: 'forum',
           forum : res.resultData.CommunityStore.forum,
           list: {
             data: posts.results,
@@ -433,6 +430,33 @@ router.get('/submit', (req, res) => {
   }
 });
 
+router.use(['/:clubId', '/:clubId/feed'], (req, res, next) => {
+  const forumId = req.params.clubId;
+
+  co(function* () {
+    if (forumId) {
+      const forum = yield model
+        .Forum
+        .getForumInfo(forumId);
+
+      forum.announces = forum.announces.map(announce => {
+        if (announce.created_at) {
+          announce.created_at = moment(announce.created_at).fromNow();
+        }
+        return announce;
+      });
+
+      assign(res.resultData, {
+        CommunityStore: {
+          forum: forum
+        }
+      });
+    }
+
+    next();
+  });
+});
+
 router.get('/:clubId', (req, res) => {
   const prop = {
     forumId: req.params.clubId,
@@ -451,28 +475,10 @@ router.get('/:clubId', (req, res) => {
 
   co(function* RouterHandler() {
 
-    if (prop.forumId) {
-      const forum = yield model
-        .Forum
-        .getForumInfo(prop.forumId);
-
-      forum.announces = forum.announces.map(announce => {
-        if (announce.created_at) {
-          announce.created_at = moment(announce.created_at).fromNow();
-        }
-        return announce;
-      });
-
-      assign(res.resultData, {
-        CommunityStore: {
-          forum: forum
-        }
-      });
-    }
-
     if (prop.forumId && prop.postId) {
-      const [ , postList, post] = yield [
+      const [ , latestSeens , postList, post] = yield [
         model.Post.incrementView(prop, visitor),
+        model.Post.addLatestSeen(prop, user),
         model.Forum.getForumPostList(prop),
         model.Post.findOneById(prop, user),
       ];
@@ -506,7 +512,6 @@ router.get('/:clubId', (req, res) => {
 
       assign(res.resultData, {
         CommunityStore: {
-          type: 'post',
           post: post,
           forum: res.resultData.CommunityStore && res.resultData.CommunityStore.forum,
           list: {
@@ -535,7 +540,6 @@ router.get('/:clubId', (req, res) => {
 
       assign(res.resultData, {
         CommunityStore: {
-          type: 'forum',
           forum: res.resultData.CommunityStore && res.resultData.CommunityStore.forum,
           list: {
             data: posts.results,
@@ -563,6 +567,49 @@ router.get('/:clubId', (req, res) => {
         BestPostStore: {},
       });
     }
+  });
+});
+
+router.get('/:clubId/feed', (req, res) => {
+  const prop = {
+    forumId: req.params.clubId,
+    postId: req.query.postId,
+    page: (req.query.p - 1) >= 0 ? (req.query.p - 1) : 0,
+    commentPage: (req.query.comment_p - 1) >= 0 ? (req.query.comment_p - 1) : 0,
+    ip: req.ip,
+    forumSearch: req.query.forumSearch,
+    forumPrefix: req.query.forumPrefix,
+    order: req.query.order,
+    comment_order: req.query.comment_order,
+    user: res.locals.user
+  };
+
+  co(function* RouterHandler() {
+    const posts = yield model.Forum.getForumPostList(prop);
+
+    posts.results = posts.results.map((post) => {
+      if (post.created_at) {
+        post.created_at = moment(post.created_at).fromNow();
+      }
+      return post;
+    });
+
+    assign(res.resultData, {
+      CommunityStore: {
+        forum: res.resultData.CommunityStore && res.resultData.CommunityStore.forum,
+        list: {
+          data: posts.results,
+          collection: {
+            current_page: parseInt(prop.page, 10) + 1,
+            limit: 10,
+            next_page: (posts.total > 10) ? 2 : null,
+            total: posts.total
+          }
+        }
+      }
+    });
+
+    res.json(res.resultData);
   });
 });
 
