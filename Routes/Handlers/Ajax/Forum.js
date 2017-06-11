@@ -11,7 +11,7 @@ router.get('/', function (req, res) {
     .getForumList(title, 'title')
     .then(forums => {
       res.json(forums);
-    })
+    });
 });
 
 router.get('/new', function (req, res) {
@@ -30,7 +30,7 @@ router.get('/new', function (req, res) {
     })
     .then(forums => {
       res.json(forums);
-    })
+    });
 });
 
 router.get('/hot', function (req, res) {
@@ -49,7 +49,7 @@ router.get('/hot', function (req, res) {
     })
     .then(forums => {
       res.json(forums);
-    })
+    });
 });
 
 router.post('/', function (req, res) {
@@ -69,29 +69,48 @@ router.post('/', function (req, res) {
     .Forum
     .createForum(forumObj, user)
     .then(forum => {
-          res.json(forum);
+      res.json(forum);
     });
 });
 
 router.put('/', function (req, res) {
   const user = res.locals.user;
-  const forumObj = {
-    id: req.body.id,
-    body: {
-      sub_header: req.body.sub_header,
-      description: req.body.description,
-      rule: req.body.rule,
-      creator_id: user.id
-    }
-  };
 
-  model
-    .Forum
-    .patchForum(forumObj, user)
-    .then(forum => {
-      res.json(forum);
-    })
+  const formidable = require('formidable');
+  const form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+
+    console.log(err);
+
+    const ImgApi = require('vn-api-client').Image;
+
+    ImgApi
+      .post('/upload', files)
+      .then(result => {
+        console.log(result);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  });
 });
+
+router.post('/image', function (req, res) {
+  const user = res.locals.user;
+
+  const formidable = require('formidable');
+  const form = new formidable.IncomingForm();
+
+  form.parse(req, function (err, fields, files) {
+    console.log(err, fields, files);
+  });
+
+  form.on('files', function (name, file) {
+    console.log(name, file);
+  })
+});
+
 
 router.post('/prefix', (req, res) => {
   const user = res.locals.user;
@@ -105,7 +124,7 @@ router.post('/prefix', (req, res) => {
     .addPrefix(prefixObj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 router.put('/prefix', (req, res) => {
@@ -121,7 +140,7 @@ router.put('/prefix', (req, res) => {
     .updatePrefix(prefixObj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 router.delete('/prefix', (req, res) => {
@@ -135,7 +154,7 @@ router.delete('/prefix', (req, res) => {
     .deletePrefix(prefixObj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 router.post('/manager', (req, res) => {
@@ -150,7 +169,7 @@ router.post('/manager', (req, res) => {
     .addManager(obj)
     .then(user => {
       res.json(user);
-    })
+    });
 });
 
 router.delete('/manager', (req, res) => {
@@ -165,7 +184,7 @@ router.delete('/manager', (req, res) => {
     .deleteManager(obj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 router.delete('/announce', (req, res) => {
@@ -180,7 +199,7 @@ router.delete('/announce', (req, res) => {
     .deleteAnnounce(obj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 router.post('/banUser', (req, res) => {
@@ -195,7 +214,7 @@ router.post('/banUser', (req, res) => {
     .addBanUser(obj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 router.delete('/banUser', (req, res) => {
@@ -210,7 +229,7 @@ router.delete('/banUser', (req, res) => {
     .deleteBanUser(obj)
     .then(prefix => {
       res.json(prefix);
-    })
+    });
 });
 
 module.exports = router;
