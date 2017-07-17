@@ -22,8 +22,11 @@ router.get('/', (req, res) => {
 
   co(function* RouterHandler() {
     if (prop.forumId && prop.postId) {
-      const [ , postList, post] = yield [
-        model.Post.incrementView(prop, visitor),
+      // 1. first, increment view count
+      yield model.Post.incrementView(prop, visitor);
+
+      // 2. retreive result
+      const [ postList, post ] = yield [
         model.Forum.getForumPostList(prop),
         model.Post.findOneById(prop, user),
       ];
@@ -476,9 +479,14 @@ router.get('/:clubId', (req, res) => {
   co(function* RouterHandler() {
 
     if (prop.forumId && prop.postId) {
-      const [ , latestSeens , postList, post] = yield [
+      // 1. increment view count, add latest seen
+      yield [
         model.Post.incrementView(prop, visitor),
-        model.Post.addLatestSeen(prop, user),
+        model.Post.addLatestSeen(prop, user)
+      ];
+
+      // 2. get results
+      const [postList, post] = yield [
         model.Forum.getForumPostList(prop),
         model.Post.findOneById(prop, user),
       ];

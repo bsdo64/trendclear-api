@@ -194,35 +194,7 @@ router.use('/activity', require('./User/Activity.js'));
 router.use('/user', require('./User/index.js'));
 router.use('/help', require('./Help/index.js'));
 router.use('/search', require('./Search/index.js'));
-router.get('/signin', (req, res) => {
-
-  assign(res.resultData, {
-    GnbStore: {
-      openGnb: false,
-      gnbMenu: res.resultData.GnbStore.gnbMenu,
-      categoryMenu: {
-        categories: [{
-          id: 3,
-          title: '회원가입',
-          order: 0,
-          using: true,
-          category_groups: [
-            {
-              using: '1',
-              id: 5,
-              title: '회원가입',
-              order: '0',
-              club_id: 3,
-              description: '회원가입'
-            }
-          ]
-        }]
-      }
-    }
-  });
-
-  res.json(res.resultData);
-});
+router.use('/signin', require('./Signin/index.js'));
 
 router.get('/setting', (req, res) => {
   assign(res.resultData, {
@@ -251,15 +223,15 @@ router.get('/setting/profile', (req, res) => {
   res.json(res.resultData);
 });
 
-router.get(['/policies', '/policies/privacy'], (req, res) => {
-  res.json(res.resultData);
-});
-
-router.get('/policies/terms', (req, res) => {
+router.get(['/policies', '/policies/privacy', '/policies/terms'], (req, res) => {
   res.json(res.resultData);
 });
 
 router.get('/about', (req, res) => {
+  res.json(res.resultData);
+});
+
+router.get('/member/find', (req, res) => {
   res.json(res.resultData);
 });
 
@@ -268,10 +240,6 @@ router.get('/careers', (req, res) => {
 });
 
 router.get('/advertisement', (req, res) => {
-  res.json(res.resultData);
-});
-
-router.get('/member/find', (req, res) => {
   res.json(res.resultData);
 });
 

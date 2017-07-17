@@ -363,6 +363,7 @@ router.get('/points', (req, res) => {
   const user = res.locals.user;
   const page = parseInt(req.query.p - 1) || 0;
   const pointType = req.query.pointType || 'TP';
+  const limit = 20;
 
   model
     .Point
@@ -376,9 +377,13 @@ router.get('/points', (req, res) => {
         direction: 'DESC'
       },
       page: parseInt(page), // (start from 0)
-      limit: 20
+      limit: limit
     }, user)
     .then(data => {
+
+      data.current_page = page + 1;
+      data.next_page = (limit * (page + 1) < data.total) ? page + 2 : null;
+      data.limit = limit;
 
       res.json({
         data: data,
@@ -394,12 +399,13 @@ router.get('/points', (req, res) => {
 router.get('/points/chargeLog', (req, res) => {
   const user = res.locals.user;
   const page = parseInt(req.query.p - 1) || 0;
+  const limit = 20;
 
   model
     .Point
     .getPaymentList({
       page: page,
-      limit: 20,
+      limit: limit,
       where: {
         user_id: user.id
       },
@@ -409,6 +415,10 @@ router.get('/points/chargeLog', (req, res) => {
       }
     })
     .then(data => {
+
+      data.current_page = page + 1;
+      data.next_page = (limit * (page + 1) < data.total) ? page + 2 : null;
+      data.limit = limit;
 
       res.json({
         data: data,

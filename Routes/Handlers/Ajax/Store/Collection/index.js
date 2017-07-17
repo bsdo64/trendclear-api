@@ -3,6 +3,10 @@ const router = express.Router();
 const assign = require('deep-assign');
 const {model, moment} = require('util/func');
 
+router.get('/', (req, res) => {
+  res.json(res.resultData);
+});
+
 router.get('/:collectionId', (req, res) => {
   const props = {
     collectionId : req.params.collectionId,

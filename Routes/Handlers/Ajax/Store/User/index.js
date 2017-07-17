@@ -18,6 +18,10 @@ router.get(['/points'], (req, res) => {
     .User
     .getPointAccount(user)
     .then(account => {
+
+      account.current_page = 1;
+      account.limit = 20;
+
       assign(res.resultData, {
         UserStore: {
           account: account
@@ -45,6 +49,10 @@ router.get('/points/chargeLog', (req, res) => {
       }
     })
     .then(list => {
+
+      list.current_page = 1;
+      list.limit = 20;
+
       assign(res.resultData, {
         UserStore: {
           payments: list

@@ -119,7 +119,7 @@ router.post('/check/rp', (req, res) => {
       response: {
         message: 'Null parameter'
       }
-    })
+    });
   }
 
   co(function* RouteHandler() {
@@ -198,7 +198,7 @@ router.post('/check/rp', (req, res) => {
         res.json({
           error: true,
           response: paymentResultFromIamport
-        })
+        });
       }
 
     }
@@ -212,7 +212,7 @@ router.post('/check/rp', (req, res) => {
         console.log(result.message);
       }
     }
-  })
+  });
 
 });
 

@@ -73,44 +73,59 @@ router.post('/', function (req, res) {
     });
 });
 
+const formidable = require('formidable');
+const path = require('path');
+const fs = require('fs');
+const request = require('superagent');
+const co = require('co');
+
 router.put('/', function (req, res) {
   const user = res.locals.user;
 
-  const formidable = require('formidable');
   const form = new formidable.IncomingForm();
+
+  form.uploadDir = path.resolve(__dirname, 'tmp');
+  form.keepExtensions = true;
 
   form.parse(req, function (err, fields, files) {
 
-    console.log(err);
+    let stream, fileName, file, XHRresult;
 
-    const ImgApi = require('vn-api-client').Image;
+    co(function * () {
 
-    ImgApi
-      .post('/upload', files)
-      .then(result => {
-        console.log(result);
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      if (files.forum_image) {
+        stream = fs.createReadStream(files.forum_image.path);
+
+        XHRresult = yield request
+          .post('http://localhost:3002/upload')
+          .attach('theFile', stream);
+
+        file = XHRresult.body.files[0];
+        fileName = file.name;
+
+        fs.unlinkSync(files.forum_image.path);
+      }
+
+      const forumObj = {
+        id: fields.id,
+        body: {
+          sub_header: fields.sub_header,
+          description: fields.description,
+          rule: fields.rule,
+          creator_id: user.id,
+          forum_image: fileName
+        }
+      };
+
+      model
+        .Forum
+        .patchForum(forumObj, user)
+        .then(forum => {
+          res.json(forum);
+        });
+    });
   });
 });
-
-router.post('/image', function (req, res) {
-  const user = res.locals.user;
-
-  const formidable = require('formidable');
-  const form = new formidable.IncomingForm();
-
-  form.parse(req, function (err, fields, files) {
-    console.log(err, fields, files);
-  });
-
-  form.on('files', function (name, file) {
-    console.log(name, file);
-  })
-});
-
 
 router.post('/prefix', (req, res) => {
   const user = res.locals.user;

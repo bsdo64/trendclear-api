@@ -4,6 +4,11 @@ const assign = require('deep-assign');
 const co = require('co');
 const {model} = require('util/func');
 
+router.get('/', (req, res) => {
+
+  res.send(res.resultData);
+});
+
 router.get('/post', (req, res) => {
 
   const user = res.locals.user;
