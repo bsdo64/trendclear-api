@@ -107,7 +107,6 @@ router.get('/', (req, res) => {
       res.json({
         GnbStore: {
           openGnb: false,
-          gnbMenu: res.resultData.GnbStore.gnbMenu,
           categoryMenu: {
             categories: res.resultData.GnbStore.categoryMenu.categories
           }
@@ -567,7 +566,6 @@ router.get('/:clubId', (req, res) => {
       res.json({
         GnbStore: {
           openGnb: false,
-          gnbMenu: res.resultData.GnbStore.gnbMenu,
           categoryMenu: {
             categories: res.resultData.GnbStore.categoryMenu.categories
           }

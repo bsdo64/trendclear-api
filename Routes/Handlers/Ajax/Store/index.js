@@ -8,63 +8,7 @@ router.use((req, res, next) => {
 
   co(function* RouterHandler() {
 
-    const [categories, newForums, hotForums] = yield [
-      model
-        .Forum
-        .Db
-        .tc_categories
-        .query()
-        .where({type: 'venacle'})
-        .eager('[forums]')
-        .orderBy('order'),
-      model
-        .Forum
-        .getList({
-          order: {
-            column: 'created_at',
-            direction: 'DESC'
-          },
-          page: 1,
-          limit: 50,
-          eager: '[prefixes, creator.profile]'
-        }),
-      model
-        .Forum
-        .getHotList({
-          order: {
-            column: 'created_at',
-            direction: 'DESC'
-          },
-          page: 1,
-          limit: 50,
-          eager: '[prefixes, creator.profile]'
-        })
-    ];
-
     assign(res.resultData, {
-      GnbStore: {
-        openGnb: false,
-        gnbMenu: { data: categories },
-        categoryMenu: {},
-        newForums: {
-          data: newForums.results,
-          collection: {
-            current_page: 1,
-            limit: 50,
-            next_page: (newForums.total > 10) ? 2 : null,
-            total: newForums.total
-          }
-        },
-        hotForums: {
-          data: hotForums.results,
-          collection: {
-            current_page: 1,
-            limit: 50,
-            next_page: (hotForums.total > 10) ? 2 : null,
-            total: hotForums.total
-          }
-        }
-      },
       ReportStore: {
         openReportModal: false,
         reportItem: [
@@ -195,6 +139,7 @@ router.use('/user', require('./User/index.js'));
 router.use('/help', require('./Help/index.js'));
 router.use('/search', require('./Search/index.js'));
 router.use('/signin', require('./Signin/index.js'));
+router.use('/explore', require('./Explore/index.js'));
 
 router.get('/setting', (req, res) => {
   assign(res.resultData, {
