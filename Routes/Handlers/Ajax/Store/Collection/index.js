@@ -47,7 +47,6 @@ router.get('/:collectionId', (req, res) => {
           }
         },
         ReportStore: res.resultData.ReportStore,
-        ListStore: res.resultData.ListStore,
         AuthStore: res.resultData.AuthStore
       });
     });

@@ -28,7 +28,6 @@ router.use((req, res, next) => {
         selectItem: 1,
         successReport: false
       },
-      ListStore: {}
     });
 
     if (req.query.forumId) {
