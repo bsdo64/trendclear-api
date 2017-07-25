@@ -11,19 +11,24 @@ router.get('/', async (req, res) => {
     }),
 
     model.Forum.getList({
-      user: res.locals.user,
       order: {column: 'follow_count', direction: 'DESC', },
       limit: 10,
       page: 1
     }),
 
     model.Collection.getExploreCollection({
-      user: res.locals.user,
       order: {column: 'follow_count', direction: 'DESC', },
       limit: 10,
       page: 1
     }),
   ]);
+
+  posts.results = posts.results.map(post => {
+    if (post.created_at) {
+      post.created_at = moment(post.created_at).fromNow();
+    }
+    return post;
+  });
 
   const nextPage = 1;
   const limit = 10;
@@ -71,7 +76,40 @@ router.get('/', async (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/posts', (req, res) => {
+router.get('/posts', async (req, res) => {
+
+  const posts = await model.Post.bestPostList({
+    user: res.locals.user,
+    order: 'hot',
+    listType: 'all'
+  });
+
+  posts.results = posts.results.map(post => {
+    if (post.created_at) {
+      post.created_at = moment(post.created_at).fromNow();
+    }
+    return post;
+  });
+
+  const nextPage = 1;
+  const limit = 10;
+  res.resultData.listStores = {
+    type: 'List',
+    lists : [
+      {
+        listName: 'exploreMainPosts',
+        itemSchema: 'post',
+        data: posts,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+          total: posts.total
+        }
+      },
+    ]
+  };
+
   res.json(res.resultData);
 });
 
