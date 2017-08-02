@@ -11,6 +11,7 @@ const {
   Forum,
   Like,
   Link,
+  List,
   Login,
   Logout,
   Post,
@@ -48,6 +49,7 @@ router.use('/community', Community);
 router.use('/forum', Forum);
 router.use('/like', Like);
 router.use('/link', Link);
+router.use('/list', List);
 router.use('/login', Login);
 router.use('/logout', Logout);
 router.use('/point', Point);

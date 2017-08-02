@@ -82,6 +82,25 @@ const co = require('co');
 router.put('/', function (req, res) {
   const user = res.locals.user;
 
+  if (req.body) {
+    const forumObj = {
+      id: req.body.id,
+      body: {
+        sub_header: req.body.sub_header,
+        description: req.body.description,
+        rule: req.body.rule,
+        creator_id: user.id,
+      }
+    };
+
+    return model
+      .Forum
+      .patchForum(forumObj, user)
+      .then(forum => {
+        return res.json(forum);
+      });
+  }
+
   const form = new formidable.IncomingForm();
 
   form.uploadDir = path.resolve(__dirname, 'tmp');

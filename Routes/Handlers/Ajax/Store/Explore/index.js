@@ -113,7 +113,39 @@ router.get('/posts', async (req, res) => {
   res.json(res.resultData);
 });
 
-router.get('/clubs', (req, res) => {
+router.get('/clubs', async (req, res) => {
+  const clubs = await model.Forum.getList({
+    order: {column: 'follow_count', direction: 'DESC', },
+    limit: 10,
+    page: 1
+  });
+
+  clubs.results = clubs.results.map(post => {
+    if (post.created_at) {
+      post.created_at = moment(post.created_at).fromNow();
+    }
+    return post;
+  });
+
+  const nextPage = 1;
+  const limit = 10;
+  res.resultData.listStores = {
+    type: 'List',
+    lists : [
+      {
+        listName: 'exploreClubs',
+        itemSchema: 'club',
+        data: clubs,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < clubs.total) ? (nextPage + 1) : null,
+          total: clubs.total
+        }
+      },
+    ]
+  };
+
   res.json(res.resultData);
 });
 
