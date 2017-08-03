@@ -22,18 +22,15 @@ const ErrorHandler = (req, res) => {
 };
 
 router.get('/', async (req, res) => {
-  const listObj = {
-    postId: req.query.listName,
-  };
-  const user = res.locals.user;
+  const page = parseInt(req.query.page);  // 2
 
   const clubs = await model.Forum.getList({
     order: {column: 'follow_count', direction: 'DESC', },
     limit: 10,
-    page: req.query.page
+    page: page // 2
   });
 
-  const nextPage = req.query.page;
+  const nextPage = page + 1; // 3
   const limit = 10;
 
   res.json({
@@ -44,9 +41,9 @@ router.get('/', async (req, res) => {
         itemSchema: 'club',
         data: clubs,
         collection: {
-          current_page: nextPage,
+          current_page: page, // 2
           limit: limit,
-          next_page: (limit * nextPage < clubs.total) ? (nextPage + 1) : null,
+          next_page: (limit * page < clubs.total) ? (nextPage) : null,
           total: clubs.total
         }
       },
