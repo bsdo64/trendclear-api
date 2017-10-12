@@ -380,7 +380,10 @@ router.get('/submit', (req, res) => {
                     ReportStore: res.resultData.ReportStore,
                     AuthStore: res.resultData.AuthStore
                   });
-                });
+                })
+                .catch(err => {
+                  res.json(err);
+                })
             });
         } else {
 
@@ -436,26 +439,30 @@ router.use(['/:clubId', '/:clubId/feed'], (req, res, next) => {
   const forumId = req.params.clubId;
 
   co(function* () {
-    if (forumId) {
-      const forum = yield model
-        .Forum
-        .getForumInfo(forumId);
+    try {
+      if (forumId) {
+        const forum = yield model
+          .Forum
+          .getForumInfo(forumId);
 
-      forum.announces = forum.announces.map(announce => {
-        if (announce.created_at) {
-          announce.created_at = moment(announce.created_at).fromNow();
-        }
-        return announce;
-      });
+        forum.announces = forum.announces.map(announce => {
+          if (announce.created_at) {
+            announce.created_at = moment(announce.created_at).fromNow();
+          }
+          return announce;
+        });
 
-      assign(res.resultData, {
-        CommunityStore: {
-          forum: forum
-        }
-      });
+        assign(res.resultData, {
+          CommunityStore: {
+            forum: forum
+          }
+        });
+      }
+
+      next();
+    } catch (e) {
+      next(e);
     }
-
-    next();
   });
 });
 
