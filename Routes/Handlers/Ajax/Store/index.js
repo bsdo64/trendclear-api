@@ -49,6 +49,45 @@ router.use((req, res, next) => {
       });
     }
 
+    /**
+     * famous rank list
+     */
+
+    const fList = yield model
+        .Post
+        .getFamousList();
+
+    const nextPage = 1;
+    const limit = 10;
+
+    assign(res.resultData, {
+      listStores: {
+        type: 'List'
+      }
+    });
+
+    fList.results = fList.results.map(post => {
+      if (post.created_at) {
+        post.created_at = moment(post.created_at).fromNow();
+      }
+      return post;
+    });
+
+    res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+    res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+      {
+        listName: 'famousPosts',
+        itemSchema: 'post',
+        data: fList,
+        collection: {
+          current_page: nextPage,
+          limit: limit,
+          next_page: (limit * nextPage < fList.total) ? (nextPage + 1) : null,
+          total: fList.total
+        }
+      },
+    ]);
+
     next();
 
   }).catch((err) => {

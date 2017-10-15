@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
     forumPrefix: req.query.forumPrefix,
     order: req.query.order,
     comment_order: req.query.comment_order,
+    user: res.locals.user
   };
 
   const user = res.locals.user;
@@ -477,6 +478,7 @@ router.get('/:clubId', (req, res) => {
     forumPrefix: req.query.forumPrefix,
     order: req.query.order,
     comment_order: req.query.comment_order,
+    user: res.locals.user
   };
 
   const user = res.locals.user;

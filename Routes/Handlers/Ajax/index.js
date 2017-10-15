@@ -40,7 +40,6 @@ router.use(logTimer.startRouteHandler, CheckUser, logTimer.endRouteHandler);
 
 router.use('/store', StoreHandler);
 router.use((err, req, res, next) => {
-  console.log(2);
   res.json(err);
 });
 

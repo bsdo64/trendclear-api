@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {model, moment} = require('util/func');
+const assign = require('deep-assign');
 
 router.get('/', async (req, res) => {
   const [posts, clubs, collections] = await Promise.all([
@@ -32,46 +33,51 @@ router.get('/', async (req, res) => {
 
   const nextPage = 1;
   const limit = 10;
-  res.resultData.listStores = {
-    type: 'List',
-    lists : [
-      {
-        listName: 'exploreMainPosts',
-        itemSchema: 'post',
-        data: posts,
-        collection: {
-          current_page: nextPage,
-          limit: limit,
-          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
-          total: posts.total
-        }
-      },
 
-      {
-        listName: 'exploreMainClubs',
-        itemSchema: 'club',
-        data: clubs,
-        collection: {
-          current_page: nextPage,
-          limit: limit,
-          next_page: (limit * nextPage < clubs.total) ? (nextPage + 1) : null,
-          total: clubs.total
-        }
-      },
+  assign(res.resultData, {
+    listStores: {
+      type: 'List'
+    }
+  });
 
-      {
-        listName: 'exploreMainCollections',
-        itemSchema: 'collection',
-        data: collections,
-        collection: {
-          current_page: nextPage,
-          limit: limit,
-          next_page: (limit * nextPage < collections.total) ? (nextPage + 1) : null,
-          total: collections.total
-        }
-      },
-    ]
-  };
+  res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+  res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+    {
+      listName: 'exploreMainPosts',
+      itemSchema: 'post',
+      data: posts,
+      collection: {
+        current_page: nextPage,
+        limit: limit,
+        next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+        total: posts.total
+      }
+    },
+
+    {
+      listName: 'exploreMainClubs',
+      itemSchema: 'club',
+      data: clubs,
+      collection: {
+        current_page: nextPage,
+        limit: limit,
+        next_page: (limit * nextPage < clubs.total) ? (nextPage + 1) : null,
+        total: clubs.total
+      }
+    },
+
+    {
+      listName: 'exploreMainCollections',
+      itemSchema: 'collection',
+      data: collections,
+      collection: {
+        current_page: nextPage,
+        limit: limit,
+        next_page: (limit * nextPage < collections.total) ? (nextPage + 1) : null,
+        total: collections.total
+      }
+    }
+  ]);
 
   res.json(res.resultData);
 });
@@ -93,22 +99,27 @@ router.get('/posts', async (req, res) => {
 
   const nextPage = 1;
   const limit = 10;
-  res.resultData.listStores = {
-    type: 'List',
-    lists : [
-      {
-        listName: 'exploreMainPosts',
-        itemSchema: 'post',
-        data: posts,
-        collection: {
-          current_page: nextPage,
-          limit: limit,
-          next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
-          total: posts.total
-        }
-      },
-    ]
-  };
+
+  assign(res.resultData, {
+    listStores: {
+      type: 'List'
+    }
+  });
+
+  res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+  res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+    {
+      listName: 'exploreMainPosts',
+      itemSchema: 'post',
+      data: posts,
+      collection: {
+        current_page: nextPage,
+        limit: limit,
+        next_page: (limit * nextPage < posts.total) ? (nextPage + 1) : null,
+        total: posts.total
+      }
+    },
+  ]);
 
   res.json(res.resultData);
 });
@@ -129,22 +140,27 @@ router.get('/clubs', async (req, res) => {
 
   const nextPage = 1;
   const limit = 10;
-  res.resultData.listStores = {
-    type: 'List',
-    lists : [
-      {
-        listName: 'exploreClubs',
-        itemSchema: 'club',
-        data: clubs,
-        collection: {
-          current_page: nextPage,
-          limit: limit,
-          next_page: (limit * nextPage < clubs.total) ? (nextPage + 1) : null,
-          total: clubs.total
-        }
-      },
-    ]
-  };
+
+  assign(res.resultData, {
+    listStores: {
+      type: 'List'
+    }
+  });
+
+  res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+  res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+    {
+      listName: 'exploreClubs',
+      itemSchema: 'club',
+      data: clubs,
+      collection: {
+        current_page: nextPage,
+        limit: limit,
+        next_page: (limit * nextPage < clubs.total) ? (nextPage + 1) : null,
+        total: clubs.total
+      }
+    }
+  ]);
 
   res.json(res.resultData);
 });
