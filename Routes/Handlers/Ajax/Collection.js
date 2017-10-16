@@ -31,6 +31,21 @@ router.post('/', (req, res) => {
   });
 });
 
+router.delete('/', (req, res) => {
+  const collectionObj = {
+    collectionId: req.body.collectionId
+  };
+  const user = res.locals.user;
+
+  co(function*() {
+    const deletedNumber = yield model.Collection.deleteCollection(collectionObj.collectionId, user);
+    res.json({
+      deleted: deletedNumber,
+      userId: user.id
+    });
+  });
+});
+
 router.get('/:id', (req, res) => {
   const collectionId = req.params.id;
   const user = res.locals.user;
