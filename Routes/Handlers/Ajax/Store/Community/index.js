@@ -252,10 +252,15 @@ router.use(['/:clubId', '/:clubId/feed'], (req, res, next) => {
 
       next();
     } catch (e) {
-      console.log(e.name);
-      console.log(e.message);
 
-      next(e);
+      assign(res.resultData, {
+        ErrorPageStore: {
+          error: true,
+          errorCode: 1,
+        }
+      });
+
+      next();
     }
   });
 });
