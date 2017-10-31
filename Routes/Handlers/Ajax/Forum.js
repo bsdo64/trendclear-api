@@ -100,10 +100,11 @@ router.put('/', function (req, res) {
         return res.json(forum);
       });
   }
+});
 
+router.post('/image', (req, res) => {
+  const user = res.locals.user;
   const form = new formidable.IncomingForm();
-
-  form.uploadDir = path.resolve(__dirname, 'tmp');
   form.keepExtensions = true;
 
   form.parse(req, function (err, fields, files) {
@@ -111,6 +112,20 @@ router.put('/', function (req, res) {
     let stream, fileName, file, XHRresult;
 
     co(function * () {
+
+      if (fields.beforeImage) {
+        const f = yield model
+          .Forum
+          .getForumInfo(fields.id);
+
+        try {
+          yield request
+            .delete('http://localhost:3002/uploaded/files/')
+            .send({ file: fields.beforeImage });
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
       if (files.forum_image) {
         stream = fs.createReadStream(files.forum_image.path);
@@ -128,10 +143,6 @@ router.put('/', function (req, res) {
       const forumObj = {
         id: fields.id,
         body: {
-          sub_header: fields.sub_header,
-          description: fields.description,
-          rule: fields.rule,
-          creator_id: user.id,
           forum_image: fileName
         }
       };
