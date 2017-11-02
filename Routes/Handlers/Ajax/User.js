@@ -346,13 +346,7 @@ router.post('/payback/rp', (req, res) => {
     yield model.Venalink.checkPaybackRP(paybackRPObj, user);
 
     res.json({
-      list: yield model.Venalink.makeQuery('tc_user_has_venalinks', {
-        where: { user_id: user.id },
-        eager: ['venalink.participants'],
-        order: {
-          column: 'request_at',
-          direction: 'DESC'
-        }}),
+      itemId: req.body.userVenalinkId,
       trendbox: yield model.User.getUserTrendbox(user),
       userId: user.id
     });
@@ -428,6 +422,72 @@ router.get('/points/chargeLog', (req, res) => {
     })
     .catch((e) => {
       res.json(e);
+    });
+});
+
+router.get('/venalinks/active', (req, res) => {
+
+  const user = res.locals.user;
+  const page = parseInt(req.query.p) || 1;
+  const limit = 10;
+
+  model
+    .Venalink
+    .makeQuery('tc_venalinks', {
+      page: page,
+      limit: limit,
+      where: { user_id: user.id },
+      eager: ['participants'],
+      order: {
+        column: 'active_at',
+        direction: 'DESC'
+      }
+    })
+    .then(list => {
+
+      res.json({
+        listName: 'userVenalinks',
+        itemSchema: 'venalink',
+        data: list.results,
+        collection: {
+          current_page: page,
+          limit: limit,
+          next_page: (limit * page < list.total) ? page + 1 : null,
+          total: list.total
+        }
+      });
+    });
+});
+
+router.get('/venalinks/share', (req, res) => {
+  const user = res.locals.user;
+  const page = parseInt(req.query.p) || 1;
+  const limit = 10;
+
+  model
+    .Venalink
+    .makeQuery('tc_user_has_venalinks', {
+      page: page,
+      limit: limit,
+      where: { user_id: user.id },
+      eager: ['venalink.participants'],
+      order: {
+        column: 'request_at',
+        direction: 'DESC'
+      }
+    })
+    .then(list => {
+      res.json({
+        listName: 'userParticipatedVenalinks',
+        itemSchema: 'participatedVenalinks',
+        data: list.results,
+        collection: {
+          current_page: page,
+          limit: limit,
+          next_page: (limit * page < list.total) ? page + 1 : null,
+          total: list.total
+        }
+      });
     });
 });
 

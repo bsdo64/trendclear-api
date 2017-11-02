@@ -3,6 +3,27 @@ const router = express.Router();
 const assign = require('deep-assign');
 const {model} = require('util/func');
 
+router.get(['/', '/profile'], (req, res, next) => {
+  const user = res.locals.user;
+
+  model
+    .User
+    .getActivityMeta(user)
+    .then((meta) => {
+      assign(res.resultData, {
+        ActivityStore: {
+          meta: meta
+        }
+      });
+
+      res.json(res.resultData);
+    })
+    .catch(err => {
+      next(err);
+    });
+
+});
+
 router.use('/activity', require('./Activity.js'));
 
 router.get('/chargePoint', (req, res) => {
@@ -65,12 +86,14 @@ router.get('/points/chargeLog', (req, res) => {
 
 router.get(['/venalinks', '/venalinks/active'], (req, res) => {
   const user = res.locals.user;
+  const nextPage = 1;
+  const limit = 10;
 
   model
     .Venalink
     .makeQuery('tc_venalinks', {
-      page: 0,
-      limit: 20,
+      page: nextPage,
+      limit: limit,
       where: { user_id: user.id },
       eager: ['participants'],
       order: {
@@ -85,18 +108,35 @@ router.get(['/venalinks', '/venalinks/active'], (req, res) => {
         }
       });
 
+      res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+      res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+        {
+          listName: 'userVenalinks',
+          itemSchema: 'venalink',
+          data: list,
+          collection: {
+            current_page: nextPage,
+            limit: limit,
+            next_page: (limit * nextPage < list.total) ? (nextPage + 1) : null,
+            total: list.total
+          }
+        }
+      ]);
+
       res.json(res.resultData);
     });
 });
 
 router.get('/venalinks/share', (req, res) => {
   const user = res.locals.user;
+  const nextPage = 1;
+  const limit = 10;
 
   model
     .Venalink
     .makeQuery('tc_user_has_venalinks', {
-      page: 0,
-      limit: 20,
+      page: 1,
+      limit: limit,
       where: { user_id: user.id },
       eager: ['venalink.participants'],
       order: {
@@ -104,12 +144,28 @@ router.get('/venalinks/share', (req, res) => {
         direction: 'DESC'
       }
     })
-    .then(participated => {
+    .then(list => {
       assign(res.resultData, {
         UserStore: {
-          participatedVenalinks: participated
+          participatedVenalinks: list
         }
       });
+
+
+      res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+      res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+        {
+          listName: 'userParticipatedVenalinks',
+          itemSchema: 'participatedVenalinks',
+          data: list,
+          collection: {
+            current_page: nextPage,
+            limit: limit,
+            next_page: (limit * nextPage < list.total) ? (nextPage + 1) : null,
+            total: list.total
+          }
+        }
+      ]);
 
       res.json(res.resultData);
     });
