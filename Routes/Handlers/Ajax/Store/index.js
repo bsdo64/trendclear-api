@@ -52,7 +52,6 @@ router.use((req, res, next) => {
     /**
      * famous rank list
      */
-
     const fList = yield model
         .Post
         .getFamousList();
@@ -87,6 +86,64 @@ router.use((req, res, next) => {
         }
       },
     ]);
+
+    /**
+     * default following club list
+     */
+    const nextPage2 = 1;
+    const limit2 = 100;
+
+    try {
+      const followingClubIds = yield model.Db
+          .tc_forum_categories
+          .query()
+          .select('tc_forum_categories.forum_id')
+          .join('tc_categories', 'tc_forum_categories.category_id',
+              'tc_categories.id');
+
+      const defaultFollowingClubIdList = followingClubIds.map(v => v.forum_id);
+      const dFCList = yield model
+          .Forum
+          .getList({
+            order: {
+              column: 'title',
+              direction: 'DESC'
+            },
+            page: nextPage2,
+            limit: limit2,
+            whereIn: {
+              type: 'id',
+              data: defaultFollowingClubIdList
+            }
+          });
+
+      assign(res.resultData, {
+        listStores: {
+          type: 'List'
+        }
+      });
+
+      res.resultData.listStores.lists = res.resultData.listStores.lists || [];
+      res.resultData.listStores.lists = res.resultData.listStores.lists.concat([
+        {
+          listName: 'defaultFollowingClubs',
+          itemSchema: 'club',
+          data: dFCList,
+          collection: {
+            current_page: nextPage2,
+            limit: limit2,
+            next_page: (limit2 * nextPage2 < dFCList.total)
+                ? (nextPage2 + 1)
+                : null,
+            total: dFCList.total
+          }
+        },
+      ]);
+    }catch (e) {
+      console.error(e);
+
+      next(e);
+    }
 
     next();
 
